@@ -1,0 +1,39 @@
+.agents/
+.claude/
+
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# uv
+uv.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy / type checking
+.mypy_cache/

@@ -1,0 +1,99 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.11"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "c1b7b1d18b5ff786fb8c4d2ef4e0138a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "e0da53828dff4c092a11a51b5f00f0eb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "fa94d27d952855a6772472b4e8f6ecdc",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Loaded <strong>140,056</strong> records</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "c7575307c006c2ed5553f0d9d215674f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='lEQa-0' random-id='5c1e4105-6c46-16c3-9473-cf14df809327'><marimo-slider data-initial-value='1000' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Radius&lt;/span&gt;&lt;/span&gt;&quot;' data-start='200' data-stop='5000' data-step='100' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-1' random-id='6d7fcd3d-8cac-9611-d358-f00c40344150'><marimo-slider data-initial-value='1.0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Coverage&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0.1' data-stop='1.0' data-step='0.1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-2' random-id='65e4f2d5-335c-1da8-a9c5-b56c49b77c55'><marimo-slider data-initial-value='250' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Elevation Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='10' data-stop='500' data-step='10' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "b437fd62320eb4d780bf1edf1df7357c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='PKri-0' random-id='51d61d28-36af-a34d-f5b6-6c287efed962'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;dc5e9da0e699447a942a8a94268ce515&quot;}' data-label='null' data-js-url='&quot;./@file/3198-157436-phLLaEna.js&quot;' data-js-hash='&quot;32edf553288349a3f7e95f75f1ed45ae&quot;'></marimo-anywidget></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "eb722657ace6aadab388436b0f2ae915",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-1.8872</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>53.7638</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>6.00</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>6.0</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>-41.6</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
