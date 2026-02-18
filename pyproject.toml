@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-    { name = "Scott", email = "" },
+    { name = "Scott Lemke", email = "scott.r.lemke@gmail.com" },
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -33,9 +33,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/scott/deckgl-marimo"
-Repository = "https://github.com/scott/deckgl-marimo"
-Issues = "https://github.com/scott/deckgl-marimo/issues"
+Homepage = "https://github.com/kihaji/deckgl-marimo"
+Repository = "https://github.com/kihaji/deckgl-marimo"
+Issues = "https://github.com/kihaji/deckgl-marimo/issues"
 
 [project.optional-dependencies]
 dev = [
