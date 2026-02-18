@@ -9,11 +9,33 @@ description = "deck.gl HexagonLayer widget for marimo notebooks via anywidget"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
+authors = [
+    { name = "Scott", email = "" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Jupyter",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+keywords = ["deck.gl", "maplibre", "marimo", "anywidget", "hexagon", "geospatial", "visualization"]
 dependencies = [
     "anywidget>=0.9.0",
     "traitlets>=5.0.0",
     "narwhals>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/scott/deckgl-marimo"
+Repository = "https://github.com/scott/deckgl-marimo"
+Issues = "https://github.com/scott/deckgl-marimo/issues"
 
 [project.optional-dependencies]
 dev = [
