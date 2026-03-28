@@ -64,7 +64,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='lEQa-0' random-id='5cbf81e7-ffde-c37e-b8dc-9a97bbbc390a'><marimo-slider data-initial-value='5' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Radius Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='20' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-1' random-id='d84eda8d-7412-25e8-b55c-4729b2435668'><marimo-slider data-initial-value='0.8' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Opacity&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0.1' data-stop='1.0' data-step='0.1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='lEQa-0' random-id='aecc442d-1546-f7af-bb6f-137448d33251'><marimo-slider data-initial-value='5' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Radius Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='20' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-1' random-id='951ddf22-e174-8b79-bba3-dae7f701957f'><marimo-slider data-initial-value='0.8' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Opacity&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0.1' data-stop='1.0' data-step='0.1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
           }
         }
       ],
@@ -90,7 +90,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='PKri-0' random-id='ce2dd1bd-9e87-ea2b-49ba-2f3ee99ed884'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;8ee29477c1994db1a6de56c2f1a96d71&quot;}' data-label='null' data-js-url='&quot;./@file/2377462-19327-MBB9iMzk.js&quot;' data-js-hash='&quot;e74c7c48f89aac9121773568c7af09c0&quot;'></marimo-anywidget></marimo-ui-element>"
+            "text/html": "<marimo-ui-element object-id='PKri-0' random-id='e7a0c424-9411-2dde-c812-dc494f629c71'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;e5e33144557a43b492b66bb0ed54b467&quot;}' data-label='null' data-js-url='&quot;./@file/2377603-23772-akrctltw.js&quot;' data-js-hash='&quot;17fc883ec9f202e45dc8790e029b7d8d&quot;'></marimo-anywidget></marimo-ui-element>"
           }
         }
       ],
@@ -116,7 +116,7 @@
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-106.6724</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>42.8589</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>10.30</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>0.0</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>0.0</td>\n</tr>\n</tbody>\n</table></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>\u2014</td>\n</tr>\n</tbody>\n</table></span>"
           }
         }
       ],

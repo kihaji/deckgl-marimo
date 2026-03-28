@@ -156,6 +156,23 @@ dgl.Basemaps.list_available()
 dgl.Map(basemap="https://my-tileserver.example.com/style.json")
 ```
 
+## Troubleshooting
+
+### `Content-Length` errors in the marimo console
+
+You may see `h11._util.LocalProtocolError: Too little data for declared Content-Length`
+in the server console when a notebook loads. This is a known issue with uvicorn's
+default `h11` HTTP parser serving the large JS bundle. The map still works correctly.
+
+To suppress it, install `httptools` so uvicorn uses a faster HTTP parser, then
+**fully restart marimo** (kill and relaunch):
+
+```bash
+uv add httptools
+# then restart marimo
+uv run marimo edit your_notebook.py
+```
+
 ## License
 
 MIT

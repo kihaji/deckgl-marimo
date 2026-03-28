@@ -51,7 +51,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-0' random-id='585d9b64-613a-9eba-f1d1-5a9e78601813'><marimo-slider data-initial-value='20' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Font Size&lt;/span&gt;&lt;/span&gt;&quot;' data-start='8' data-stop='48' data-step='4' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-0' random-id='a9f8dd63-358d-6cd4-fb46-4dc545b39165'><marimo-slider data-initial-value='20' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Font Size&lt;/span&gt;&lt;/span&gt;&quot;' data-start='8' data-stop='48' data-step='4' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
           }
         }
       ],
@@ -77,7 +77,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='6c5fa9f8-1e36-42b7-6845-aea10cc28d58'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;fca3f7d1991244b781365941f254c31b&quot;}' data-label='null' data-js-url='&quot;./@file/2377603-21964-vWnPO0sz.js&quot;' data-js-hash='&quot;17fc883ec9f202e45dc8790e029b7d8d&quot;'></marimo-anywidget></marimo-ui-element>"
+            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='01b9247b-3217-4c34-2d08-1425dcdcbe65'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;0d79aa8f15e34b2a9767fe837fb11c63&quot;}' data-label='null' data-js-url='&quot;./@file/2377603-22602-aARaosY2.js&quot;' data-js-hash='&quot;17fc883ec9f202e45dc8790e029b7d8d&quot;'></marimo-anywidget></marimo-ui-element>"
           }
         }
       ],
