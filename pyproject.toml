@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "deckgl-marimo"
-version = "0.1.0"
-description = "deck.gl HexagonLayer widget for marimo notebooks via anywidget"
+version = "0.2.0"
+description = "deck.gl visualization library for marimo notebooks — interactive maps with 33 layer types"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -25,15 +25,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
     "Topic :: Scientific/Engineering :: Visualization",
 ]
-keywords = ["deck.gl", "maplibre", "marimo", "anywidget", "hexagon", "geospatial", "visualization"]
+keywords = ["deck.gl", "maplibre", "marimo", "anywidget", "geospatial", "visualization", "maps"]
 dependencies = [
     "anywidget>=0.9.0",
     "traitlets>=5.0.0",
     "narwhals>=1.0.0",
+    "marimo>=0.21.1",
 ]
 
 [project.urls]
 Homepage = "https://github.com/kihaji/deckgl-marimo"
+Documentation = "https://kihaji.github.io/deckgl-marimo"
 Repository = "https://github.com/kihaji/deckgl-marimo"
 Issues = "https://github.com/kihaji/deckgl-marimo/issues"
 
@@ -43,4 +45,10 @@ dev = [
     "pandas",
     "polars",
     "pytest",
+    "geopandas",
+    "duckdb",
+]
+docs = [
+    "mkdocs-material",
+    "mkdocstrings[python]",
 ]

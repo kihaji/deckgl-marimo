@@ -1,7 +1,8 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.19.11"
+    "marimo_version": "0.21.1",
+    "script_metadata_hash": "713387069e10cb6e9b4316f0be471d02"
   },
   "cells": [
     {
@@ -63,7 +64,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='lEQa-0' random-id='5c1e4105-6c46-16c3-9473-cf14df809327'><marimo-slider data-initial-value='1000' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Radius&lt;/span&gt;&lt;/span&gt;&quot;' data-start='200' data-stop='5000' data-step='100' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-1' random-id='6d7fcd3d-8cac-9611-d358-f00c40344150'><marimo-slider data-initial-value='1.0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Coverage&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0.1' data-stop='1.0' data-step='0.1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-2' random-id='65e4f2d5-335c-1da8-a9c5-b56c49b77c55'><marimo-slider data-initial-value='250' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Elevation Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='10' data-stop='500' data-step='10' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='lEQa-0' random-id='ca12551e-dc6d-63c6-0ec4-5a5e7936516a'><marimo-slider data-initial-value='1000' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Radius&lt;/span&gt;&lt;/span&gt;&quot;' data-start='200' data-stop='5000' data-step='100' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-1' random-id='027c3013-4b1d-105f-17f7-dc020216416f'><marimo-slider data-initial-value='1.0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Coverage&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0.1' data-stop='1.0' data-step='0.1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='lEQa-2' random-id='fdee72ba-612d-b710-e875-4589077037f2'><marimo-slider data-initial-value='250' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Elevation Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='10' data-stop='500' data-step='10' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
           }
         }
       ],
@@ -76,7 +77,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='PKri-0' random-id='51d61d28-36af-a34d-f5b6-6c287efed962'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;dc5e9da0e699447a942a8a94268ce515&quot;}' data-label='null' data-js-url='&quot;./@file/3198-157436-phLLaEna.js&quot;' data-js-hash='&quot;32edf553288349a3f7e95f75f1ed45ae&quot;'></marimo-anywidget></marimo-ui-element>"
+            "text/html": "<marimo-ui-element object-id='PKri-0' random-id='261b6e6e-091d-d846-422a-f7e01e2b20d4'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;912f9bcfccaf4abe8375f40f3cf3f3ed&quot;}' data-label='null' data-js-url='&quot;./@file/3198-4606-mc1wlBOj.js&quot;' data-js-hash='&quot;32edf553288349a3f7e95f75f1ed45ae&quot;'></marimo-anywidget></marimo-ui-element>"
           }
         }
       ],
@@ -89,7 +90,7 @@
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-1.8872</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>53.7638</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>6.00</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>6.0</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>-41.6</td>\n</tr>\n</tbody>\n</table></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-1.8908</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>52.0690</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>7.24</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>10.0</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>-36.8</td>\n</tr>\n</tbody>\n</table></span>"
           }
         }
       ],

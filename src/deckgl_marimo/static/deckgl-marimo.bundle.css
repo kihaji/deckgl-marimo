@@ -1,0 +1,21 @@
+/* MapLibre CSS is injected via JS (bundled inline). */
+
+.deckgl-marimo-container {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .deckgl-marimo-container {
+    border-color: #444;
+  }
+
+  .deckgl-marimo-container .maplibregl-ctrl-group {
+    background-color: #2d2d2d;
+  }
+
+  .deckgl-marimo-container .maplibregl-ctrl-group button {
+    filter: invert(1);
+  }
+}

@@ -12,6 +12,10 @@ build/
 *.egg-info/
 *.egg
 
+# Node.js
+node_modules/
+js/node_modules/
+
 # Virtual environments
 .venv/
 venv/

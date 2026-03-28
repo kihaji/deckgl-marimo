@@ -1,0 +1,22 @@
+{
+  "name": "deckgl-marimo-js",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch"
+  },
+  "dependencies": {
+    "@deck.gl/core": "^9.1.8",
+    "@deck.gl/layers": "^9.1.8",
+    "@deck.gl/aggregation-layers": "^9.1.8",
+    "@deck.gl/geo-layers": "^9.1.8",
+    "@deck.gl/mesh-layers": "^9.1.8",
+    "@deck.gl/mapbox": "^9.1.8",
+    "maplibre-gl": "^4.7.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

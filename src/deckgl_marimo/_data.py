@@ -1,10 +1,93 @@
-"""DataFrame to positions conversion using narwhals."""
+"""Data conversion utilities for deckgl-marimo.
+
+Supports pandas, polars (via narwhals), geopandas, DuckDB relations,
+plain dicts, and GeoJSON.
+"""
 
 from __future__ import annotations
 
 from typing import Any
 
 import narwhals as nw
+
+
+def prepare_data(data: Any) -> list | dict | str:
+    """Universal data preparation for deck.gl layers.
+
+    Detects the input type and converts to a JSON-serializable format
+    suitable for deck.gl consumption.
+
+    Parameters
+    ----------
+    data
+        One of:
+        - pandas/polars DataFrame -> list of dicts
+        - GeoDataFrame (has __geo_interface__) -> GeoJSON FeatureCollection
+        - DuckDB Relation (has .fetchdf()) -> converted via fetchdf() then recursed
+        - list[dict] -> passed through
+        - dict -> passed through (assumed GeoJSON)
+        - str -> passed through (assumed URL or file path)
+
+    Returns
+    -------
+    list | dict | str
+        JSON-serializable data for deck.gl.
+    """
+    if data is None:
+        return []
+
+    # String: URL or file path — pass through for JS to handle
+    if isinstance(data, str):
+        return data
+
+    # Dict: assumed GeoJSON — pass through
+    if isinstance(data, dict):
+        return data
+
+    # List: assumed list of dicts — pass through
+    if isinstance(data, list):
+        return data
+
+    # DuckDB Relation: has .fetchdf() method
+    if hasattr(data, "fetchdf"):
+        return prepare_data(data.fetchdf())
+
+    # GeoDataFrame: has __geo_interface__
+    if hasattr(data, "__geo_interface__"):
+        return geodataframe_to_geojson(data)
+
+    # pandas/polars DataFrame via narwhals
+    try:
+        return dataframe_to_records(data)
+    except Exception:
+        raise TypeError(
+            f"Unsupported data type: {type(data).__name__}. "
+            "Expected DataFrame, GeoDataFrame, DuckDB Relation, "
+            "list of dicts, dict (GeoJSON), or str (URL)."
+        )
+
+
+def dataframe_to_records(data: Any) -> list[dict]:
+    """Convert a DataFrame to a list of dicts via narwhals.
+
+    Parameters
+    ----------
+    data
+        A pandas or polars DataFrame.
+
+    Returns
+    -------
+    list[dict]
+        List of row dictionaries.
+    """
+    df = nw.from_native(data)
+    columns = df.columns
+    result = []
+    col_data = {col: df[col].to_list() for col in columns}
+    n_rows = len(col_data[columns[0]]) if columns else 0
+    for i in range(n_rows):
+        result.append({col: col_data[col][i] for col in columns})
+    return result
 
 
 def dataframe_to_positions(
@@ -35,3 +118,22 @@ def dataframe_to_positions(
     lons = df[lon_col].to_list()
     lats = df[lat_col].to_list()
     return [[lon, lat] for lon, lat in zip(lons, lats)]
+
+
+def geodataframe_to_geojson(gdf: Any) -> dict:
+    """Convert a GeoDataFrame to a GeoJSON FeatureCollection.
+
+    Uses the ``__geo_interface__`` protocol, which is supported by
+    geopandas GeoDataFrames.
+
+    Parameters
+    ----------
+    gdf
+        A GeoDataFrame with ``__geo_interface__`` attribute.
+
+    Returns
+    -------
+    dict
+        GeoJSON FeatureCollection dict.
+    """
+    return gdf.__geo_interface__
