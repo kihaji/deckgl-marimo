@@ -61,25 +61,34 @@ def _(mo):
 
 
 @app.cell
-def _(dgl, df, intensity_slider, mo, radius_slider, threshold_slider):
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=[
-                dgl.HeatmapLayer(
-                    data=df.to_dict("records"),
-                    get_position=["lng", "lat"],
-                    radius_pixels=radius_slider.value,
-                    intensity=intensity_slider.value,
-                    threshold=threshold_slider.value,
-                ),
-            ],
-            basemap="dark-matter",
-            center=(-1.4157, 52.2324),
-            zoom=6.0,
-        )
+def _(dgl, mo):
+    map_widget = dgl.Map(
+        basemap="dark-matter",
+        center=(-1.4157, 52.2324),
+        zoom=6.0,
     )
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
     widget
-    return (widget,)
+    return
+
+
+@app.cell
+def _(df, dgl, intensity_slider, map_widget, radius_slider, threshold_slider):
+    map_widget.layer_specs = [
+        dgl.HeatmapLayer(
+            data=df.to_dict("records"),
+            get_position=["lng", "lat"],
+            radius_pixels=radius_slider.value,
+            intensity=intensity_slider.value,
+            threshold=threshold_slider.value,
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -100,7 +109,7 @@ def _(mo, widget):
 | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 if __name__ == "__main__":

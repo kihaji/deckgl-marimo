@@ -2,7 +2,7 @@
   "version": "1",
   "metadata": {
     "marimo_version": "0.21.1",
-    "script_metadata_hash": "713387069e10cb6e9b4316f0be471d02"
+    "script_metadata_hash": "7f6310ac098667ddf8319022596f0ddc"
   },
   "cells": [
     {
@@ -33,7 +33,7 @@
     },
     {
       "id": "vblA",
-      "code_hash": "58c0b31cc21eb9705dc017284f8b9bf9",
+      "code_hash": "22e4dfe7cb9e062b2815dd8b87357210",
       "outputs": [
         {
           "type": "data",
@@ -51,7 +51,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-0' random-id='e1e4f4f8-00d3-2b54-6891-6d3c6d783b5a'><marimo-slider data-initial-value='5' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Width&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='20' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='bkHC-1' random-id='5688ccb1-a95f-5f17-9702-95297076c90f'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Rounded Joints&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element></div>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-0' random-id='25adaa32-52bb-57f5-9e05-738307a8f9ec'><marimo-slider data-initial-value='5' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Width&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='20' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='bkHC-1' random-id='9d017bbe-453e-4c5b-1529-3357ebc9820a'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Rounded Joints&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element></div>"
           }
         }
       ],
@@ -59,12 +59,12 @@
     },
     {
       "id": "lEQa",
-      "code_hash": "2663f2b36e288ba512a81ab06692ea53",
+      "code_hash": "d14f3e8c0332849073f1338a907784b0",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='1dbd0583-4981-7b2d-03f0-49e32fa8147e'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;6f30c484b9e8449f9478514d966a33db&quot;}' data-label='null' data-js-url='&quot;./@file/2377462-18053-NCFj6ERI.js&quot;' data-js-hash='&quot;e74c7c48f89aac9121773568c7af09c0&quot;'></marimo-anywidget></marimo-ui-element>"
+            "text/plain": ""
           }
         }
       ],
@@ -72,12 +72,38 @@
     },
     {
       "id": "PKri",
+      "code_hash": "9d2b1ad5bbc16c44d49116dc213c53f2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='ae1313ce-a1a3-e433-923a-094e0e9e47bf'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;72358ecbd2be436aaeadaa0035be27f8&quot;}' data-label='null' data-js-url='&quot;./@file/2377462-20768-6tadXjS5.js&quot;' data-js-hash='&quot;e74c7c48f89aac9121773568c7af09c0&quot;'></marimo-anywidget></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "9f83d7837efa77e37a24f23726a60505",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
       "code_hash": "9e08203518cab904878feb1d95d385e9",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>\u2014</td>\n</tr>\n</tbody>\n</table></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-122.3318</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>37.7858</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>17.68</td>\n</tr>\n</tbody>\n</table></span>"
           }
         }
       ],

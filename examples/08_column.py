@@ -70,29 +70,33 @@ def _(mo):
 
 
 @app.cell
-def _(cities, dgl, elevation_slider, mo, radius_slider):
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=[
-                dgl.ColumnLayer(
-                    data=cities.to_dict("records"),
-                    get_position=["lon", "lat"],
-                    get_fill_color="color",
-                    get_elevation="population",
-                    elevation_scale=elevation_slider.value,
-                    radius=radius_slider.value,
-                    extruded=True,
-                    pickable=True,
-                ),
-            ],
-            basemap="dark-matter",
-            center=(-98, 38),
-            zoom=4,
-            pitch=45,
-        )
-    )
+def _(dgl, mo):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-98, 38), zoom=4, pitch=45)
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
     widget
-    return (widget,)
+    return
+
+
+@app.cell
+def _(cities, dgl, elevation_slider, map_widget, radius_slider):
+    map_widget.layer_specs = [
+        dgl.ColumnLayer(
+            data=cities.to_dict("records"),
+            get_position=["lon", "lat"],
+            get_fill_color="color",
+            get_elevation="population",
+            elevation_scale=elevation_slider.value,
+            radius=radius_slider.value,
+            extruded=True,
+            pickable=True,
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -114,7 +118,7 @@ def _(mo, widget):
 | Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 if __name__ == "__main__":

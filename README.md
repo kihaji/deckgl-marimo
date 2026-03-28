@@ -78,24 +78,35 @@ widget = mo.ui.anywidget(m)
 
 ### Reactive controls
 
+> **Important:** Create the `Map` widget in a cell that does **not** depend on
+> slider values. Update layers by assigning to `map_widget.layer_specs` in a
+> separate cell. This keeps the map instance stable — sliders update layers
+> via traitlet sync instead of recreating the entire map, which would cause
+> tile reloads and a black screen flash.
+
 ```python
-# Cell 1
+# Cell 1 — sliders
 radius = mo.ui.slider(200, 5000, value=1000, label="Radius")
 
-# Cell 2 — re-executes when slider changes
-widget = mo.ui.anywidget(
-    dgl.Map(layers=[
-        dgl.HexagonLayer(
-            data=df,
-            get_position=["lon", "lat"],
-            radius=radius.value,
-            extruded=True,
-            elevation_scale=250,
-        )
-    ], basemap="dark-matter", center=(-1.4, 52.2), zoom=6, pitch=40)
-)
+# Cell 2 — create map widget (NO slider deps — stable, never re-executes)
+map_widget = dgl.Map(basemap="dark-matter", center=(-1.4, 52.2), zoom=6, pitch=40)
+widget = mo.ui.anywidget(map_widget)
 
-# Cell 3 — viewport readback
+# Cell 3 — display
+widget
+
+# Cell 4 — update layers reactively (re-executes when slider changes)
+map_widget.layer_specs = [
+    dgl.HexagonLayer(
+        data=df,
+        get_position=["lon", "lat"],
+        radius=radius.value,
+        extruded=True,
+        elevation_scale=250,
+    ).to_spec()
+]
+
+# Cell 5 — viewport readback
 vp = widget.value.get("viewport", {})
 mo.md(f"Zoom: {vp.get('zoom', 'N/A'):.1f}")
 ```

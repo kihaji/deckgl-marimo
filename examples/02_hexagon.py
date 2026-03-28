@@ -61,28 +61,37 @@ def _(mo):
 
 
 @app.cell
-def _(coverage_slider, dgl, df, elevation_slider, mo, radius_slider):
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=[
-                dgl.HexagonLayer(
-                    data=df.to_dict("records"),
-                    get_position=["lng", "lat"],
-                    radius=radius_slider.value,
-                    coverage=coverage_slider.value,
-                    elevation_scale=elevation_slider.value,
-                    extruded=True,
-                    pickable=True,
-                ),
-            ],
-            basemap="dark-matter",
-            center=(-1.4157, 52.2324),
-            zoom=6.0,
-            pitch=40.5,
-        )
+def _(dgl, mo):
+    map_widget = dgl.Map(
+        basemap="dark-matter",
+        center=(-1.4157, 52.2324),
+        zoom=6.0,
+        pitch=40.5,
     )
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
     widget
-    return (widget,)
+    return
+
+
+@app.cell
+def _(coverage_slider, df, dgl, elevation_slider, map_widget, radius_slider):
+    map_widget.layer_specs = [
+        dgl.HexagonLayer(
+            data=df.to_dict("records"),
+            get_position=["lng", "lat"],
+            radius=radius_slider.value,
+            coverage=coverage_slider.value,
+            elevation_scale=elevation_slider.value,
+            extruded=True,
+            pickable=True,
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -105,7 +114,7 @@ def _(mo, widget):
 | Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 if __name__ == "__main__":

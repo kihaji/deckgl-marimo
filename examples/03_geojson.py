@@ -31,14 +31,6 @@ def _():
 
 @app.cell
 def _(mo):
-    mo.md("""
-    **GeoJsonLayer** — Vancouver building footprints from deck.gl sample data
-    """)
-    return
-
-
-@app.cell
-def _(mo):
     opacity_slider = mo.ui.slider(
         start=0.1, stop=1.0, step=0.1, value=0.7, show_value=True, label="Opacity"
     )
@@ -51,9 +43,27 @@ def _(mo):
 
 
 @app.cell
-def _(dgl, extruded_toggle, line_width_slider, mo, opacity_slider):
+def _(dgl, mo):
+    map_widget = dgl.Map(
+        basemap="dark-matter",
+        center=(-123.1, 49.25),
+        zoom=11,
+        pitch=45,
+    )
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
+def _(dgl, extruded_toggle, line_width_slider, map_widget, opacity_slider):
     GEOJSON_URL = "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/geojson/vancouver-blocks.json"
-    widget = mo.ui.anywidget(
+    map_widget.layer_specs = [
         dgl.GeoJsonLayer(
             data=GEOJSON_URL,
             get_fill_color=[0, 180, 230, 160],
@@ -62,13 +72,9 @@ def _(dgl, extruded_toggle, line_width_slider, mo, opacity_slider):
             extruded=extruded_toggle.value,
             opacity=opacity_slider.value,
             line_width_min_pixels=1,
-            center=(-123.1, 49.25),
-            zoom=11,
-            pitch=45,
-        )
-    )
-    widget
-    return (widget,)
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -80,14 +86,14 @@ def _(mo, widget):
 
     mo.md(
         f"""
-    **Viewport**
+**Viewport**
 
-    | Property | Value |
-    |----------|-------|
-    | Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
-    | Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
-    | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
-    """
+| Property | Value |
+|----------|-------|
+| Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
+| Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
+| Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
+"""
     )
     return
 

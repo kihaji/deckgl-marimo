@@ -51,7 +51,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-0' random-id='1f3dcaf1-28d0-b3ee-39b9-fa53a2ccc33d'><marimo-slider data-initial-value='20' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Font Size&lt;/span&gt;&lt;/span&gt;&quot;' data-start='8' data-stop='48' data-step='4' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-0' random-id='585d9b64-613a-9eba-f1d1-5a9e78601813'><marimo-slider data-initial-value='20' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Font Size&lt;/span&gt;&lt;/span&gt;&quot;' data-start='8' data-stop='48' data-step='4' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div>"
           }
         }
       ],
@@ -59,12 +59,12 @@
     },
     {
       "id": "lEQa",
-      "code_hash": "e34cb893f9e077392cb659daf0922f08",
+      "code_hash": "a798bdd2129421d96d0285afee541928",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='a6b2c14a-02d7-2a1d-e979-9e1a591649df'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;b14ec42cc2bb4fc18bc58947d1e8d633&quot;}' data-label='null' data-js-url='&quot;./@file/2377462-18548-8FkH0y41.js&quot;' data-js-hash='&quot;e74c7c48f89aac9121773568c7af09c0&quot;'></marimo-anywidget></marimo-ui-element>"
+            "text/plain": ""
           }
         }
       ],
@@ -72,12 +72,38 @@
     },
     {
       "id": "PKri",
+      "code_hash": "9d2b1ad5bbc16c44d49116dc213c53f2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='6c5fa9f8-1e36-42b7-6845-aea10cc28d58'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;fca3f7d1991244b781365941f254c31b&quot;}' data-label='null' data-js-url='&quot;./@file/2377603-21964-vWnPO0sz.js&quot;' data-js-hash='&quot;17fc883ec9f202e45dc8790e029b7d8d&quot;'></marimo-anywidget></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "3fff1c5d3872beccb1ac6501ca1acd01",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
       "code_hash": "9e08203518cab904878feb1d95d385e9",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-4.1580</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>52.9807</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>6.24</td>\n</tr>\n</tbody>\n</table></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Viewport</strong></span>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>\u2014</td>\n</tr>\n</tbody>\n</table></span>"
           }
         }
       ],

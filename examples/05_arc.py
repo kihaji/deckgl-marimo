@@ -68,27 +68,32 @@ def _(mo):
 
 
 @app.cell
-def _(dgl, flights, great_circle_toggle, mo, width_slider):
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=[
-                dgl.ArcLayer(
-                    data=flights.to_dict("records"),
-                    get_source_position=["src_lon", "src_lat"],
-                    get_target_position=["dst_lon", "dst_lat"],
-                    get_source_color=[0, 128, 255],
-                    get_target_color=[255, 0, 128],
-                    get_width=width_slider.value,
-                    great_circle=great_circle_toggle.value,
-                ),
-            ],
-            basemap="dark-matter",
-            center=(-40, 40),
-            zoom=2,
-        )
-    )
+def _(dgl, mo):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-40, 40), zoom=2)
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
     widget
-    return (widget,)
+    return
+
+
+@app.cell
+def _(dgl, flights, great_circle_toggle, map_widget, width_slider):
+    map_widget.layer_specs = [
+        dgl.ArcLayer(
+            data=flights.to_dict("records"),
+            get_source_position=["src_lon", "src_lat"],
+            get_target_position=["dst_lon", "dst_lat"],
+            get_source_color=[0, 128, 255],
+            get_target_color=[255, 0, 128],
+            get_width=width_slider.value,
+            great_circle=great_circle_toggle.value,
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -109,7 +114,7 @@ def _(mo, widget):
 | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 if __name__ == "__main__":

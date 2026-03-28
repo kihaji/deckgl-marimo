@@ -62,8 +62,21 @@ def _(mo):
 
 
 @app.cell
-def _(df, dgl, mo, opacity_slider, radius_slider):
-    widget = mo.ui.anywidget(
+def _(dgl, mo):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-98, 39), zoom=4)
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
+def _(df, dgl, map_widget, opacity_slider, radius_slider):
+    map_widget.layer_specs = [
         dgl.ScatterplotLayer(
             data=df.to_dict("records"),
             get_position=["lon", "lat"],
@@ -73,12 +86,9 @@ def _(df, dgl, mo, opacity_slider, radius_slider):
             radius_min_pixels=2,
             radius_max_pixels=20,
             opacity=opacity_slider.value,
-            center=(-98, 39),
-            zoom=4,
-        )
-    )
-    widget
-    return (widget,)
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -90,16 +100,16 @@ def _(mo, widget):
 
     mo.md(
         f"""
-    **Viewport**
+**Viewport**
 
-    | Property | Value |
-    |----------|-------|
-    | Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
-    | Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
-    | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
-    | Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
-    | Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
-    """
+| Property | Value |
+|----------|-------|
+| Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
+| Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
+| Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
+| Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
+| Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
+"""
     )
     return
 

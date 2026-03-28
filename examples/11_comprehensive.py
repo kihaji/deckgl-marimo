@@ -142,14 +142,32 @@ def _(
 
 
 @app.cell
+def _(dgl, mo):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-98, 38), zoom=4, pitch=45)
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
+def _(basemap_picker, dgl, map_widget):
+    map_widget.basemap_style = dgl.Basemaps.resolve(basemap_picker.value)
+    return
+
+
+@app.cell
 def _(
     arc_width_slider,
-    basemap_picker,
     cities,
     dgl,
     elevation_slider,
     flights,
-    mo,
+    map_widget,
     radius_slider,
     show_arcs,
     show_columns,
@@ -169,7 +187,7 @@ def _(
                 radius=radius_slider.value,
                 extruded=True,
                 pickable=True,
-            )
+            ).to_spec()
         )
 
     if show_arcs.value:
@@ -182,7 +200,7 @@ def _(
                 get_source_color=[0, 128, 255],
                 get_target_color=[255, 0, 128],
                 get_width=arc_width_slider.value,
-            )
+            ).to_spec()
         )
 
     if show_labels.value:
@@ -198,20 +216,11 @@ def _(
                 get_alignment_baseline="bottom",
                 font_family="Arial, sans-serif",
                 billboard=True,
-            )
+            ).to_spec()
         )
 
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=layers,
-            basemap=basemap_picker.value,
-            center=(-98, 38),
-            zoom=4,
-            pitch=45,
-        )
-    )
-    widget
-    return (widget,)
+    map_widget.layer_specs = layers
+    return
 
 
 @app.cell
@@ -234,7 +243,7 @@ def _(mo, widget):
 | Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 @app.cell

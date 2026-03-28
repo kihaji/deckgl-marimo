@@ -43,8 +43,18 @@ function isConstant(value) {
 /**
  * Resolve accessor specs in a props object, mutating it in place.
  * Only processes properties that match the accessor naming pattern (get*).
+ *
+ * @param {Object} props - Layer props to resolve (mutated in place)
+ * @param {Array|undefined} data - The layer's data array, used to verify column names
  */
-export function resolveAccessors(props, dataLength) {
+export function resolveAccessors(props, data) {
+  const dataLength = Array.isArray(data) ? data.length : undefined;
+  // Get the set of valid column names from the first data row
+  const dataColumns =
+    Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && data[0] !== null
+      ? new Set(Object.keys(data[0]))
+      : null;
+
   for (const key of Object.keys(props)) {
     if (!isAccessorProp(key)) continue;
 
@@ -56,17 +66,25 @@ export function resolveAccessors(props, dataLength) {
     }
 
     if (typeof value === "string") {
-      // Single column name: "population" -> d => d.population
-      const col = value;
-      props[key] = (d) => d[col];
+      // Only convert to accessor if the string matches a column in the data.
+      // Otherwise it's a constant string value (e.g., "middle", "center").
+      if (dataColumns && dataColumns.has(value)) {
+        const col = value;
+        props[key] = (d) => d[col];
+      }
+      // If not a column name, leave as constant string
       continue;
     }
 
     if (Array.isArray(value)) {
       if (isColumnNameList(value)) {
-        // List of column names: ["lon", "lat"] -> d => [d.lon, d.lat]
-        const cols = value;
-        props[key] = (d) => cols.map((c) => d[c]);
+        // Verify at least the first column exists in data before converting
+        if (!dataColumns || value.every((col) => dataColumns.has(col))) {
+          const cols = value;
+          props[key] = (d) => cols.map((c) => d[c]);
+          continue;
+        }
+        // If columns don't match data, leave as-is (could be a constant)
         continue;
       }
 
@@ -76,7 +94,6 @@ export function resolveAccessors(props, dataLength) {
       }
 
       // Per-row array: large array matching data length
-      // Check if it's an array of arrays (per-row values)
       if (
         dataLength !== undefined &&
         value.length === dataLength &&

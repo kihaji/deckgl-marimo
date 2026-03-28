@@ -2,7 +2,6 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "marimo",
-#     "pandas",
 #     "deckgl-marimo",
 # ]
 #
@@ -21,13 +20,6 @@ def _():
     import marimo as mo
 
     return (mo,)
-
-
-@app.cell
-def _():
-    import pandas as pd
-
-    return (pd,)
 
 
 @app.cell
@@ -63,33 +55,38 @@ def _(mo):
 
 
 @app.cell
-def _(dgl, locations, mo, size_slider):
+def _(dgl, mo):
+    map_widget = dgl.Map(basemap="voyager", center=(-73.99, 40.74), zoom=12)
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
+def _(dgl, locations, map_widget, size_slider):
     ICON_ATLAS = "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png"
     ICON_MAPPING = {
         "marker": {"x": 0, "y": 0, "width": 128, "height": 128, "anchorY": 128, "mask": True},
     }
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=[
-                dgl.IconLayer(
-                    data=locations,
-                    get_position=["lon", "lat"],
-                    get_icon="icon",
-                    get_size=size_slider.value,
-                    get_color=[255, 64, 64],
-                    icon_atlas=ICON_ATLAS,
-                    icon_mapping=ICON_MAPPING,
-                    size_scale=1,
-                    pickable=True,
-                ),
-            ],
-            basemap="voyager",
-            center=(-73.99, 40.74),
-            zoom=12,
-        )
-    )
-    widget
-    return (widget,)
+    map_widget.layer_specs = [
+        dgl.IconLayer(
+            data=locations,
+            get_position=["lon", "lat"],
+            get_icon="icon",
+            get_size=size_slider.value,
+            get_color=[255, 64, 64],
+            icon_atlas=ICON_ATLAS,
+            icon_mapping=ICON_MAPPING,
+            size_scale=1,
+            pickable=True,
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -110,7 +107,7 @@ def _(mo, widget):
 | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 if __name__ == "__main__":

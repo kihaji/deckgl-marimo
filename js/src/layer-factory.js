@@ -102,8 +102,7 @@ export function createLayer(spec) {
   }
 
   // Resolve accessor specs (get* properties) to JS functions
-  const dataLength = Array.isArray(props.data) ? props.data.length : undefined;
-  resolveAccessors(props, dataLength);
+  resolveAccessors(props, props.data);
 
   return new LayerClass(props);
 }

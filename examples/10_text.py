@@ -62,30 +62,35 @@ def _(mo):
 
 
 @app.cell
-def _(cities, dgl, mo, size_slider):
-    widget = mo.ui.anywidget(
-        dgl.Map(
-            layers=[
-                dgl.TextLayer(
-                    data=cities,
-                    get_position=["lon", "lat"],
-                    get_text="name",
-                    get_size=size_slider.value,
-                    get_color=[255, 255, 255, 230],
-                    get_text_anchor="middle",
-                    get_alignment_baseline="center",
-                    font_family="Arial, sans-serif",
-                    billboard=True,
-                    pickable=True,
-                ),
-            ],
-            basemap="dark-matter",
-            center=(10, 50),
-            zoom=4,
-        )
-    )
+def _(dgl, mo):
+    map_widget = dgl.Map(basemap="dark-matter", center=(10, 50), zoom=4)
+    widget = mo.ui.anywidget(map_widget)
+    return map_widget, widget
+
+
+@app.cell
+def _(widget):
     widget
-    return (widget,)
+    return
+
+
+@app.cell
+def _(cities, dgl, map_widget, size_slider):
+    map_widget.layer_specs = [
+        dgl.TextLayer(
+            data=cities,
+            get_position=["lon", "lat"],
+            get_text="name",
+            get_size=size_slider.value,
+            get_color=[255, 255, 255, 230],
+            get_text_anchor="middle",
+            get_alignment_baseline="center",
+            font_family="Arial, sans-serif",
+            billboard=True,
+            pickable=True,
+        ).to_spec()
+    ]
+    return
 
 
 @app.cell
@@ -106,7 +111,7 @@ def _(mo, widget):
 | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
 """
     )
-    return (viewport,)
+    return
 
 
 if __name__ == "__main__":

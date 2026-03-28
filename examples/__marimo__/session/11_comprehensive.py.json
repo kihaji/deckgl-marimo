@@ -129,7 +129,7 @@
         {
           "type": "data",
           "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 4rem'><div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='Xref-0' random-id='1dae9c34-c1d3-e178-74af-a98c3b120766'><marimo-dropdown data-initial-value='[&quot;dark-matter&quot;]' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Basemap&lt;/span&gt;&lt;/span&gt;&quot;' data-options='[&quot;bright&quot;,&quot;dark&quot;,&quot;dark-matter&quot;,&quot;liberty&quot;,&quot;light&quot;,&quot;osm&quot;,&quot;positron&quot;,&quot;voyager&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false'></marimo-dropdown></marimo-ui-element><div style='display: flex;flex: 1;flex-direction: row;justify-content: space-between;align-items: normal;flex-wrap: nowrap;gap: 1rem'><marimo-ui-element object-id='SFPL-0' random-id='40b9d77d-f605-86e4-d63f-7a52eeb8e24a'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Columns&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element><marimo-ui-element object-id='SFPL-1' random-id='572ea8b3-967d-da9f-558a-e7f649ac1c16'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Arcs&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element><marimo-ui-element object-id='SFPL-2' random-id='b470f125-2da7-1ccc-2db8-2d6fc9c2900e'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Labels&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element></div></div><div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='BYtC-0' random-id='a8ab1fe4-f7cd-bcdb-a8c0-65f8b9cb5252'><marimo-slider data-initial-value='20000' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Column Radius&lt;/span&gt;&lt;/span&gt;&quot;' data-start='5000' data-stop='50000' data-step='5000' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='BYtC-1' random-id='2df88c52-39bf-13b1-1e14-002d995ab648'><marimo-slider data-initial-value='100' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Elevation Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='10' data-stop='500' data-step='10' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='BYtC-2' random-id='55daabb3-dcc9-a786-857e-c5c3f434b453'><marimo-slider data-initial-value='2' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Arc Width&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='10' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div></div>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 4rem'><div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='Xref-0' random-id='62aadd6f-6a79-f764-d231-d3bac1a23117'><marimo-dropdown data-initial-value='[&quot;dark-matter&quot;]' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Basemap&lt;/span&gt;&lt;/span&gt;&quot;' data-options='[&quot;bright&quot;,&quot;dark&quot;,&quot;dark-matter&quot;,&quot;liberty&quot;,&quot;light&quot;,&quot;osm&quot;,&quot;positron&quot;,&quot;voyager&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false'></marimo-dropdown></marimo-ui-element><div style='display: flex;flex: 1;flex-direction: row;justify-content: space-between;align-items: normal;flex-wrap: nowrap;gap: 1rem'><marimo-ui-element object-id='SFPL-0' random-id='b5dc6afd-4893-5722-be41-ab8c8ddece21'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Columns&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element><marimo-ui-element object-id='SFPL-1' random-id='bf10e7a0-8cee-db5a-b589-31f787e906fa'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Arcs&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element><marimo-ui-element object-id='SFPL-2' random-id='49c7107d-42e9-6b1b-5612-1e9218b8da98'><marimo-switch data-initial-value='true' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Labels&lt;/span&gt;&lt;/span&gt;&quot;' data-disabled='false'></marimo-switch></marimo-ui-element></div></div><div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='BYtC-0' random-id='07b88d08-1724-2154-5fd6-e0b7a4a316d4'><marimo-slider data-initial-value='20000' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Column Radius&lt;/span&gt;&lt;/span&gt;&quot;' data-start='5000' data-stop='50000' data-step='5000' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='BYtC-1' random-id='66324828-e014-4599-562c-34d7715da275'><marimo-slider data-initial-value='100' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Elevation Scale&lt;/span&gt;&lt;/span&gt;&quot;' data-start='10' data-stop='500' data-step='10' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='BYtC-2' random-id='6063b7cc-f1fa-bb2e-f922-5334e24e09be'><marimo-slider data-initial-value='2' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Arc Width&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='10' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div></div>"
           }
         }
       ],
@@ -137,12 +137,12 @@
     },
     {
       "id": "Kclp",
-      "code_hash": "477efff0d6a244a0751ed770cfdb9aa7",
+      "code_hash": "069cc4e74dabd6aa1873f0ad1029adcc",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='Kclp-0' random-id='b4e81e9e-8f8f-6937-79fd-72100b98dfd1'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;fd86b09fb7124e6a94eaee69d27220d3&quot;}' data-label='null' data-js-url='&quot;./@file/2377462-18664-I2eZQJnz.js&quot;' data-js-hash='&quot;e74c7c48f89aac9121773568c7af09c0&quot;'></marimo-anywidget></marimo-ui-element>"
+            "text/plain": ""
           }
         }
       ],
@@ -150,12 +150,12 @@
     },
     {
       "id": "emfo",
-      "code_hash": "6ad6787186d4d51333beb226d37e1a9c",
+      "code_hash": "9d2b1ad5bbc16c44d49116dc213c53f2",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"viewport\">Viewport</h2>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>-100.6901</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>32.7238</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>4.00</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>45.0</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>0.0</td>\n</tr>\n</tbody>\n</table></span>"
+            "text/html": "<marimo-ui-element object-id='Kclp-0' random-id='dd21dbfe-9f04-42a8-7e2f-e1c47ca56555'><marimo-anywidget data-initial-value='{&quot;model_id&quot;:&quot;5a8ae03595794d529bf195379d1f312c&quot;}' data-label='null' data-js-url='&quot;./@file/2377603-22072-qxUK6dbY.js&quot;' data-js-hash='&quot;17fc883ec9f202e45dc8790e029b7d8d&quot;'></marimo-anywidget></marimo-ui-element>"
           }
         }
       ],
@@ -163,6 +163,45 @@
     },
     {
       "id": "Hstk",
+      "code_hash": "12728cbb7f51263cca2c4b5b79ae22de",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "dfda936285d703016630d45c0e6bc4f9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "6ad6787186d4d51333beb226d37e1a9c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"viewport\">Viewport</h2>\n<table>\n<thead>\n<tr>\n<th>Property</th>\n<th>Value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Longitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Latitude</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Zoom</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Pitch</td>\n<td>\u2014</td>\n</tr>\n<tr>\n<td>Bearing</td>\n<td>\u2014</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
       "code_hash": "af5c54ef3c39deb0d848de847d30ef72",
       "outputs": [
         {
