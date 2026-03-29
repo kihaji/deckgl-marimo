@@ -20,6 +20,7 @@ js/node_modules/
 .venv/
 venv/
 
+__marimo__/
 
 # IDE
 .idea/
