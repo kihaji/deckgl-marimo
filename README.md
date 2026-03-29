@@ -10,7 +10,7 @@ Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https:
 
 ## Features
 
-- **33 deck.gl layer types** — scatter plots, hexagonal bins, heatmaps, arcs, paths, polygons, GeoJSON, 3D columns, and more
+- **10 deck.gl layer types** — scatter plots, hexagonal bins, heatmaps, arcs, paths, polygons, GeoJSON, 3D columns, and more
 - **Multi-layer maps** — compose multiple layers on a single map
 - **Standalone layers** — display any layer directly without explicit map setup
 - **Marimo-native reactivity** — bind layer properties to sliders, dropdowns, and other widgets
