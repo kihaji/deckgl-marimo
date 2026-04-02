@@ -38,6 +38,9 @@ from deckgl_marimo.layers._mesh import (
     ScenegraphLayer,
     SimpleMeshLayer,
 )
+from deckgl_marimo.layers._composite import (
+    DisplacementLayer,
+)
 
 __all__ = [
     # Core
@@ -74,4 +77,6 @@ __all__ = [
     # Mesh
     "ScenegraphLayer",
     "SimpleMeshLayer",
+    # Composite
+    "DisplacementLayer",
 ]

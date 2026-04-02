@@ -91,7 +91,7 @@ class Map(anywidget.AnyWidget):
         **kwargs: Any,
     ) -> None:
         self._layers: list[BaseLayer] = list(layers or [])
-        specs = [layer.to_spec() for layer in self._layers]
+        specs = [spec for layer in self._layers for spec in layer.to_specs()]
         style = Basemaps.resolve(basemap)
 
         init_kwargs: dict[str, Any] = {
@@ -172,4 +172,4 @@ class Map(anywidget.AnyWidget):
 
     def _sync_layers(self) -> None:
         """Re-serialize all layers and update the traitlet."""
-        self.layer_specs = [layer.to_spec() for layer in self._layers]
+        self.layer_specs = [spec for layer in self._layers for spec in layer.to_specs()]

@@ -121,6 +121,14 @@ class BaseLayer:
 
         return spec
 
+    def to_specs(self) -> list[dict]:
+        """Serialize to a list of JSON-compatible specs.
+
+        Composite layers override this to return multiple specs.
+        Simple layers return a single-element list.
+        """
+        return [self.to_spec()]
+
     def _get_map(self) -> Any:
         """Get or create the backing Map widget for anywidget compatibility."""
         if self.__map is None:
