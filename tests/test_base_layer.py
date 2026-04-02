@@ -1,6 +1,7 @@
 """Tests for BaseLayer and utility functions."""
 
 from deckgl_marimo._base import BaseLayer
+from deckgl_marimo.layers._core import GeoJsonLayer
 from deckgl_marimo._utils import to_camel_case, to_snake_case
 
 
@@ -68,3 +69,64 @@ class TestBaseLayer:
     def test_repr(self):
         layer = BaseLayer(id="test-layer")
         assert repr(layer) == "BaseLayer(id='test-layer')"
+
+
+class TestLoadOptions:
+    def test_load_options_in_spec(self):
+        opts = {"fetch": {"headers": {"Authorization": "Bearer xyz"}}}
+        layer = BaseLayer(data="https://example.com/data.json", load_options=opts)
+        spec = layer.to_spec()
+        assert spec["loadOptions"] == opts
+
+    def test_fetch_headers_convenience(self):
+        layer = BaseLayer(
+            data="https://example.com/data.json",
+            fetch_headers={"Authorization": "Bearer xyz"},
+        )
+        spec = layer.to_spec()
+        assert spec["loadOptions"] == {
+            "fetch": {"headers": {"Authorization": "Bearer xyz"}}
+        }
+
+    def test_fetch_headers_merged_with_load_options(self):
+        layer = BaseLayer(
+            data="https://example.com/data.json",
+            fetch_headers={"X-Default": "default-val", "Authorization": "from-headers"},
+            load_options={
+                "fetch": {
+                    "credentials": "include",
+                    "headers": {"Authorization": "from-load-options"},
+                }
+            },
+        )
+        spec = layer.to_spec()
+        lo = spec["loadOptions"]
+        assert lo["fetch"]["credentials"] == "include"
+        # load_options headers take precedence over fetch_headers
+        assert lo["fetch"]["headers"]["Authorization"] == "from-load-options"
+        # fetch_headers defaults still present
+        assert lo["fetch"]["headers"]["X-Default"] == "default-val"
+
+    def test_no_load_options_when_none(self):
+        layer = BaseLayer(data="https://example.com/data.json")
+        spec = layer.to_spec()
+        assert "loadOptions" not in spec
+
+    def test_load_options_credentials(self):
+        layer = BaseLayer(
+            data="https://example.com/data.json",
+            load_options={"fetch": {"credentials": "include"}},
+        )
+        spec = layer.to_spec()
+        assert spec["loadOptions"]["fetch"]["credentials"] == "include"
+
+    def test_load_options_with_geojson_layer(self):
+        layer = GeoJsonLayer(
+            data="https://example.com/data.geojson",
+            fetch_headers={"X-API-Key": "abc123"},
+        )
+        spec = layer.to_spec()
+        assert spec["type"] == "GeoJsonLayer"
+        assert spec["loadOptions"] == {
+            "fetch": {"headers": {"X-API-Key": "abc123"}}
+        }

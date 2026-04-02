@@ -15,6 +15,7 @@ Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https:
 - **Standalone layers** — display any layer directly without explicit map setup
 - **Marimo-native reactivity** — bind layer properties to sliders, dropdowns, and other widgets
 - **Multiple data sources** — pandas, polars, geopandas, DuckDB, GeoJSON dicts, and URLs
+- **Authenticated data loading** — pass HTTP headers, API keys, or credentials for remote data sources
 - **Fully offline** — all JavaScript bundled in the package, no CDN dependencies
 - **Viewport readback** — read the current map center, zoom, pitch, and bearing from Python
 - **Click & hover events** — inspect picked objects reactively in downstream cells
@@ -120,6 +121,42 @@ rel = duckdb.sql("SELECT lon, lat, value FROM 'data.parquet' WHERE value > 100")
 layer = dgl.ScatterplotLayer(data=rel, get_position=["lon", "lat"])
 ```
 
+### Authenticated remote data
+
+Any layer that loads data from a URL supports custom HTTP headers via
+`fetch_headers`, or full control over the fetch request via `load_options`.
+
+```python
+# Bearer token
+layer = dgl.GeoJsonLayer(
+    data="https://secure-api.example.com/data.geojson",
+    fetch_headers={"Authorization": "Bearer my-token"},
+    get_fill_color=[0, 180, 230, 160],
+)
+
+# API key
+layer = dgl.GeoJsonLayer(
+    data="https://api.example.com/features",
+    fetch_headers={"X-API-Key": "abc123"},
+)
+
+# Full fetch control (mTLS / CORS / custom options)
+layer = dgl.GeoJsonLayer(
+    data="https://internal.example.com/data.geojson",
+    load_options={
+        "fetch": {
+            "credentials": "include",
+            "mode": "cors",
+            "headers": {"Authorization": "Bearer token"},
+        }
+    },
+)
+```
+
+Both parameters are available on all layer types via `BaseLayer`. When
+`fetch_headers` and `load_options` both specify headers, the `load_options`
+headers take precedence.
+
 ## Available layers
 
 ### Fully tested (10)
@@ -160,18 +197,8 @@ dgl.Map(basemap="https://my-tileserver.example.com/style.json")
 
 ### `Content-Length` errors in the marimo console
 
-You may see `h11._util.LocalProtocolError: Too little data for declared Content-Length`
-in the server console when a notebook loads. This is a known issue with uvicorn's
-default `h11` HTTP parser serving the large JS bundle. The map still works correctly.
+This is fixed in Marimo >= 0.22.0 please update to that.
 
-To suppress it, install `httptools` so uvicorn uses a faster HTTP parser, then
-**fully restart marimo** (kill and relaunch):
-
-```bash
-uv add httptools
-# then restart marimo
-uv run marimo edit your_notebook.py
-```
 
 ## License
 

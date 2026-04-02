@@ -32,6 +32,16 @@ class BaseLayer:
         Whether the layer responds to pointer events.
     auto_highlight
         Whether to highlight the picked object.
+    load_options
+        Options passed to deck.gl's loaders.gl data loading system.
+        Use this for full control over fetch configuration, e.g.
+        ``{"fetch": {"credentials": "include", "headers": {...}}}``.
+    fetch_headers
+        Convenience shortcut to set HTTP headers on the data fetch
+        request. Equivalent to
+        ``load_options={"fetch": {"headers": {...}}}``.
+        If both ``fetch_headers`` and ``load_options`` specify headers,
+        the ``load_options`` headers take precedence.
     basemap
         Basemap style for standalone display (default ``"dark-matter"``).
     center
@@ -64,6 +74,8 @@ class BaseLayer:
         opacity: float = 1.0,
         pickable: bool = True,
         auto_highlight: bool = False,
+        load_options: dict[str, Any] | None = None,
+        fetch_headers: dict[str, str] | None = None,
         basemap: str = "dark-matter",
         center: tuple[float, float] | None = None,
         zoom: float = 1.0,
@@ -78,6 +90,8 @@ class BaseLayer:
         self.opacity = opacity
         self.pickable = pickable
         self.auto_highlight = auto_highlight
+        self.load_options = load_options
+        self.fetch_headers = fetch_headers
         self._props = props
 
         # Map parameters for standalone display
@@ -119,6 +133,15 @@ class BaseLayer:
             camel_key = to_camel_case(key)
             spec[camel_key] = value
 
+        # Build loadOptions from explicit params + convenience params
+        effective_load_options = dict(self.load_options) if self.load_options else {}
+        if self.fetch_headers:
+            fetch_opts = effective_load_options.setdefault("fetch", {})
+            merged_headers = {**self.fetch_headers, **fetch_opts.get("headers", {})}
+            fetch_opts["headers"] = merged_headers
+        if effective_load_options:
+            spec["loadOptions"] = effective_load_options
+
         return spec
 
     def to_specs(self) -> list[dict]:
@@ -147,8 +170,8 @@ class BaseLayer:
         # Avoid infinite recursion for our own attributes
         if name.startswith("_BaseLayer") or name in (
             "id", "data", "visible", "opacity", "pickable",
-            "auto_highlight", "_props", "_map_kwargs",
-            "LAYER_TYPE", "_MAP_KEYS",
+            "auto_highlight", "load_options", "fetch_headers",
+            "_props", "_map_kwargs", "LAYER_TYPE", "_MAP_KEYS",
         ):
             raise AttributeError(name)
 

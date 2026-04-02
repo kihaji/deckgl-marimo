@@ -94,6 +94,14 @@ class ScatterplotLayer(BaseLayer):
 class GeoJsonLayer(BaseLayer):
     """Render GeoJSON data (points, lines, polygons).
 
+    For authenticated remote data, use ``fetch_headers`` or
+    ``load_options``::
+
+        GeoJsonLayer(
+            data="https://secure-api.example.com/data.geojson",
+            fetch_headers={"Authorization": "Bearer my-token"},
+        )
+
     Parameters
     ----------
     data
