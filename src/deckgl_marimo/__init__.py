@@ -29,6 +29,7 @@ from deckgl_marimo.layers._aggregation import (
 # Composite layers
 from deckgl_marimo.layers._composite import (
     DisplacementLayer,
+    EllipseLayer,
 )
 
 # Backward compatibility
@@ -53,6 +54,7 @@ __all__ = [
     "HexagonLayer",
     # Composite layers
     "DisplacementLayer",
+    "EllipseLayer",
     # Backward compat
     "DeckGLHexagonWidget",
 ]

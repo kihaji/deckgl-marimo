@@ -40,6 +40,7 @@ from deckgl_marimo.layers._mesh import (
 )
 from deckgl_marimo.layers._composite import (
     DisplacementLayer,
+    EllipseLayer,
 )
 
 __all__ = [
@@ -79,4 +80,5 @@ __all__ = [
     "SimpleMeshLayer",
     # Composite
     "DisplacementLayer",
+    "EllipseLayer",
 ]
