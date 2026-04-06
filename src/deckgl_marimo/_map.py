@@ -72,10 +72,15 @@ class Map(anywidget.AnyWidget):
     height = traitlets.Unicode("600px").tag(sync=True)
     width = traitlets.Unicode("100%").tag(sync=True)
 
+    # Binary data transfer (bypasses JSON serialization)
+    binary_data = traitlets.Bytes(b"").tag(sync=True)
+    binary_metadata = traitlets.Dict({}).tag(sync=True)
+
     # Read-back from JS (JS -> Python)
     viewport = traitlets.Dict({}).tag(sync=True)
     click_info = traitlets.Dict({}).tag(sync=True)
     hover_info = traitlets.Dict({}).tag(sync=True)
+    perf_metrics = traitlets.Dict({}).tag(sync=True)
 
     def __init__(
         self,
@@ -94,9 +99,14 @@ class Map(anywidget.AnyWidget):
         specs = [spec for layer in self._layers for spec in layer.to_specs()]
         style = Basemaps.resolve(basemap)
 
+        # Pre-pack binary data for layers that use binary mode
+        bin_meta, bin_data = self._pack_binary(self._layers)
+
         init_kwargs: dict[str, Any] = {
             "layer_specs": specs,
             "basemap_style": style,
+            "binary_data": bin_data,
+            "binary_metadata": bin_meta,
             "zoom": zoom,
             "pitch": pitch,
             "bearing": bearing,
@@ -110,6 +120,29 @@ class Map(anywidget.AnyWidget):
             init_kwargs["latitude"] = center[1]
 
         super().__init__(**init_kwargs)
+
+    @staticmethod
+    def _pack_binary(layers: list[BaseLayer]) -> tuple[dict, bytes]:
+        """Pack binary data for all layers. Returns (metadata, buffer)."""
+        layer_metas = []
+        buffers: list[bytes] = []
+        offset = 0
+
+        for layer in layers:
+            result = layer.to_binary()
+            if result is None:
+                continue
+            meta, buf = result
+            meta["startIndices"]["offset"] += offset
+            for attr_meta in meta["attributes"].values():
+                attr_meta["offset"] += offset
+            layer_metas.append(meta)
+            buffers.append(buf)
+            offset += len(buf)
+
+        if layer_metas:
+            return {"layers": layer_metas}, b"".join(buffers)
+        return {}, b""
 
     def add_layer(self, layer: BaseLayer) -> None:
         """Add a layer to the map.
@@ -173,3 +206,10 @@ class Map(anywidget.AnyWidget):
     def _sync_layers(self) -> None:
         """Re-serialize all layers and update the traitlet."""
         self.layer_specs = [spec for layer in self._layers for spec in layer.to_specs()]
+        self._sync_binary()
+
+    def _sync_binary(self) -> None:
+        """Pack binary data for layers that use binary mode."""
+        meta, data = self._pack_binary(self._layers)
+        self.binary_metadata = meta
+        self.binary_data = data

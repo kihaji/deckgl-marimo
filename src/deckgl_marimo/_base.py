@@ -76,6 +76,7 @@ class BaseLayer:
         auto_highlight: bool = False,
         load_options: dict[str, Any] | None = None,
         fetch_headers: dict[str, str] | None = None,
+        use_binary: bool = False,
         basemap: str = "dark-matter",
         center: tuple[float, float] | None = None,
         zoom: float = 1.0,
@@ -92,6 +93,7 @@ class BaseLayer:
         self.auto_highlight = auto_highlight
         self.load_options = load_options
         self.fetch_headers = fetch_headers
+        self.use_binary = use_binary
         self._props = props
 
         # Map parameters for standalone display
@@ -125,7 +127,7 @@ class BaseLayer:
             "autoHighlight": self.auto_highlight,
         }
 
-        if self.data is not None:
+        if self.data is not None and not self.use_binary:
             spec["data"] = prepare_data(self.data)
 
         # Convert snake_case props to camelCase
@@ -151,6 +153,15 @@ class BaseLayer:
         Simple layers return a single-element list.
         """
         return [self.to_spec()]
+
+    def to_binary(self) -> tuple[dict, bytes] | None:
+        """Pack layer data into binary format for efficient transfer.
+
+        Returns ``(metadata, buffer)`` or ``None`` if this layer type
+        does not support binary packing or ``use_binary`` is ``False``.
+        Subclasses override this to provide layer-specific packing.
+        """
+        return None
 
     def _get_map(self) -> Any:
         """Get or create the backing Map widget for anywidget compatibility."""

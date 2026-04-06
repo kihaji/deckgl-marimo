@@ -301,6 +301,8 @@ class PolygonLayer(BaseLayer):
         elevation_scale: float = 1,
         **kwargs: Any,
     ) -> None:
+        self._get_polygon_key = get_polygon
+        self._get_fill_color_key = get_fill_color
         super().__init__(
             data=data,
             get_polygon=get_polygon,
@@ -314,6 +316,38 @@ class PolygonLayer(BaseLayer):
             elevation_scale=elevation_scale,
             **kwargs,
         )
+
+    def to_spec(self) -> dict:
+        """Serialize to spec. Uses SolidPolygonLayer for binary mode."""
+        spec = super().to_spec()
+        if self.use_binary:
+            # PolygonLayer is a composite layer that calls getPolygon(d)
+            # internally — it doesn't support binary data.attributes.
+            # SolidPolygonLayer is the underlying primitive that does.
+            spec["type"] = "SolidPolygonLayer"
+            # Remove accessor props that are handled by binary attributes
+            spec.pop("getPolygon", None)
+            if isinstance(self._get_fill_color_key, str):
+                spec.pop("getFillColor", None)
+        return spec
+
+    def to_binary(self) -> tuple[dict, bytes] | None:
+        """Pack polygon data into binary format."""
+        if not self.use_binary or self.data is None:
+            return None
+        if not isinstance(self.data, list):
+            return None
+
+        from deckgl_marimo._binary import pack_polygon_binary
+
+        get_polygon = self._get_polygon_key or "polygon"
+        get_fill_color = self._get_fill_color_key
+        # Only pass color key if it's an accessor (string column name)
+        color_arg = get_fill_color if isinstance(get_fill_color, str) else None
+
+        meta, buf = pack_polygon_binary(self.data, get_polygon, color_arg)
+        meta["id"] = self.id
+        return meta, buf
 
 
 class IconLayer(BaseLayer):

@@ -40,3 +40,6 @@ htmlcov/
 
 # mypy / type checking
 .mypy_cache/
+
+# Large test data files
+examples/data/*.npz
