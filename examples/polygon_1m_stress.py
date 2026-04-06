@@ -43,8 +43,17 @@ def _():
 
 @app.cell
 def _(mo, np, pathlib, time):
-    _t0 = time.perf_counter()
     _path = pathlib.Path(__file__).parent / "data" / "polygons_1m.npz"
+    if not _path.exists():
+        mo.stop(
+            True,
+            mo.md(
+                "**Data file not found.** Run the generator first:\n\n"
+                "```bash\nuv run python examples/generate_1m_polygons.py\n```"
+            ),
+        )
+
+    _t0 = time.perf_counter()
     npz = np.load(_path)
     coords = npz["coords"]
     start_indices = npz["start_indices"]

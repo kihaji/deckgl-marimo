@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "deckgl-marimo"
-version = "0.3.0"
+version = "0.4.0"
 description = "deck.gl visualization library for marimo notebooks — interactive maps with 33 layer types"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -41,6 +41,7 @@ Repository = "https://github.com/kihaji/deckgl-marimo"
 Issues = "https://github.com/kihaji/deckgl-marimo/issues"
 
 [project.optional-dependencies]
+binary = ["numpy"]
 dev = [
     "marimo",
     "pandas",

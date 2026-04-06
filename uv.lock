@@ -302,7 +302,7 @@ wheels = [
 
 [[package]]
 name = "deckgl-marimo"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "anywidget" },
@@ -314,6 +314,10 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+binary = [
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.4.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
 dev = [
     { name = "duckdb" },
     { name = "geopandas" },
@@ -340,13 +344,14 @@ requires-dist = [
     { name = "mkdocs-material", marker = "extra == 'docs'" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'" },
     { name = "narwhals", specifier = ">=1.0.0" },
+    { name = "numpy", marker = "extra == 'binary'" },
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pandas", marker = "extra == 'dev'" },
     { name = "polars", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "traitlets", specifier = ">=5.0.0" },
 ]
-provides-extras = ["dev", "docs"]
+provides-extras = ["binary", "dev", "docs"]
 
 [[package]]
 name = "decorator"
