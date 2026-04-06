@@ -14,9 +14,12 @@ from deckgl_marimo.layers._core import (
     ColumnLayer,
     GeoJsonLayer,
     IconLayer,
+    LineLayer,
     PathLayer,
+    PointCloudLayer,
     PolygonLayer,
     ScatterplotLayer,
+    SolidPolygonLayer,
     TextLayer,
 )
 
@@ -45,9 +48,12 @@ __all__ = [
     "ColumnLayer",
     "GeoJsonLayer",
     "IconLayer",
+    "LineLayer",
     "PathLayer",
+    "PointCloudLayer",
     "PolygonLayer",
     "ScatterplotLayer",
+    "SolidPolygonLayer",
     "TextLayer",
     # Aggregation layers
     "HeatmapLayer",

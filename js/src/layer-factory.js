@@ -73,13 +73,16 @@ export function applyBinaryData(specs, buffer, metadata) {
     const lm = metaByLayer[spec.id];
     if (!lm) continue;
 
-    // Build startIndices typed array
-    const SICtor = DTYPE_CONSTRUCTORS[lm.startIndices.dtype];
-    const startIndices = new SICtor(
-      buffer,
-      lm.startIndices.offset,
-      lm.startIndices.byteLength / SICtor.BYTES_PER_ELEMENT
-    );
+    // Build startIndices typed array (only for variable-length layers like Polygon/Path)
+    let startIndices = undefined;
+    if (lm.startIndices) {
+      const SICtor = DTYPE_CONSTRUCTORS[lm.startIndices.dtype];
+      startIndices = new SICtor(
+        buffer,
+        lm.startIndices.offset,
+        lm.startIndices.byteLength / SICtor.BYTES_PER_ELEMENT
+      );
+    }
 
     // Build attribute typed arrays
     const attributes = {};
@@ -93,9 +96,11 @@ export function applyBinaryData(specs, buffer, metadata) {
 
     spec.data = {
       length: lm.length,
-      startIndices,
       attributes,
     };
+    if (startIndices) {
+      spec.data.startIndices = startIndices;
+    }
     // Mark as binary so createLayer skips accessor resolution
     spec._binary = true;
   }
