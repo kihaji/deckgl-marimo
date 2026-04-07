@@ -5,6 +5,7 @@ anywidget-based widgets with full marimo reactivity support.
 """
 
 from deckgl_marimo._basemaps import Basemaps
+from deckgl_marimo._color_scale import ColorScale
 from deckgl_marimo._map import Map
 from deckgl_marimo._view_state import ViewState
 
@@ -43,6 +44,7 @@ __all__ = [
     "Map",
     "ViewState",
     "Basemaps",
+    "ColorScale",
     # Core layers
     "ArcLayer",
     "ColumnLayer",

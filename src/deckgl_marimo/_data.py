@@ -120,6 +120,51 @@ def dataframe_to_positions(
     return [[lon, lat] for lon, lat in zip(lons, lats)]
 
 
+def materialize_rows(data: Any) -> list[dict] | None:
+    """Convert layer data to a list of row dicts for callable accessors.
+
+    Returns ``None`` if data cannot be materialized (e.g., URL string).
+
+    Parameters
+    ----------
+    data
+        Raw layer data: DataFrame, GeoDataFrame, list of dicts,
+        GeoJSON dict, DuckDB Relation, URL string, or None.
+
+    Returns
+    -------
+    list[dict] | None
+        Row dicts, or None for URL/None data.
+    """
+    if data is None:
+        return None
+
+    if isinstance(data, str):
+        return None
+
+    if isinstance(data, list):
+        return data
+
+    # GeoJSON FeatureCollection
+    if isinstance(data, dict) and "features" in data:
+        return [f.get("properties", {}) for f in data["features"]]
+
+    # DuckDB Relation
+    if hasattr(data, "fetchdf"):
+        return materialize_rows(data.fetchdf())
+
+    # GeoDataFrame — extract properties (non-geometry columns)
+    if hasattr(data, "__geo_interface__") and hasattr(data, "columns"):
+        geo = data.__geo_interface__
+        return [f.get("properties", {}) for f in geo.get("features", [])]
+
+    # pandas/polars DataFrame via narwhals
+    try:
+        return dataframe_to_records(data)
+    except Exception:
+        return None
+
+
 def geodataframe_to_geojson(gdf: Any) -> dict:
     """Convert a GeoDataFrame to a GeoJSON FeatureCollection.
 

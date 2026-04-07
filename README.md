@@ -16,6 +16,8 @@ Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https:
 - **Standalone layers** — display any layer directly without explicit map setup
 - **Marimo-native reactivity** — bind layer properties to sliders, dropdowns, and other widgets
 - **Performance metrics** — built-in FPS counter and frame time tracking via `perf_metrics` traitlet
+- **Color scales** — map numeric columns to color palettes (viridis, plasma, etc.) with linear or log scaling
+- **Callable accessors** — pass Python functions to any `get_*` accessor for custom per-row logic
 - **Multiple data sources** — pandas, polars, geopandas, DuckDB, GeoJSON dicts, and URLs
 - **Authenticated data loading** — pass HTTP headers, API keys, or credentials for remote data sources
 - **Fully offline** — all JavaScript bundled in the package, no CDN dependencies
@@ -113,6 +115,58 @@ map_widget.layer_specs = [
 vp = widget.value.get("viewport", {})
 mo.md(f"Zoom: {vp.get('zoom', 'N/A'):.1f}")
 ```
+
+### Color scales
+
+Map a numeric column to interpolated colors using `ColorScale`. Supports named palettes, custom color ramps, and linear or logarithmic scaling.
+
+```python
+# Named palette
+layer = dgl.ScatterplotLayer(
+    data=df,
+    get_position=["lon", "lat"],
+    get_fill_color=dgl.ColorScale("temperature", palette="viridis"),
+)
+
+# Two-color ramp with log scale
+layer = dgl.ScatterplotLayer(
+    data=df,
+    get_position=["lon", "lat"],
+    get_fill_color=dgl.ColorScale("population", colors=["blue", "red"], scale="log"),
+)
+```
+
+**Available palettes:** `viridis`, `plasma`, `inferno`, `magma`, `cividis`, `coolwarm`, `RdBu`, `spectral`, `turbo`
+
+**ColorScale parameters:**
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `column` | *(required)* | Numeric column name to map |
+| `palette` | — | Named palette (mutually exclusive with `colors`) |
+| `colors` | — | List of 2+ colors: names (`"blue"`), hex (`"#FF0000"`), or RGB (`[255, 0, 0]`) |
+| `domain` | auto | `(min, max)` value range; auto-detected from data if omitted |
+| `scale` | `"linear"` | `"linear"` or `"log"` |
+| `alpha` | `255` | Alpha channel (0–255) for all output colors |
+
+### Callable accessors
+
+Pass a Python function to any `get_*` accessor for full control over per-row values:
+
+```python
+layer = dgl.ScatterplotLayer(
+    data=df,
+    get_position=["lon", "lat"],
+    get_fill_color=lambda row: [
+        int(row["temperature"] * 2.55),
+        50,
+        255 - int(row["temperature"] * 2.55),
+        200,
+    ],
+)
+```
+
+Both `ColorScale` and callable accessors work with the binary data path (`use_binary=True`) — colors are resolved in Python and packed into the binary buffer automatically.
 
 ### DuckDB integration
 

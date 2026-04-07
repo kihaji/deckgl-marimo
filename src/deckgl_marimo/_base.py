@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, ClassVar
 from uuid import uuid4
 
-from deckgl_marimo._data import prepare_data
+from deckgl_marimo._data import materialize_rows, prepare_data
 from deckgl_marimo._utils import to_camel_case
 
 
@@ -130,10 +130,26 @@ class BaseLayer:
         if self.data is not None and not self.use_binary:
             spec["data"] = prepare_data(self.data)
 
-        # Convert snake_case props to camelCase
+        # Convert snake_case props to camelCase, resolving ColorScale/callables
+        from deckgl_marimo._color_scale import ColorScale
+
+        rows = None  # lazily materialized for callables
         for key, value in self._props.items():
             camel_key = to_camel_case(key)
-            spec[camel_key] = value
+
+            if isinstance(value, ColorScale):
+                spec[camel_key] = value.resolve(self.data)
+            elif callable(value) and key.startswith("get_"):
+                if rows is None:
+                    rows = materialize_rows(self.data)
+                if rows is None:
+                    raise ValueError(
+                        f"Cannot use callable accessor '{key}' with URL or None data. "
+                        "Provide actual data (DataFrame, list of dicts, etc.)."
+                    )
+                spec[camel_key] = [value(row) for row in rows]
+            else:
+                spec[camel_key] = value
 
         # Build loadOptions from explicit params + convenience params
         effective_load_options = dict(self.load_options) if self.load_options else {}
