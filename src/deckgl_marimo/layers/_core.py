@@ -6,6 +6,7 @@ import warnings
 from typing import Any
 
 from deckgl_marimo._base import BaseLayer
+from deckgl_marimo._binary import BinaryAttr, BinaryConfig
 
 
 def _experimental(cls: type) -> type:
@@ -56,6 +57,11 @@ class ScatterplotLayer(BaseLayer):
     """
 
     LAYER_TYPE = "ScatterplotLayer"
+    BINARY = BinaryConfig(attrs=(
+        BinaryAttr("get_position", "float32", 2, fast_key="positions"),
+        BinaryAttr("get_fill_color", "uint8", 4, fast_key="colors"),
+        BinaryAttr("get_radius", "float32", 1, fast_key="radii"),
+    ))
 
     def __init__(
         self,
@@ -74,9 +80,6 @@ class ScatterplotLayer(BaseLayer):
         billboard: bool = False,
         **kwargs: Any,
     ) -> None:
-        self._get_position_key = get_position
-        self._get_fill_color_key = get_fill_color
-        self._get_radius_key = get_radius
         super().__init__(
             data=data,
             get_position=get_position,
@@ -92,76 +95,6 @@ class ScatterplotLayer(BaseLayer):
             billboard=billboard,
             **kwargs,
         )
-
-    def to_spec(self) -> dict:
-        spec = super().to_spec()
-        if self.use_binary:
-            # Strip accessor props that binary data provides
-            for key in ("getPosition", "getFillColor", "getRadius"):
-                val = spec.get(key)
-                if isinstance(val, str):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and all(isinstance(x, str) for x in val):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                    spec.pop(key, None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        if not self.use_binary or self.data is None:
-            return None
-        from deckgl_marimo._binary import pack_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-        import numpy as np
-
-        data = self.data if isinstance(self.data, dict) else None
-
-        # Fast path: pre-built numpy arrays
-        if data and "positions" in data:
-            n = len(data["positions"])
-            attrs: dict[str, tuple[Any, str, int]] = {
-                "getPosition": (data["positions"], "float32", 2),
-            }
-            if data.get("colors") is not None:
-                attrs["getFillColor"] = (data["colors"], "uint8", 4)
-            if data.get("radii") is not None:
-                attrs["getRadius"] = (data["radii"], "float32", 1)
-            meta, buf = pack_binary(n, attrs)
-            meta["id"] = self.id
-            return meta, buf
-
-        # Slow path: list of dicts
-        if not isinstance(self.data, list):
-            return None
-        n = len(self.data)
-        pos_key = self._get_position_key
-        if isinstance(pos_key, list):
-            positions = np.array([[row[pos_key[0]], row[pos_key[1]]] for row in self.data], dtype=np.float32)
-        elif isinstance(pos_key, str):
-            positions = np.array([row[pos_key] for row in self.data], dtype=np.float32)
-        else:
-            return None
-
-        attrs = {"getPosition": (positions, "float32", 2)}
-
-        if isinstance(self._get_fill_color_key, str):
-            colors = np.array([row[self._get_fill_color_key] for row in self.data], dtype=np.uint8)
-            if colors.shape[1] == 3:
-                alpha = np.full((n, 1), 255, dtype=np.uint8)
-                colors = np.hstack([colors, alpha])
-            attrs["getFillColor"] = (colors, "uint8", 4)
-        else:
-            resolved = resolve_color_accessor(self._get_fill_color_key, self.data, n)
-            if resolved is not None:
-                attrs["getFillColor"] = (resolved, "uint8", 4)
-
-        if isinstance(self._get_radius_key, str):
-            radii = np.array([row[self._get_radius_key] for row in self.data], dtype=np.float32)
-            attrs["getRadius"] = (radii, "float32", 1)
-
-        meta, buf = pack_binary(n, attrs)
-        meta["id"] = self.id
-        return meta, buf
 
 
 class GeoJsonLayer(BaseLayer):
@@ -254,6 +187,12 @@ class ArcLayer(BaseLayer):
     """
 
     LAYER_TYPE = "ArcLayer"
+    BINARY = BinaryConfig(attrs=(
+        BinaryAttr("get_source_position", "float32", 2, fast_key="source_positions"),
+        BinaryAttr("get_target_position", "float32", 2, fast_key="target_positions"),
+        BinaryAttr("get_source_color", "uint8", 4, fast_key="source_colors"),
+        BinaryAttr("get_target_color", "uint8", 4, fast_key="target_colors"),
+    ))
 
     def __init__(
         self,
@@ -267,10 +206,6 @@ class ArcLayer(BaseLayer):
         great_circle: bool = False,
         **kwargs: Any,
     ) -> None:
-        self._get_source_position_key = get_source_position
-        self._get_target_position_key = get_target_position
-        self._get_source_color_key = get_source_color
-        self._get_target_color_key = get_target_color
         super().__init__(
             data=data,
             get_source_position=get_source_position,
@@ -281,87 +216,6 @@ class ArcLayer(BaseLayer):
             great_circle=great_circle,
             **kwargs,
         )
-
-    def to_spec(self) -> dict:
-        spec = super().to_spec()
-        if self.use_binary:
-            for key in ("getSourcePosition", "getTargetPosition",
-                       "getSourceColor", "getTargetColor"):
-                val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                    spec.pop(key, None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        if not self.use_binary or self.data is None:
-            return None
-        from deckgl_marimo._binary import pack_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-        import numpy as np
-
-        # Fast path
-        if isinstance(self.data, dict) and "source_positions" in self.data:
-            d = self.data
-            n = len(d["source_positions"])
-            attrs: dict[str, tuple[Any, str, int]] = {
-                "getSourcePosition": (d["source_positions"], "float32", 2),
-                "getTargetPosition": (d["target_positions"], "float32", 2),
-            }
-            if d.get("source_colors") is not None:
-                attrs["getSourceColor"] = (d["source_colors"], "uint8", 4)
-            if d.get("target_colors") is not None:
-                attrs["getTargetColor"] = (d["target_colors"], "uint8", 4)
-            meta, buf = pack_binary(n, attrs)
-            meta["id"] = self.id
-            return meta, buf
-
-        # Slow path
-        if not isinstance(self.data, list):
-            return None
-        n = len(self.data)
-
-        def _extract_pos(key):
-            if isinstance(key, list):
-                return np.array([[row[key[0]], row[key[1]]] for row in self.data], dtype=np.float32)
-            elif isinstance(key, str):
-                return np.array([row[key] for row in self.data], dtype=np.float32)
-            return None
-
-        src = _extract_pos(self._get_source_position_key)
-        tgt = _extract_pos(self._get_target_position_key)
-        if src is None or tgt is None:
-            return None
-
-        attrs = {
-            "getSourcePosition": (src, "float32", 2),
-            "getTargetPosition": (tgt, "float32", 2),
-        }
-
-        if isinstance(self._get_source_color_key, str):
-            sc = np.array([row[self._get_source_color_key] for row in self.data], dtype=np.uint8)
-            if sc.ndim == 2 and sc.shape[1] == 3:
-                sc = np.hstack([sc, np.full((n, 1), 255, dtype=np.uint8)])
-            attrs["getSourceColor"] = (sc, "uint8", 4)
-        else:
-            resolved = resolve_color_accessor(self._get_source_color_key, self.data, n)
-            if resolved is not None:
-                attrs["getSourceColor"] = (resolved, "uint8", 4)
-
-        if isinstance(self._get_target_color_key, str):
-            tc = np.array([row[self._get_target_color_key] for row in self.data], dtype=np.uint8)
-            if tc.ndim == 2 and tc.shape[1] == 3:
-                tc = np.hstack([tc, np.full((n, 1), 255, dtype=np.uint8)])
-            attrs["getTargetColor"] = (tc, "uint8", 4)
-        else:
-            resolved = resolve_color_accessor(self._get_target_color_key, self.data, n)
-            if resolved is not None:
-                attrs["getTargetColor"] = (resolved, "uint8", 4)
-
-        meta, buf = pack_binary(n, attrs)
-        meta["id"] = self.id
-        return meta, buf
 
 
 class PathLayer(BaseLayer):
@@ -388,6 +242,10 @@ class PathLayer(BaseLayer):
     """
 
     LAYER_TYPE = "PathLayer"
+    BINARY = BinaryConfig(attrs=(
+        BinaryAttr("get_path", "float32", 2, fast_key="path_coords", is_geometry=True),
+        BinaryAttr("get_color", "uint8", 4, fast_key="colors", per_vertex=True),
+    ))
 
     def __init__(
         self,
@@ -402,8 +260,6 @@ class PathLayer(BaseLayer):
         billboard: bool = False,
         **kwargs: Any,
     ) -> None:
-        self._get_path_key = get_path
-        self._get_color_key = get_color
         super().__init__(
             data=data,
             get_path=get_path,
@@ -415,85 +271,6 @@ class PathLayer(BaseLayer):
             billboard=billboard,
             **kwargs,
         )
-
-    def to_spec(self) -> dict:
-        spec = super().to_spec()
-        if self.use_binary:
-            if isinstance(spec.get("getPath"), str):
-                spec.pop("getPath", None)
-            val = spec.get("getColor")
-            if isinstance(val, str):
-                spec.pop("getColor", None)
-            elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                spec.pop("getColor", None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        if not self.use_binary or self.data is None:
-            return None
-        from deckgl_marimo._binary import pack_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-        import numpy as np
-
-        # Fast path: pre-built numpy arrays
-        if isinstance(self.data, dict) and "path_coords" in self.data:
-            data = self.data
-            si = np.asarray(data["start_indices"], dtype=np.uint32)
-            n = len(si)
-            attrs: dict[str, tuple[Any, str, int]] = {
-                "getPath": (data["path_coords"], "float32", 2),
-            }
-            if data.get("colors") is not None:
-                attrs["getColor"] = (data["colors"], "uint8", 4)
-            meta, buf = pack_binary(n, attrs, start_indices=si)
-            meta["id"] = self.id
-            return meta, buf
-
-        # Slow path: list of dicts
-        if not isinstance(self.data, list):
-            return None
-        n = len(self.data)
-        path_key = self._get_path_key or "path"
-
-        vert_counts = np.array([len(row[path_key]) for row in self.data], dtype=np.uint32)
-        total_verts = int(vert_counts.sum())
-        si = np.empty(n, dtype=np.uint32)
-        si[0] = 0
-        np.cumsum(vert_counts[:-1], out=si[1:])
-
-        path_flat = np.empty(total_verts * 2, dtype=np.float32)
-        idx = 0
-        for row in self.data:
-            for pt in row[path_key]:
-                path_flat[idx] = pt[0]
-                path_flat[idx + 1] = pt[1]
-                idx += 2
-
-        attrs = {"getPath": (path_flat, "float32", 2)}
-
-        if isinstance(self._get_color_key, str):
-            vertex_colors = np.empty((total_verts, 4), dtype=np.uint8)
-            for i, row in enumerate(self.data):
-                c = row[self._get_color_key]
-                rgba = (c[0], c[1], c[2], c[3] if len(c) > 3 else 255)
-                v_start = si[i]
-                v_end = si[i + 1] if i + 1 < n else total_verts
-                vertex_colors[v_start:v_end] = rgba
-            attrs["getColor"] = (vertex_colors, "uint8", 4)
-        else:
-            # ColorScale/callable: resolve to per-path colors, then expand to per-vertex
-            resolved = resolve_color_accessor(self._get_color_key, self.data, n)
-            if resolved is not None:
-                vertex_colors = np.empty((total_verts, 4), dtype=np.uint8)
-                for i in range(n):
-                    v_start = si[i]
-                    v_end = si[i + 1] if i + 1 < n else total_verts
-                    vertex_colors[v_start:v_end] = resolved[i]
-                attrs["getColor"] = (vertex_colors, "uint8", 4)
-
-        meta, buf = pack_binary(n, attrs, start_indices=si)
-        meta["id"] = self.id
-        return meta, buf
 
 
 class PolygonLayer(BaseLayer):
@@ -524,6 +301,13 @@ class PolygonLayer(BaseLayer):
     """
 
     LAYER_TYPE = "PolygonLayer"
+    BINARY = BinaryConfig(
+        attrs=(
+            BinaryAttr("get_polygon", "float32", 2, fast_key="polygon_coords", is_geometry=True),
+            BinaryAttr("get_fill_color", "uint8", 4, fast_key="colors", per_vertex=True),
+        ),
+        binary_type_override="SolidPolygonLayer",
+    )
 
     def __init__(
         self,
@@ -540,8 +324,6 @@ class PolygonLayer(BaseLayer):
         elevation_scale: float = 1,
         **kwargs: Any,
     ) -> None:
-        self._get_polygon_key = get_polygon
-        self._get_fill_color_key = get_fill_color
         super().__init__(
             data=data,
             get_polygon=get_polygon,
@@ -555,83 +337,6 @@ class PolygonLayer(BaseLayer):
             elevation_scale=elevation_scale,
             **kwargs,
         )
-
-    def to_spec(self) -> dict:
-        """Serialize to spec. Uses SolidPolygonLayer for binary mode."""
-        spec = super().to_spec()
-        if self.use_binary:
-            # PolygonLayer is a composite layer that calls getPolygon(d)
-            # internally — it doesn't support binary data.attributes.
-            # SolidPolygonLayer is the underlying primitive that does.
-            spec["type"] = "SolidPolygonLayer"
-            # Remove accessor props that are handled by binary attributes
-            spec.pop("getPolygon", None)
-            val = spec.get("getFillColor")
-            if isinstance(val, str):
-                spec.pop("getFillColor", None)
-            elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                spec.pop("getFillColor", None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        """Pack polygon data into binary format."""
-        if not self.use_binary or self.data is None:
-            return None
-        if not isinstance(self.data, list):
-            return None
-
-        from deckgl_marimo._binary import pack_polygon_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-
-        get_polygon = self._get_polygon_key or "polygon"
-        get_fill_color = self._get_fill_color_key
-
-        if isinstance(get_fill_color, str):
-            meta, buf = pack_polygon_binary(self.data, get_polygon, get_fill_color)
-        else:
-            # Resolve ColorScale/callable, then expand per-polygon colors to per-vertex
-            resolved = resolve_color_accessor(get_fill_color, self.data, len(self.data))
-            if resolved is not None:
-                import numpy as np
-
-                n = len(self.data)
-                vert_counts = np.array([len(row[get_polygon]) for row in self.data], dtype=np.uint32)
-                total_verts = int(vert_counts.sum())
-                si = np.empty(n, dtype=np.uint32)
-                si[0] = 0
-                np.cumsum(vert_counts[:-1], out=si[1:])
-
-                vertex_colors = np.empty((total_verts, 4), dtype=np.uint8)
-                for i in range(n):
-                    v_start = si[i]
-                    v_end = si[i + 1] if i + 1 < n else total_verts
-                    vertex_colors[v_start:v_end] = resolved[i]
-
-                meta, buf = pack_polygon_binary(self.data, get_polygon, None)
-                # Re-pack with colors included
-                from deckgl_marimo._binary import pack_binary
-
-                # Re-extract polygon coords and start indices from the existing meta
-                # Simpler: just call pack_polygon_binary without color, then separately pack color
-                # Actually let's reconstruct fully
-                polygon_flat = np.empty(total_verts * 2, dtype=np.float32)
-                idx = 0
-                for row in self.data:
-                    for pt in row[get_polygon]:
-                        polygon_flat[idx] = pt[0]
-                        polygon_flat[idx + 1] = pt[1]
-                        idx += 2
-
-                attrs: dict[str, tuple] = {
-                    "getPolygon": (polygon_flat, "float32", 2),
-                    "getFillColor": (vertex_colors, "uint8", 4),
-                }
-                meta, buf = pack_binary(n, attrs, start_indices=si)
-            else:
-                meta, buf = pack_polygon_binary(self.data, get_polygon, None)
-
-        meta["id"] = self.id
-        return meta, buf
 
 
 class IconLayer(BaseLayer):
@@ -783,6 +488,11 @@ class ColumnLayer(BaseLayer):
     """
 
     LAYER_TYPE = "ColumnLayer"
+    BINARY = BinaryConfig(attrs=(
+        BinaryAttr("get_position", "float32", 2, fast_key="positions"),
+        BinaryAttr("get_fill_color", "uint8", 4, fast_key="colors"),
+        BinaryAttr("get_elevation", "float32", 1, fast_key="elevations"),
+    ))
 
     def __init__(
         self,
@@ -798,9 +508,6 @@ class ColumnLayer(BaseLayer):
         extruded: bool = True,
         **kwargs: Any,
     ) -> None:
-        self._get_position_key = get_position
-        self._get_fill_color_key = get_fill_color
-        self._get_elevation_key = get_elevation
         super().__init__(
             data=data,
             get_position=get_position,
@@ -813,70 +520,6 @@ class ColumnLayer(BaseLayer):
             extruded=extruded,
             **kwargs,
         )
-
-    def to_spec(self) -> dict:
-        spec = super().to_spec()
-        if self.use_binary:
-            for key in ("getPosition", "getFillColor", "getElevation"):
-                val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                    spec.pop(key, None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        if not self.use_binary or self.data is None:
-            return None
-        from deckgl_marimo._binary import pack_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-        import numpy as np
-
-        if isinstance(self.data, dict) and "positions" in self.data:
-            d = self.data
-            n = len(d["positions"])
-            attrs: dict[str, tuple[Any, str, int]] = {
-                "getPosition": (d["positions"], "float32", 2),
-            }
-            if d.get("colors") is not None:
-                attrs["getFillColor"] = (d["colors"], "uint8", 4)
-            if d.get("elevations") is not None:
-                attrs["getElevation"] = (d["elevations"], "float32", 1)
-            meta, buf = pack_binary(n, attrs)
-            meta["id"] = self.id
-            return meta, buf
-
-        if not isinstance(self.data, list):
-            return None
-        n = len(self.data)
-        pos_key = self._get_position_key
-
-        if isinstance(pos_key, list):
-            positions = np.array([[row[pos_key[0]], row[pos_key[1]]] for row in self.data], dtype=np.float32)
-        elif isinstance(pos_key, str):
-            positions = np.array([row[pos_key] for row in self.data], dtype=np.float32)
-        else:
-            return None
-
-        attrs = {"getPosition": (positions, "float32", 2)}
-
-        if isinstance(self._get_fill_color_key, str):
-            colors = np.array([row[self._get_fill_color_key] for row in self.data], dtype=np.uint8)
-            if colors.ndim == 2 and colors.shape[1] == 3:
-                colors = np.hstack([colors, np.full((n, 1), 255, dtype=np.uint8)])
-            attrs["getFillColor"] = (colors, "uint8", 4)
-        else:
-            resolved = resolve_color_accessor(self._get_fill_color_key, self.data, n)
-            if resolved is not None:
-                attrs["getFillColor"] = (resolved, "uint8", 4)
-
-        if isinstance(self._get_elevation_key, str):
-            elevations = np.array([row[self._get_elevation_key] for row in self.data], dtype=np.float32)
-            attrs["getElevation"] = (elevations, "float32", 1)
-
-        meta, buf = pack_binary(n, attrs)
-        meta["id"] = self.id
-        return meta, buf
 
 
 # --- Experimental Core Layers ---
@@ -912,6 +555,11 @@ class LineLayer(BaseLayer):
     """Render straight lines between pairs of points."""
 
     LAYER_TYPE = "LineLayer"
+    BINARY = BinaryConfig(attrs=(
+        BinaryAttr("get_source_position", "float32", 2, fast_key="source_positions"),
+        BinaryAttr("get_target_position", "float32", 2, fast_key="target_positions"),
+        BinaryAttr("get_color", "uint8", 4, fast_key="colors"),
+    ))
 
     def __init__(
         self,
@@ -923,9 +571,6 @@ class LineLayer(BaseLayer):
         get_width: Any = 1,
         **kwargs: Any,
     ) -> None:
-        self._get_source_position_key = get_source_position
-        self._get_target_position_key = get_target_position
-        self._get_color_key = get_color
         super().__init__(
             data=data,
             get_source_position=get_source_position,
@@ -935,82 +580,19 @@ class LineLayer(BaseLayer):
             **kwargs,
         )
 
-    def to_spec(self) -> dict:
-        spec = super().to_spec()
-        if self.use_binary:
-            for key in ("getSourcePosition", "getTargetPosition", "getColor"):
-                val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                    spec.pop(key, None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        if not self.use_binary or self.data is None:
-            return None
-        from deckgl_marimo._binary import pack_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-        import numpy as np
-
-        if isinstance(self.data, dict) and "source_positions" in self.data:
-            d = self.data
-            n = len(d["source_positions"])
-            attrs: dict[str, tuple[Any, str, int]] = {
-                "getSourcePosition": (d["source_positions"], "float32", 2),
-                "getTargetPosition": (d["target_positions"], "float32", 2),
-            }
-            if d.get("colors") is not None:
-                attrs["getColor"] = (d["colors"], "uint8", 4)
-            meta, buf = pack_binary(n, attrs)
-            meta["id"] = self.id
-            return meta, buf
-
-        if not isinstance(self.data, list):
-            return None
-        n = len(self.data)
-
-        def _extract_pos(key):
-            if isinstance(key, list):
-                return np.array([[row[key[0]], row[key[1]]] for row in self.data], dtype=np.float32)
-            elif isinstance(key, str):
-                return np.array([row[key] for row in self.data], dtype=np.float32)
-            return None
-
-        src = _extract_pos(self._get_source_position_key)
-        tgt = _extract_pos(self._get_target_position_key)
-        if src is None or tgt is None:
-            return None
-
-        attrs = {
-            "getSourcePosition": (src, "float32", 2),
-            "getTargetPosition": (tgt, "float32", 2),
-        }
-        if isinstance(self._get_color_key, str):
-            colors = np.array([row[self._get_color_key] for row in self.data], dtype=np.uint8)
-            if colors.ndim == 2 and colors.shape[1] == 3:
-                colors = np.hstack([colors, np.full((n, 1), 255, dtype=np.uint8)])
-            attrs["getColor"] = (colors, "uint8", 4)
-        else:
-            resolved = resolve_color_accessor(self._get_color_key, self.data, n)
-            if resolved is not None:
-                attrs["getColor"] = (resolved, "uint8", 4)
-
-        meta, buf = pack_binary(n, attrs)
-        meta["id"] = self.id
-        return meta, buf
-
 
 @_experimental
 class PointCloudLayer(BaseLayer):
     """Render a point cloud."""
 
     LAYER_TYPE = "PointCloudLayer"
+    BINARY = BinaryConfig(attrs=(
+        BinaryAttr("get_position", "float32", 0, fast_key="positions"),  # size=0: infer 2D or 3D
+        BinaryAttr("get_color", "uint8", 4, fast_key="colors"),
+        BinaryAttr("get_normal", "float32", 3, fast_key="normals"),
+    ))
 
     def __init__(self, *, data: Any = None, get_position: Any = None, get_color: Any = (0, 0, 0, 255), get_normal: Any = None, point_size: float = 10, **kwargs: Any) -> None:
-        self._get_position_key = get_position
-        self._get_color_key = get_color
-        self._get_normal_key = get_normal
         super().__init__(
             data=data,
             get_position=get_position,
@@ -1019,71 +601,6 @@ class PointCloudLayer(BaseLayer):
             point_size=point_size,
             **kwargs,
         )
-
-    def to_spec(self) -> dict:
-        spec = super().to_spec()
-        if self.use_binary:
-            for key in ("getPosition", "getColor", "getNormal"):
-                val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
-                    spec.pop(key, None)
-        return spec
-
-    def to_binary(self) -> tuple[dict, bytes] | None:
-        if not self.use_binary or self.data is None:
-            return None
-        from deckgl_marimo._binary import pack_binary
-        from deckgl_marimo._color_scale import resolve_color_accessor
-        import numpy as np
-
-        if isinstance(self.data, dict) and "positions" in self.data:
-            d = self.data
-            n = len(d["positions"])
-            pos_size = 3 if d["positions"].shape[1] == 3 else 2
-            attrs: dict[str, tuple[Any, str, int]] = {
-                "getPosition": (d["positions"], "float32", pos_size),
-            }
-            if d.get("colors") is not None:
-                attrs["getColor"] = (d["colors"], "uint8", 4)
-            if d.get("normals") is not None:
-                attrs["getNormal"] = (d["normals"], "float32", 3)
-            meta, buf = pack_binary(n, attrs)
-            meta["id"] = self.id
-            return meta, buf
-
-        if not isinstance(self.data, list):
-            return None
-        n = len(self.data)
-        pos_key = self._get_position_key
-        if isinstance(pos_key, list):
-            positions = np.array([[row[k] for k in pos_key] for row in self.data], dtype=np.float32)
-        elif isinstance(pos_key, str):
-            positions = np.array([row[pos_key] for row in self.data], dtype=np.float32)
-        else:
-            return None
-
-        pos_size = positions.shape[1] if positions.ndim == 2 else 3
-        attrs = {"getPosition": (positions, "float32", pos_size)}
-
-        if isinstance(self._get_color_key, str):
-            colors = np.array([row[self._get_color_key] for row in self.data], dtype=np.uint8)
-            if colors.ndim == 2 and colors.shape[1] == 3:
-                colors = np.hstack([colors, np.full((n, 1), 255, dtype=np.uint8)])
-            attrs["getColor"] = (colors, "uint8", 4)
-        else:
-            resolved = resolve_color_accessor(self._get_color_key, self.data, n)
-            if resolved is not None:
-                attrs["getColor"] = (resolved, "uint8", 4)
-
-        if isinstance(self._get_normal_key, str):
-            normals = np.array([row[self._get_normal_key] for row in self.data], dtype=np.float32)
-            attrs["getNormal"] = (normals, "float32", 3)
-
-        meta, buf = pack_binary(n, attrs)
-        meta["id"] = self.id
-        return meta, buf
 
 
 @_experimental

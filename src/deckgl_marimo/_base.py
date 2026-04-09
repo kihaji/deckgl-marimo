@@ -59,6 +59,7 @@ class BaseLayer:
     """
 
     LAYER_TYPE: ClassVar[str] = "BaseLayer"
+    BINARY: ClassVar[Any] = None  # Optional BinaryConfig for declarative binary support
 
     # Keys that are Map parameters, not layer props
     _MAP_KEYS: ClassVar[set[str]] = {
@@ -160,6 +161,12 @@ class BaseLayer:
         if effective_load_options:
             spec["loadOptions"] = effective_load_options
 
+        # Strip accessor keys that binary data provides
+        if self.use_binary and self.BINARY is not None:
+            from deckgl_marimo._binary import strip_binary_accessors
+
+            strip_binary_accessors(spec, self.BINARY)
+
         return spec
 
     def to_specs(self) -> list[dict]:
@@ -175,9 +182,16 @@ class BaseLayer:
 
         Returns ``(metadata, buffer)`` or ``None`` if this layer type
         does not support binary packing or ``use_binary`` is ``False``.
-        Subclasses override this to provide layer-specific packing.
+
+        Layers with a :attr:`BINARY` config are handled automatically.
+        Subclasses may still override this for custom packing logic.
         """
-        return None
+        if self.BINARY is None or not self.use_binary or self.data is None:
+            return None
+
+        from deckgl_marimo._binary import build_binary
+
+        return build_binary(self.id, self.data, self._props, self.BINARY)
 
     def _get_map(self) -> Any:
         """Get or create the backing Map widget for anywidget compatibility."""

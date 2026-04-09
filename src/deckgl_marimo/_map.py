@@ -133,7 +133,8 @@ class Map(anywidget.AnyWidget):
             if result is None:
                 continue
             meta, buf = result
-            meta["startIndices"]["offset"] += offset
+            if "startIndices" in meta:
+                meta["startIndices"]["offset"] += offset
             for attr_meta in meta["attributes"].values():
                 attr_meta["offset"] += offset
             layer_metas.append(meta)
