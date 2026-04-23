@@ -85,9 +85,30 @@ function createPerfTracker(model) {
 }
 
 /**
+ * Fold min/max zoom gating into each spec's `visible` prop.
+ *
+ * Preserves the user-supplied visible by stashing it once on `_userVisible`,
+ * so repeated calls with a changing zoom are idempotent.
+ */
+function applyZoomVisibility(specs, zoom) {
+  for (const spec of specs) {
+    const hasMin = spec.minZoom != null;
+    const hasMax = spec.maxZoom != null;
+    if (!hasMin && !hasMax) continue;
+    if (spec._userVisible === undefined) {
+      spec._userVisible = spec.visible !== false;
+    }
+    const inRange =
+      (!hasMin || zoom >= spec.minZoom) &&
+      (!hasMax || zoom <= spec.maxZoom);
+    spec.visible = spec._userVisible && inRange;
+  }
+}
+
+/**
  * Build layers from specs, applying binary data if available.
  */
-function buildLayers(model) {
+function buildLayers(model, map) {
   const specs = model.get("layer_specs") || [];
   const binaryMeta = model.get("binary_metadata") || {};
   const binaryData = model.get("binary_data");
@@ -115,6 +136,10 @@ function buildLayers(model) {
 
   if (buffer && binaryMeta.layers) {
     applyBinaryData(specs, buffer, binaryMeta);
+  }
+
+  if (map) {
+    applyZoomVisibility(specs, map.getZoom());
   }
 
   return createLayers(specs);
@@ -156,7 +181,7 @@ async function render({ model, el }) {
 
   // --- deck.gl Overlay ---
   const overlay = new MapboxOverlay({
-    layers: buildLayers(model),
+    layers: buildLayers(model, map),
     getTooltip: ({ object }) => object && (object.tooltip || null),
   });
   map.addControl(overlay);
@@ -170,12 +195,37 @@ async function render({ model, el }) {
   }
 
   // --- Reactivity: layer_specs or binary_data changes ---
+  let lastZoomVisibilityKey = "";
   const rebuildLayers = () => {
-    overlay.setProps({ layers: buildLayers(model) });
+    lastZoomVisibilityKey = "";  // force re-evaluation against fresh specs
+    overlay.setProps({ layers: buildLayers(model, map) });
   };
   model.on("change:layer_specs", rebuildLayers);
   model.on("change:binary_data", rebuildLayers);
   model.on("change:binary_metadata", rebuildLayers);
+
+  // --- Reactivity: zoom-based layer visibility ---
+  // Fires every animation frame during zoom; we only call setProps when at
+  // least one gated layer's effective visibility actually flips.
+  map.on("zoom", () => {
+    const specs = model.get("layer_specs") || [];
+    const zoom = map.getZoom();
+    let hasGated = false;
+    let key = "";
+    for (const s of specs) {
+      if (s.minZoom == null && s.maxZoom == null) continue;
+      hasGated = true;
+      const inRange =
+        (s.minZoom == null || zoom >= s.minZoom) &&
+        (s.maxZoom == null || zoom <= s.maxZoom);
+      key += `${s.id}:${inRange ? 1 : 0}|`;
+    }
+    if (!hasGated) return;
+    if (key !== lastZoomVisibilityKey) {
+      lastZoomVisibilityKey = key;
+      overlay.setProps({ layers: buildLayers(model, map) });
+    }
+  });
 
   // --- Reactivity: basemap_style changes ---
   model.on("change:basemap_style", () => {

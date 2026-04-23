@@ -71,6 +71,36 @@ class TestBaseLayer:
         assert repr(layer) == "BaseLayer(id='test-layer')"
 
 
+class TestZoomVisibility:
+    def test_min_zoom_in_spec(self):
+        layer = BaseLayer(min_zoom=5)
+        spec = layer.to_spec()
+        assert spec["minZoom"] == 5
+
+    def test_max_zoom_in_spec(self):
+        layer = BaseLayer(max_zoom=15)
+        spec = layer.to_spec()
+        assert spec["maxZoom"] == 15
+
+    def test_both_zoom_bounds_in_spec(self):
+        layer = BaseLayer(min_zoom=5, max_zoom=15)
+        spec = layer.to_spec()
+        assert spec["minZoom"] == 5
+        assert spec["maxZoom"] == 15
+
+    def test_no_zoom_keys_by_default(self):
+        layer = BaseLayer()
+        spec = layer.to_spec()
+        assert "minZoom" not in spec
+        assert "maxZoom" not in spec
+
+    def test_fractional_zoom_bounds(self):
+        layer = BaseLayer(min_zoom=10.5, max_zoom=14.25)
+        spec = layer.to_spec()
+        assert spec["minZoom"] == 10.5
+        assert spec["maxZoom"] == 14.25
+
+
 class TestLoadOptions:
     def test_load_options_in_spec(self):
         opts = {"fetch": {"headers": {"Authorization": "Bearer xyz"}}}

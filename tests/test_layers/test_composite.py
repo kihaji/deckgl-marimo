@@ -135,6 +135,13 @@ class TestDisplacementLayer:
         for spec in specs:
             assert spec["data"] == SAMPLE_DATA
 
+    def test_zoom_bounds_propagate(self):
+        specs = self._make(min_zoom=8, max_zoom=14).to_specs()
+        assert len(specs) == 3
+        for spec in specs:
+            assert spec["minZoom"] == 8
+            assert spec["maxZoom"] == 14
+
 
 # =====================================================================
 # _compute_ellipse_ring
@@ -370,3 +377,10 @@ class TestEllipseLayer:
     def test_invalid_num_vertices(self):
         with pytest.raises(ValueError, match="num_vertices"):
             self._make(num_vertices=2)
+
+    def test_zoom_bounds_propagate(self):
+        specs = self._make(show_center_dots=True, min_zoom=8, max_zoom=14).to_specs()
+        assert len(specs) == 2
+        for spec in specs:
+            assert spec["minZoom"] == 8
+            assert spec["maxZoom"] == 14
