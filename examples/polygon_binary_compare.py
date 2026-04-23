@@ -386,5 +386,39 @@ def _(get_history, mo):
     return
 
 
+@app.cell
+def _(bin_widget, json_widget, mo, polygons):
+    # Demonstrates picking works for both JSON and binary layers.
+    # JSON: click_info.object is populated directly by deck.gl.
+    # Binary: deck.gl can't attach an object row, but info.index is always
+    # provided. This example sets binary_data on the widget manually
+    # (bypassing Map.__init__), so the Python-side resolver has no source
+    # layer data to look up — we do the lookup here against `polygons`.
+
+    json_click = json_widget.value.get("click_info", {})
+    bin_click = bin_widget.value.get("click_info", {})
+
+    def _render(title, click, fallback_rows):
+        if not click:
+            return mo.md(f"**{title}**\n\n_click a polygon_")
+        idx = click.get("index")
+        obj = click.get("object")
+        if obj is None and idx is not None and 0 <= idx < len(fallback_rows):
+            obj = fallback_rows[idx]
+        return mo.md(
+            f"**{title}**\n\n"
+            f"- layer: `{click.get('layer_id')}`\n"
+            f"- index: `{idx}`\n"
+            f"- coordinate: `{click.get('coordinate')}`\n"
+            f"- row: `{obj}`"
+        )
+
+    mo.hstack([
+        _render("JSON picking", json_click, polygons),
+        _render("Binary picking", bin_click, polygons),
+    ], justify="start", gap=2)
+    return
+
+
 if __name__ == "__main__":
     app.run()

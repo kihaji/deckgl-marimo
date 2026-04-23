@@ -101,6 +101,10 @@ export function applyBinaryData(specs, buffer, metadata) {
     if (startIndices) {
       spec.data.startIndices = startIndices;
     }
+    // Forward pre-packed tooltip strings for binary-mode tooltip lookup
+    if (lm.tooltips) {
+      spec._tooltips = lm.tooltips;
+    }
     // Mark as binary so createLayer skips accessor resolution
     spec._binary = true;
   }
@@ -161,6 +165,7 @@ export function createLayer(spec) {
   const {
     type,
     _binary,
+    _tooltips: _tt,
     minZoom: _mz,
     maxZoom: _mx,
     _userVisible: _uv,

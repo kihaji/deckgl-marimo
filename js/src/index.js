@@ -182,7 +182,17 @@ async function render({ model, el }) {
   // --- deck.gl Overlay ---
   const overlay = new MapboxOverlay({
     layers: buildLayers(model, map),
-    getTooltip: ({ object }) => object && (object.tooltip || null),
+    getTooltip: (info) => {
+      if (!info || !info.picked || !info.layer) return null;
+      // Binary layers: look up pre-packed tooltip string by feature index
+      const specs = model.get("layer_specs") || [];
+      const spec = specs.find((s) => s.id === info.layer.id);
+      if (spec && spec._tooltips && info.index >= 0) {
+        return spec._tooltips[info.index] ?? null;
+      }
+      // Object-based layers: read tooltip off the picked row
+      return info.object ? info.object.tooltip || null : null;
+    },
   });
   map.addControl(overlay);
 
@@ -270,27 +280,25 @@ async function render({ model, el }) {
   });
 
   // --- Click/hover event readback ---
+  // Gate on info.picked (deck.gl's canonical "something was picked" flag) so
+  // binary-packed layers emit events too — they don't populate info.object.
+  const pickPayload = (info) => ({
+    object: info.object ?? null,
+    coordinate: info.coordinate,
+    layer_id: info.layer ? info.layer.id : null,
+    index: info.index,
+  });
   overlay.setProps({
     ...overlay.props,
     onClick: (info) => {
-      if (info && info.object) {
-        model.set("click_info", {
-          object: info.object,
-          coordinate: info.coordinate,
-          layer_id: info.layer ? info.layer.id : null,
-          index: info.index,
-        });
+      if (info && info.picked) {
+        model.set("click_info", pickPayload(info));
         model.save_changes();
       }
     },
     onHover: (info) => {
-      if (info && info.object) {
-        model.set("hover_info", {
-          object: info.object,
-          coordinate: info.coordinate,
-          layer_id: info.layer ? info.layer.id : null,
-          index: info.index,
-        });
+      if (info && info.picked) {
+        model.set("hover_info", pickPayload(info));
         model.save_changes();
       }
     },

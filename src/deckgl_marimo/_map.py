@@ -10,6 +10,7 @@ import traitlets
 
 from deckgl_marimo._base import BaseLayer
 from deckgl_marimo._basemaps import Basemaps
+from deckgl_marimo._data import materialize_rows
 
 _STATIC = pathlib.Path(__file__).parent / "static"
 
@@ -96,6 +97,7 @@ class Map(anywidget.AnyWidget):
         **kwargs: Any,
     ) -> None:
         self._layers: list[BaseLayer] = list(layers or [])
+        self._resolving_pick = False
         specs = [spec for layer in self._layers for spec in layer.to_specs()]
         style = Basemaps.resolve(basemap)
 
@@ -133,9 +135,20 @@ class Map(anywidget.AnyWidget):
             if result is None:
                 continue
             meta, buf = result
-            meta["startIndices"]["offset"] += offset
+            # startIndices is only present for variable-length layers
+            # (Polygon, Path, Trips) — fixed-size layers omit it.
+            if "startIndices" in meta:
+                meta["startIndices"]["offset"] += offset
             for attr_meta in meta["attributes"].values():
                 attr_meta["offset"] += offset
+
+            # Binary mode strips per-row data; deck.gl's default hover tooltip
+            # reads object.tooltip, which is unreachable. Pre-pack tooltip
+            # strings indexed by feature so the JS side can render them.
+            rows = materialize_rows(layer.data)
+            if rows and "tooltip" in rows[0]:
+                meta["tooltips"] = [str(r.get("tooltip", "")) for r in rows]
+
             layer_metas.append(meta)
             buffers.append(buf)
             offset += len(buf)
@@ -143,6 +156,36 @@ class Map(anywidget.AnyWidget):
         if layer_metas:
             return {"layers": layer_metas}, b"".join(buffers)
         return {}, b""
+
+    @traitlets.observe("click_info", "hover_info")
+    def _resolve_pick_object(self, change: Any) -> None:
+        """Populate ``object`` on pick events for binary-packed layers.
+
+        JS sends ``object: null`` when deck.gl has no iterable data to look
+        up into (binary mode). We find the picked layer by id, materialize
+        its source data, and fill in the row at ``index`` so downstream
+        code can treat binary and JSON layers uniformly.
+        """
+        if self._resolving_pick:
+            return
+        info = change["new"] or {}
+        if info.get("object") is not None:
+            return
+        layer_id = info.get("layer_id")
+        index = info.get("index")
+        if layer_id is None or index is None or index < 0:
+            return
+        layer = next((l for l in self._layers if l.id == layer_id), None)
+        if layer is None:
+            return
+        rows = materialize_rows(layer.data)
+        if rows is None or index >= len(rows):
+            return
+        self._resolving_pick = True
+        try:
+            setattr(self, change["name"], {**info, "object": rows[index]})
+        finally:
+            self._resolving_pick = False
 
     def add_layer(self, layer: BaseLayer) -> None:
         """Add a layer to the map.
