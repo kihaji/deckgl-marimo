@@ -106,7 +106,7 @@ def _(dgl, mo, polygons):
         zoom=1,
         height="500px",
     )
-    widget = mo.ui.anywidget(binary_map)
+    widget = binary_map.as_widget()
     widget
     return (widget,)
 

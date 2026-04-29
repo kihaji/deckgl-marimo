@@ -67,7 +67,7 @@ def _(dgl, mo):
         center=(-1.4157, 52.2324),
         zoom=6.0,
     )
-    widget = mo.ui.anywidget(map_widget)
+    widget = map_widget.as_widget()
     return map_widget, widget
 
 

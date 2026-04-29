@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Any
+from typing import Any, ClassVar
 
 import anywidget
 import traitlets
 
-from deckgl_marimo._base import BaseLayer
+from deckgl_marimo._base import BaseLayer, _raise_for_unknown_props
 from deckgl_marimo._basemaps import Basemaps
 from deckgl_marimo._data import materialize_rows
 
@@ -56,6 +56,14 @@ class Map(anywidget.AnyWidget):
     _esm = _STATIC / "deckgl-marimo.bundle.js"
     _css = _STATIC / "deckgl-marimo.bundle.css"
 
+    # User-facing init kwargs — validated against to catch typos like
+    # ``Map(layer=...)`` instead of ``Map(layers=...)``. Hand-listed
+    # because Map has a single user-facing class; no MRO walking needed.
+    _VALID_KWARGS: ClassVar[frozenset[str]] = frozenset({
+        "layers", "basemap", "center", "zoom", "pitch", "bearing",
+        "height", "width",
+    })
+
     # Layer specifications (list of dicts from BaseLayer.to_spec())
     layer_specs = traitlets.List([]).tag(sync=True)
 
@@ -94,8 +102,11 @@ class Map(anywidget.AnyWidget):
         bearing: float = 0.0,
         height: str = "600px",
         width: str = "100%",
+        _unsafe_props: bool = False,
         **kwargs: Any,
     ) -> None:
+        if not _unsafe_props:
+            _raise_for_unknown_props(type(self).__name__, kwargs, self._VALID_KWARGS)
         self._layers: list[BaseLayer] = list(layers or [])
         self._resolving_pick = False
         specs = [spec for layer in self._layers for spec in layer.to_specs()]
@@ -245,6 +256,19 @@ class Map(anywidget.AnyWidget):
     def layers(self) -> list[BaseLayer]:
         """Return the current list of layers."""
         return list(self._layers)
+
+    def as_widget(self) -> Any:
+        """Wrap this Map in ``marimo.ui.anywidget`` for reactive ``.value`` access.
+
+        Equivalent to ``marimo.ui.anywidget(map)``; provided so users do not
+        need to import marimo themselves at the call site. ``marimo`` is
+        imported lazily, so this method only works inside a marimo-equipped
+        environment — Jupyter / plain-Python users keep using the Map widget
+        directly.
+        """
+        import marimo as mo
+
+        return mo.ui.anywidget(self)
 
     def _sync_layers(self) -> None:
         """Re-serialize all layers and update the traitlet."""

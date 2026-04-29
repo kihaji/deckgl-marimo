@@ -61,7 +61,7 @@ def _raise_for_unknown_props(
         else:
             lines.append(f"  '{key}'")
     raise TypeError(
-        f"Unknown layer property/properties for {cls_name}:\n"
+        f"Unknown property/properties for {cls_name}:\n"
         + "\n".join(lines)
         + "\n(Pass _unsafe_props=True to bypass this check.)"
     )
@@ -297,6 +297,16 @@ class BaseLayer:
 
             self.__map = Map(layers=[self], **self._map_kwargs)
         return self.__map
+
+    def as_widget(self) -> Any:
+        """Wrap this layer in ``marimo.ui.anywidget`` for reactive ``.value`` access.
+
+        Equivalent to ``marimo.ui.anywidget(layer)``; provided so users do not
+        need to import marimo themselves. The layer is wrapped via its
+        backing Map (see :meth:`_get_map`), so the resulting widget exposes
+        the same viewport / pick / hover state as a standalone Map.
+        """
+        return self._get_map().as_widget()
 
     def __getattr__(self, name: str) -> Any:
         """Proxy anywidget protocol attributes to the backing Map.

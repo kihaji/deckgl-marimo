@@ -12,7 +12,7 @@
 
 import marimo
 
-__generated_with = "0.19.11"
+__generated_with = "0.22.0"
 app = marimo.App(width="full")
 
 
@@ -47,35 +47,18 @@ def _(mo, pd):
 
 @app.cell
 def _(mo):
-    radius_slider = mo.ui.slider(
-        start=200, stop=5000, step=100, value=1000, show_value=True, label="Radius (m)"
-    )
-    coverage_slider = mo.ui.slider(
-        start=0.1, stop=1.0, step=0.1, value=1.0, show_value=True, label="Coverage"
-    )
-    elevation_slider = mo.ui.slider(
-        start=10, stop=500, step=10, value=250, show_value=True, label="Elevation Scale"
-    )
+    radius_slider = mo.ui.slider(start=200, stop=5000, step=100, value=1000, show_value=True, label="Radius (m)")
+    coverage_slider = mo.ui.slider(start=0.1, stop=1.0, step=0.1, value=1.0, show_value=True, label="Coverage")
+    elevation_slider = mo.ui.slider(start=10, stop=500, step=10, value=250, show_value=True, label="Elevation Scale")
     mo.hstack([radius_slider, coverage_slider, elevation_slider], justify="start", gap=2)
     return coverage_slider, elevation_slider, radius_slider
 
 
 @app.cell
-def _(dgl, mo):
-    map_widget = dgl.Map(
-        basemap="dark-matter",
-        center=(-1.4157, 52.2324),
-        zoom=6.0,
-        pitch=40.5,
-    )
-    widget = mo.ui.anywidget(map_widget)
+def _(dgl):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-1.4157, 52.2324), zoom=6.0, pitch=40.5)
+    widget = map_widget.as_widget()
     return map_widget, widget
-
-
-@app.cell
-def _(widget):
-    widget
-    return
 
 
 @app.cell
@@ -96,6 +79,12 @@ def _(coverage_slider, df, dgl, elevation_slider, map_widget, radius_slider):
 
 
 @app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
 def _(mo, widget):
     viewport = widget.value.get("viewport", {})
 
@@ -104,16 +93,16 @@ def _(mo, widget):
 
     mo.md(
         f"""
-**Viewport**
+    **Viewport**
 
-| Property | Value |
-|----------|-------|
-| Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
-| Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
-| Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
-| Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
-| Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
-"""
+    | Property | Value |
+    |----------|-------|
+    | Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
+    | Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
+    | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
+    | Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
+    | Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
+    """
     )
     return
 

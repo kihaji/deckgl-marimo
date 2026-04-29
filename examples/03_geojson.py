@@ -11,7 +11,7 @@
 
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.23.4"
 app = marimo.App(width="full")
 
 
@@ -31,33 +31,18 @@ def _():
 
 @app.cell
 def _(mo):
-    opacity_slider = mo.ui.slider(
-        start=0.1, stop=1.0, step=0.1, value=0.7, show_value=True, label="Opacity"
-    )
+    opacity_slider = mo.ui.slider(start=0.1, stop=1.0, step=0.1, value=0.7, show_value=True, label="Opacity")
     extruded_toggle = mo.ui.switch(value=True, label="3D Extrusion")
-    line_width_slider = mo.ui.slider(
-        start=0, stop=5, step=1, value=1, show_value=True, label="Line Width"
-    )
+    line_width_slider = mo.ui.slider(start=0, stop=5, step=1, value=1, show_value=True, label="Line Width")
     mo.hstack([opacity_slider, extruded_toggle, line_width_slider], justify="start", gap=2)
     return extruded_toggle, line_width_slider, opacity_slider
 
 
 @app.cell
-def _(dgl, mo):
-    map_widget = dgl.Map(
-        basemap="dark-matter",
-        center=(-123.1, 49.25),
-        zoom=11,
-        pitch=45,
-    )
-    widget = mo.ui.anywidget(map_widget)
+def _(dgl):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-123.1, 49.25), zoom=11, pitch=45)
+    widget = map_widget.as_widget()
     return map_widget, widget
-
-
-@app.cell
-def _(widget):
-    widget
-    return
 
 
 @app.cell
@@ -78,6 +63,12 @@ def _(dgl, extruded_toggle, line_width_slider, map_widget, opacity_slider):
 
 
 @app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
 def _(mo, widget):
     viewport = widget.value.get("viewport", {})
 
@@ -86,14 +77,14 @@ def _(mo, widget):
 
     mo.md(
         f"""
-**Viewport**
+    **Viewport**
 
-| Property | Value |
-|----------|-------|
-| Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
-| Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
-| Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
-"""
+    | Property | Value |
+    |----------|-------|
+    | Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
+    | Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
+    | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
+    """
     )
     return
 

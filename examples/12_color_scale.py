@@ -64,7 +64,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     map1 = dgl.Map(basemap="dark-matter", center=(-122.4, 37.75), zoom=11)
-    widget1 = mo.ui.anywidget(map1)
+    widget1 = map1.as_widget()
     return map1, widget1
 
 
@@ -101,7 +101,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     map2 = dgl.Map(basemap="dark-matter", center=(-122.4, 37.75), zoom=11)
-    widget2 = mo.ui.anywidget(map2)
+    widget2 = map2.as_widget()
     return map2, widget2
 
 
@@ -140,7 +140,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     map3 = dgl.Map(basemap="dark-matter", center=(-122.4, 37.75), zoom=11)
-    widget3 = mo.ui.anywidget(map3)
+    widget3 = map3.as_widget()
     return map3, widget3
 
 
@@ -179,7 +179,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     map4 = dgl.Map(basemap="dark-matter", center=(-122.4, 37.75), zoom=11)
-    widget4 = mo.ui.anywidget(map4)
+    widget4 = map4.as_widget()
     return map4, widget4
 
 

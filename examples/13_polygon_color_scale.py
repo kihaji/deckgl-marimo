@@ -136,7 +136,7 @@ def _(dgl, mo, polygons):
         center=(0.0, 42.0),
         zoom=4,
     )
-    widget1 = mo.ui.anywidget(map1)
+    widget1 = map1.as_widget()
     return (widget1,)
 
 
@@ -193,7 +193,7 @@ def _(dgl, mo, polygons):
         center=(0.0, 42.0),
         zoom=4,
     )
-    widget2 = mo.ui.anywidget(map2)
+    widget2 = map2.as_widget()
     return (widget2,)
 
 

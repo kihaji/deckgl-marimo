@@ -12,7 +12,7 @@
 
 import marimo
 
-__generated_with = "0.22.0"
+__generated_with = "0.23.4"
 app = marimo.App(width="full")
 
 
@@ -55,16 +55,10 @@ def _(mo):
 
 
 @app.cell
-def _(dgl, mo):
-    map_widget = dgl.Map(basemap = "dark-matter", center = (-98, 39), zoom = 4)
-    widget = mo.ui.anywidget(map_widget)
+def _(dgl):
+    map_widget = dgl.Map(basemap="dark-matter", center=(-98, 39), zoom=4)
+    widget = map_widget.as_widget()
     return map_widget, widget
-
-
-@app.cell
-def _(widget):
-    widget
-    return
 
 
 @app.cell
@@ -81,6 +75,12 @@ def _(df, dgl, map_widget, opacity_slider, radius_slider):
             opacity=opacity_slider.value,
         ).to_spec()
     ]
+    return
+
+
+@app.cell
+def _(widget):
+    widget
     return
 
 

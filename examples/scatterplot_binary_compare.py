@@ -123,7 +123,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     json_map = dgl.Map(basemap="dark-matter", center=(0, 0), zoom=1, height="500px")
-    json_widget = mo.ui.anywidget(json_map)
+    json_widget = json_map.as_widget()
     return json_map, json_widget
 
 
@@ -180,7 +180,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     bin_map = dgl.Map(basemap="dark-matter", center=(0, 0), zoom=1, height="500px")
-    bin_widget = mo.ui.anywidget(bin_map)
+    bin_widget = bin_map.as_widget()
     return bin_map, bin_widget
 
 

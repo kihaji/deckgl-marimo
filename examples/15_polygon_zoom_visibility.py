@@ -104,7 +104,7 @@ def _(dgl, mo, neighborhood_layer, region_layer):
         zoom=10,
         layers=[region_layer, neighborhood_layer],
     )
-    widget = mo.ui.anywidget(map_widget)
+    widget = map_widget.as_widget()
     return map_widget, widget
 
 

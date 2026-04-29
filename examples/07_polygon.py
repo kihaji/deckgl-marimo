@@ -58,7 +58,7 @@ def _(mo):
 @app.cell
 def _(dgl, mo):
     map_widget = dgl.Map(basemap="dark-matter", center=(-122.41, 37.79), zoom=13, pitch=45)
-    widget = mo.ui.anywidget(map_widget)
+    widget = map_widget.as_widget()
     return map_widget, widget
 
 

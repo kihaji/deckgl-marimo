@@ -144,7 +144,7 @@ def _(dgl, mo):
         zoom=1,
         height="700px",
     )
-    widget = mo.ui.anywidget(map_widget)
+    widget = map_widget.as_widget()
     return map_widget, widget
 
 

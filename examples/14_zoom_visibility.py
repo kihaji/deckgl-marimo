@@ -95,7 +95,7 @@ def _(dgl, dots, labels, mo):
         zoom=4,
         layers=[dots, labels],
     )
-    widget = mo.ui.anywidget(map_widget)
+    widget = map_widget.as_widget()
     return map_widget, widget
 
 

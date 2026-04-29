@@ -44,6 +44,31 @@ class TestUnknownKwargs:
         assert spec["myCustomProp"] == "hello"
 
 
+class TestMapKwargs:
+    """Map validates init kwargs the same way BaseLayer does for layer props."""
+
+    def test_singular_layer_typo_raises_with_suggestion(self):
+        with pytest.raises(TypeError, match="layer") as exc:
+            dgl.Map(layer=[dgl.ScatterplotLayer(get_position=["lon", "lat"])])
+        msg = str(exc.value)
+        assert "Map" in msg
+        assert "layers" in msg
+        assert "did you mean" in msg
+
+    def test_unknown_kwarg_raises(self):
+        with pytest.raises(TypeError, match="totally_made_up_xyzzy"):
+            dgl.Map(totally_made_up_xyzzy=42)
+
+    def test_layers_plural_still_works(self):
+        m = dgl.Map(layers=[dgl.ScatterplotLayer(get_position=["lon", "lat"])])
+        assert len(m.layer_specs) == 1
+
+    def test_unsafe_props_bypasses_validation(self):
+        # Pass-through kwargs are allowed when explicitly opted in.
+        m = dgl.Map(layers=[], _unsafe_props=True)
+        assert m.layer_specs == []
+
+
 class TestBaseLayerStillUnvalidated:
     """BaseLayer is the catch-all and intentionally accepts arbitrary props."""
 
