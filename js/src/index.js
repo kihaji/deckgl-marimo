@@ -174,7 +174,7 @@ async function render({ model, el }) {
     zoom: model.get("zoom") || 1,
     pitch: model.get("pitch") || 0,
     bearing: model.get("bearing") || 0,
-    antialias: true,
+    canvasContextAttributes: { antialias: true },
   });
 
   map.addControl(new maplibregl.NavigationControl(), "top-right");

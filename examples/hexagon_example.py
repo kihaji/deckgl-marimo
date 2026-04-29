@@ -40,7 +40,7 @@ def _():
 @app.cell
 def _(mo, pd):
     URL = "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv"
-    df = pd.read_csv(URL)
+    df = pd.read_csv(URL).rename(columns={"lng": "lon"})
     mo.md(f"Loaded **{len(df):,}** records")
     return (df,)
 
@@ -72,7 +72,7 @@ def _(DeckGLHexagonWidget, coverage_slider, df, elevation_scale_slider, mo, radi
             style_url="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
             data=df,
             lat_col="lat",
-            lon_col="lng",
+            lon_col="lon",
             center_lon=-1.4157,
             center_lat=52.2324,
             zoom=6.0,

@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from deckgl_marimo._accessors import Accessor, ColorAccessor
 from deckgl_marimo._base import BaseLayer
 from deckgl_marimo._data import prepare_data
 from deckgl_marimo.layers._core import ArcLayer, PolygonLayer, ScatterplotLayer
@@ -128,15 +129,15 @@ class DisplacementLayer(BaseLayer):
         show_arcs: bool = True,
         show_origin_dots: bool = True,
         show_displaced_dots: bool = True,
-        arc_width: Any = 1,
-        arc_source_color: Any = (76, 175, 80, 200),
-        arc_target_color: Any = (244, 67, 54, 200),
+        arc_width: Accessor = 1,
+        arc_source_color: ColorAccessor = (76, 175, 80, 200),
+        arc_target_color: ColorAccessor = (244, 67, 54, 200),
         great_circle: bool = False,
-        origin_color: Any = (76, 175, 80, 180),
-        origin_radius: Any = 4,
+        origin_color: ColorAccessor = (76, 175, 80, 180),
+        origin_radius: Accessor = 4,
         origin_radius_min_pixels: float = 3,
-        displaced_color: Any = (244, 67, 54, 180),
-        displaced_radius: Any = 4,
+        displaced_color: ColorAccessor = (244, 67, 54, 180),
+        displaced_radius: Accessor = 4,
         displaced_radius_min_pixels: float = 3,
         **kwargs: Any,
     ) -> None:
@@ -289,13 +290,13 @@ class EllipseLayer(BaseLayer):
         units: str = "meters",
         num_vertices: int = 64,
         show_center_dots: bool = False,
-        fill_color: Any = (0, 140, 255, 100),
-        line_color: Any = (0, 100, 200, 255),
-        line_width: Any = 1,
+        fill_color: ColorAccessor = (0, 140, 255, 100),
+        line_color: ColorAccessor = (0, 100, 200, 255),
+        line_width: Accessor = 1,
         filled: bool = True,
         stroked: bool = True,
-        center_dot_color: Any = (255, 255, 255, 255),
-        center_dot_radius: Any = 100,
+        center_dot_color: ColorAccessor = (255, 255, 255, 255),
+        center_dot_radius: Accessor = 100,
         center_dot_radius_min_pixels: float = 4,
         **kwargs: Any,
     ) -> None:

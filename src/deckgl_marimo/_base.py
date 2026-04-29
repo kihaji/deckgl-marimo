@@ -2,11 +2,69 @@
 
 from __future__ import annotations
 
+import difflib
+import inspect
 from typing import Any, ClassVar
 from uuid import uuid4
 
 from deckgl_marimo._data import materialize_rows, prepare_data
 from deckgl_marimo._utils import to_camel_case
+
+# JS Number.MAX_SAFE_INTEGER. Use this — never `float("inf")` — for pixel
+# upper bounds: `Infinity` is not valid JSON, so anywidget's wire serialization
+# silently drops the whole payload. Matches deck.gl's own default value.
+MAX_SAFE_INTEGER = 2**53 - 1
+
+
+def _collect_kwargs(cls: type) -> frozenset[str]:
+    """Union all keyword parameter names declared by ``__init__`` across cls's MRO.
+
+    Variadic ``*args`` and ``**kwargs`` are skipped, ``self`` is skipped.
+    Used to compute the set of valid props for a layer subclass; runs at
+    class-creation time so it captures the original signature even when a
+    decorator (e.g. ``_experimental``) later wraps ``__init__``.
+    """
+    valid: set[str] = set()
+    for klass in cls.__mro__:
+        if klass is object:
+            continue
+        init = klass.__dict__.get("__init__")
+        if init is None:
+            continue
+        try:
+            sig = inspect.signature(init)
+        except (ValueError, TypeError):
+            continue
+        for name, param in sig.parameters.items():
+            if name == "self":
+                continue
+            if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
+                continue
+            valid.add(name)
+    return frozenset(valid)
+
+
+def _raise_for_unknown_props(
+    cls_name: str, props: dict[str, Any], valid: frozenset[str]
+) -> None:
+    """Raise ``TypeError`` listing unknown keys with ``difflib`` suggestions."""
+    unknown = [k for k in props if k not in valid]
+    if not unknown:
+        return
+    valid_sorted = sorted(valid)
+    lines = []
+    for key in unknown:
+        matches = difflib.get_close_matches(key, valid_sorted, n=3, cutoff=0.6)
+        if matches:
+            hint = ", ".join(repr(m) for m in matches)
+            lines.append(f"  '{key}' — did you mean: {hint}?")
+        else:
+            lines.append(f"  '{key}'")
+    raise TypeError(
+        f"Unknown layer property/properties for {cls_name}:\n"
+        + "\n".join(lines)
+        + "\n(Pass _unsafe_props=True to bypass this check.)"
+    )
 
 
 class BaseLayer:
@@ -16,6 +74,24 @@ class BaseLayer:
     :meth:`to_spec`. They can also be used directly as widgets —
     passing a layer to ``mo.ui.anywidget()`` or displaying it in a
     notebook cell automatically wraps it in a :class:`Map`.
+
+    Accessors
+    ---------
+    Any parameter named ``get_*`` accepts one of the following forms:
+
+    - A constant (e.g. ``[255, 0, 0, 255]`` or ``5.0``).
+    - A column name string (e.g. ``"population"``) — looked up per row.
+    - A list of column names for vector accessors
+      (e.g. ``["lon", "lat"]``).
+    - A callable ``f(row) -> value``, materialized over the data at
+      spec time.
+    - A :class:`~deckgl_marimo.ColorScale` instance (color accessors only).
+
+    Materialized callables and ``ColorScale`` require concrete data
+    (DataFrame, list of dicts, etc.); URL data is not supported for
+    these forms. See :class:`~deckgl_marimo.Accessor`,
+    :class:`~deckgl_marimo.PositionAccessor`, and
+    :class:`~deckgl_marimo.ColorAccessor` for the type aliases.
 
     Parameters
     ----------
@@ -60,8 +136,14 @@ class BaseLayer:
         Initial bearing for standalone display.
     map_height
         CSS height for standalone display.
+    _unsafe_props
+        If ``True``, skip validation of unknown ``**props`` keys. Use
+        only when passing through undocumented deck.gl props; subclass
+        ``__init__`` signatures normally cover the supported set.
     **props
-        Additional deck.gl layer properties in snake_case.
+        Additional deck.gl layer properties in snake_case. Validated
+        against the subclass's declared kwargs unless ``_unsafe_props``
+        is set.
     """
 
     LAYER_TYPE: ClassVar[str] = "BaseLayer"
@@ -70,6 +152,16 @@ class BaseLayer:
     _MAP_KEYS: ClassVar[set[str]] = {
         "basemap", "center", "zoom", "pitch", "bearing", "map_height",
     }
+
+    # Union of declared kwargs across this class and its ancestors. ``None``
+    # on ``BaseLayer`` itself disables validation (catch-all behavior); every
+    # subclass receives a concrete frozenset via ``__init_subclass__`` at
+    # class-creation time. Computed before ``_experimental`` decoration.
+    _VALID_PROPS: ClassVar[frozenset[str] | None] = None
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._VALID_PROPS = _collect_kwargs(cls)
 
     def __init__(
         self,
@@ -91,8 +183,12 @@ class BaseLayer:
         pitch: float = 0.0,
         bearing: float = 0.0,
         map_height: str = "600px",
+        _unsafe_props: bool = False,
         **props: Any,
     ) -> None:
+        if not _unsafe_props and self._VALID_PROPS is not None:
+            _raise_for_unknown_props(type(self).__name__, props, self._VALID_PROPS)
+
         self.id = id or f"{self.LAYER_TYPE}-{uuid4().hex[:8]}"
         self.data = data
         self.visible = visible

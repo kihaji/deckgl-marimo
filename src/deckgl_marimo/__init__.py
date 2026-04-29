@@ -4,6 +4,7 @@ Provides deck.gl layers on MapLibre GL basemaps as interactive
 anywidget-based widgets with full marimo reactivity support.
 """
 
+from deckgl_marimo._accessors import Accessor, ColorAccessor, PositionAccessor
 from deckgl_marimo._basemaps import Basemaps
 from deckgl_marimo._color_scale import ColorScale
 from deckgl_marimo._map import Map
@@ -45,6 +46,10 @@ __all__ = [
     "ViewState",
     "Basemaps",
     "ColorScale",
+    # Accessor type aliases
+    "Accessor",
+    "ColorAccessor",
+    "PositionAccessor",
     # Core layers
     "ArcLayer",
     "ColumnLayer",

@@ -5,7 +5,8 @@ from __future__ import annotations
 import warnings
 from typing import Any
 
-from deckgl_marimo._base import BaseLayer
+from deckgl_marimo._accessors import Accessor, ColorAccessor, PositionAccessor
+from deckgl_marimo._base import MAX_SAFE_INTEGER, BaseLayer
 
 
 def _experimental(cls: type) -> type:
@@ -61,17 +62,23 @@ class ScatterplotLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_position: Any = None,
-        get_fill_color: Any = (0, 0, 0, 255),
-        get_line_color: Any = (0, 0, 0, 255),
-        get_radius: Any = 1,
+        get_position: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        get_radius: Accessor = 1,
+        get_line_width: Accessor = 1,
+        radius_units: str = "meters",
         radius_scale: float = 1,
         radius_min_pixels: float = 0,
-        radius_max_pixels: float = float("inf"),
+        radius_max_pixels: float = MAX_SAFE_INTEGER,
+        line_width_units: str = "meters",
+        line_width_scale: float = 1,
         line_width_min_pixels: float = 0,
+        line_width_max_pixels: float = MAX_SAFE_INTEGER,
         stroked: bool = False,
         filled: bool = True,
         billboard: bool = False,
+        antialiasing: bool = True,
         **kwargs: Any,
     ) -> None:
         self._get_position_key = get_position
@@ -83,13 +90,19 @@ class ScatterplotLayer(BaseLayer):
             get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
             get_line_color=list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
             get_radius=get_radius,
+            get_line_width=get_line_width,
+            radius_units=radius_units,
             radius_scale=radius_scale,
             radius_min_pixels=radius_min_pixels,
             radius_max_pixels=radius_max_pixels,
+            line_width_units=line_width_units,
+            line_width_scale=line_width_scale,
             line_width_min_pixels=line_width_min_pixels,
+            line_width_max_pixels=line_width_max_pixels,
             stroked=stroked,
             filled=filled,
             billboard=billboard,
+            antialiasing=antialiasing,
             **kwargs,
         )
 
@@ -206,15 +219,27 @@ class GeoJsonLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_fill_color: Any = (0, 0, 0, 255),
-        get_line_color: Any = (0, 0, 0, 255),
-        get_line_width: Any = 1,
-        get_point_radius: Any = 1,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_width: Accessor = 1,
+        get_point_radius: Accessor = 1,
+        get_elevation: Accessor = 1000,
         filled: bool = True,
         stroked: bool = True,
         extruded: bool = False,
+        wireframe: bool = False,
         point_type: str = "circle",
+        elevation_scale: float = 1,
+        line_width_units: str = "meters",
+        line_width_scale: float = 1,
         line_width_min_pixels: float = 0,
+        line_joint_rounded: bool = False,
+        line_miter_limit: float = 4,
+        line_cap_rounded: bool = False,
+        line_billboard: bool = False,
+        point_antialiasing: bool = True,
+        point_billboard: bool = True,
+        text_background: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -223,11 +248,23 @@ class GeoJsonLayer(BaseLayer):
             get_line_color=list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
             get_line_width=get_line_width,
             get_point_radius=get_point_radius,
+            get_elevation=get_elevation,
             filled=filled,
             stroked=stroked,
             extruded=extruded,
+            wireframe=wireframe,
             point_type=point_type,
+            elevation_scale=elevation_scale,
+            line_width_units=line_width_units,
+            line_width_scale=line_width_scale,
             line_width_min_pixels=line_width_min_pixels,
+            line_joint_rounded=line_joint_rounded,
+            line_miter_limit=line_miter_limit,
+            line_cap_rounded=line_cap_rounded,
+            line_billboard=line_billboard,
+            point_antialiasing=point_antialiasing,
+            point_billboard=point_billboard,
+            text_background=text_background,
             **kwargs,
         )
 
@@ -259,12 +296,19 @@ class ArcLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_source_position: Any = None,
-        get_target_position: Any = None,
-        get_source_color: Any = (0, 0, 255, 255),
-        get_target_color: Any = (0, 200, 0, 255),
-        get_width: Any = 1,
+        get_source_position: PositionAccessor | None = None,
+        get_target_position: PositionAccessor | None = None,
+        get_source_color: ColorAccessor = (0, 0, 255, 255),
+        get_target_color: ColorAccessor = (0, 200, 0, 255),
+        get_width: Accessor = 1,
+        get_height: Accessor = 1,
+        get_tilt: Accessor = 0,
         great_circle: bool = False,
+        num_segments: int = 50,
+        width_units: str = "pixels",
+        width_scale: float = 1,
+        width_min_pixels: float = 0,
+        width_max_pixels: float = MAX_SAFE_INTEGER,
         **kwargs: Any,
     ) -> None:
         self._get_source_position_key = get_source_position
@@ -278,7 +322,14 @@ class ArcLayer(BaseLayer):
             get_source_color=list(get_source_color) if isinstance(get_source_color, tuple) else get_source_color,
             get_target_color=list(get_target_color) if isinstance(get_target_color, tuple) else get_target_color,
             get_width=get_width,
+            get_height=get_height,
+            get_tilt=get_tilt,
             great_circle=great_circle,
+            num_segments=num_segments,
+            width_units=width_units,
+            width_scale=width_scale,
+            width_min_pixels=width_min_pixels,
+            width_max_pixels=width_max_pixels,
             **kwargs,
         )
 
@@ -393,12 +444,17 @@ class PathLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_path: Any = None,
-        get_color: Any = (0, 0, 0, 255),
-        get_width: Any = 1,
+        get_path: PositionAccessor | None = None,
+        get_color: ColorAccessor = (0, 0, 0, 255),
+        get_width: Accessor = 1,
+        width_units: str = "meters",
         width_scale: float = 1,
         width_min_pixels: float = 0,
+        width_max_pixels: float = MAX_SAFE_INTEGER,
         rounded: bool = False,
+        joint_rounded: bool = False,
+        cap_rounded: bool = False,
+        miter_limit: float = 4,
         billboard: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -409,9 +465,14 @@ class PathLayer(BaseLayer):
             get_path=get_path,
             get_color=list(get_color) if isinstance(get_color, tuple) else get_color,
             get_width=get_width,
+            width_units=width_units,
             width_scale=width_scale,
             width_min_pixels=width_min_pixels,
+            width_max_pixels=width_max_pixels,
             rounded=rounded,
+            joint_rounded=joint_rounded,
+            cap_rounded=cap_rounded,
+            miter_limit=miter_limit,
             billboard=billboard,
             **kwargs,
         )
@@ -521,6 +582,24 @@ class PolygonLayer(BaseLayer):
         Elevation accessor for 3D extrusion.
     elevation_scale
         Global elevation multiplier.
+    line_width_units
+        Units for line width: ``"meters"`` (default), ``"common"``, or ``"pixels"``.
+    line_width_scale
+        Global line width multiplier.
+    line_width_min_pixels
+        Minimum line width in pixels.
+    line_width_max_pixels
+        Maximum line width in pixels.
+    wireframe
+        Whether to draw the wireframe of extruded polygons.
+
+    Notes
+    -----
+    With ``use_binary=True``, the emitted layer spec switches to
+    deck.gl's ``SolidPolygonLayer`` because the composite
+    ``PolygonLayer`` does not support binary attributes. Stroke
+    (``stroked``, ``get_line_color``, ``get_line_width``) is not
+    rendered in binary mode.
     """
 
     LAYER_TYPE = "PolygonLayer"
@@ -529,15 +608,22 @@ class PolygonLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_polygon: Any = None,
-        get_fill_color: Any = (0, 0, 0, 255),
-        get_line_color: Any = (0, 0, 0, 255),
-        get_line_width: Any = 1,
+        get_polygon: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_width: Accessor = 1,
         filled: bool = True,
         stroked: bool = True,
         extruded: bool = False,
-        get_elevation: Any = 1000,
+        get_elevation: Accessor = 1000,
         elevation_scale: float = 1,
+        line_width_units: str = "meters",
+        line_width_scale: float = 1,
+        line_width_min_pixels: float = 0,
+        line_width_max_pixels: float = MAX_SAFE_INTEGER,
+        line_joint_rounded: bool = False,
+        line_miter_limit: float = 4,
+        wireframe: bool = False,
         **kwargs: Any,
     ) -> None:
         self._get_polygon_key = get_polygon
@@ -553,6 +639,13 @@ class PolygonLayer(BaseLayer):
             extruded=extruded,
             get_elevation=get_elevation,
             elevation_scale=elevation_scale,
+            line_width_units=line_width_units,
+            line_width_scale=line_width_scale,
+            line_width_min_pixels=line_width_min_pixels,
+            line_width_max_pixels=line_width_max_pixels,
+            line_joint_rounded=line_joint_rounded,
+            line_miter_limit=line_miter_limit,
+            wireframe=wireframe,
             **kwargs,
         )
 
@@ -667,14 +760,19 @@ class IconLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_position: Any = None,
-        get_icon: Any = None,
-        get_size: Any = 1,
-        get_color: Any = (0, 0, 0, 255),
-        get_angle: Any = 0,
+        get_position: PositionAccessor | None = None,
+        get_icon: Accessor | None = None,
+        get_size: Accessor = 1,
+        get_color: ColorAccessor = (0, 0, 0, 255),
+        get_angle: Accessor = 0,
+        get_pixel_offset: Accessor = (0, 0),
         icon_atlas: str | None = None,
         icon_mapping: dict | None = None,
+        size_units: str = "pixels",
         size_scale: float = 1,
+        size_min_pixels: float = 0,
+        size_max_pixels: float = MAX_SAFE_INTEGER,
+        alpha_cutoff: float = 0.05,
         billboard: bool = True,
         **kwargs: Any,
     ) -> None:
@@ -684,7 +782,12 @@ class IconLayer(BaseLayer):
             "get_size": get_size,
             "get_color": list(get_color) if isinstance(get_color, tuple) else get_color,
             "get_angle": get_angle,
+            "get_pixel_offset": list(get_pixel_offset) if isinstance(get_pixel_offset, tuple) else get_pixel_offset,
+            "size_units": size_units,
             "size_scale": size_scale,
+            "size_min_pixels": size_min_pixels,
+            "size_max_pixels": size_max_pixels,
+            "alpha_cutoff": alpha_cutoff,
             "billboard": billboard,
         }
         if icon_atlas is not None:
@@ -729,32 +832,62 @@ class TextLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_position: Any = None,
-        get_text: Any = None,
-        get_size: Any = 32,
-        get_color: Any = (0, 0, 0, 255),
-        get_angle: Any = 0,
+        get_position: PositionAccessor | None = None,
+        get_text: Accessor | None = None,
+        get_size: Accessor = 32,
+        get_color: ColorAccessor = (0, 0, 0, 255),
+        get_angle: Accessor = 0,
         get_alignment_baseline: str = "center",
         get_text_anchor: str = "middle",
+        get_pixel_offset: Accessor = (0, 0),
+        get_background_color: ColorAccessor = (255, 255, 255, 255),
+        get_border_color: ColorAccessor = (0, 0, 0, 255),
+        get_border_width: Accessor = 0,
         font_family: str = "Monaco, monospace",
+        size_units: str = "pixels",
         size_scale: float = 1,
+        size_min_pixels: float = 0,
+        size_max_pixels: float = MAX_SAFE_INTEGER,
         billboard: bool = True,
+        background: bool = False,
+        background_padding: tuple[float, float, float, float] = (0, 0, 0, 0),
+        outline_width: float = 0,
+        outline_color: tuple[int, int, int, int] = (0, 0, 0, 255),
+        word_break: str = "break-word",
+        max_width: float = -1,
+        line_height: float = 1.0,
+        character_set: Any = None,
         **kwargs: Any,
     ) -> None:
-        super().__init__(
-            data=data,
-            get_position=get_position,
-            get_text=get_text,
-            get_size=get_size,
-            get_color=list(get_color) if isinstance(get_color, tuple) else get_color,
-            get_angle=get_angle,
-            get_alignment_baseline=get_alignment_baseline,
-            get_text_anchor=get_text_anchor,
-            font_family=font_family,
-            size_scale=size_scale,
-            billboard=billboard,
-            **kwargs,
-        )
+        props: dict[str, Any] = {
+            "get_position": get_position,
+            "get_text": get_text,
+            "get_size": get_size,
+            "get_color": list(get_color) if isinstance(get_color, tuple) else get_color,
+            "get_angle": get_angle,
+            "get_alignment_baseline": get_alignment_baseline,
+            "get_text_anchor": get_text_anchor,
+            "get_pixel_offset": list(get_pixel_offset) if isinstance(get_pixel_offset, tuple) else get_pixel_offset,
+            "get_background_color": list(get_background_color) if isinstance(get_background_color, tuple) else get_background_color,
+            "get_border_color": list(get_border_color) if isinstance(get_border_color, tuple) else get_border_color,
+            "get_border_width": get_border_width,
+            "font_family": font_family,
+            "size_units": size_units,
+            "size_scale": size_scale,
+            "size_min_pixels": size_min_pixels,
+            "size_max_pixels": size_max_pixels,
+            "billboard": billboard,
+            "background": background,
+            "background_padding": list(background_padding),
+            "outline_width": outline_width,
+            "outline_color": list(outline_color),
+            "word_break": word_break,
+            "max_width": max_width,
+            "line_height": line_height,
+        }
+        if character_set is not None:
+            props["character_set"] = character_set
+        super().__init__(data=data, **props, **kwargs)
 
 
 class ColumnLayer(BaseLayer):
@@ -788,31 +921,59 @@ class ColumnLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_position: Any = None,
-        get_fill_color: Any = (255, 0, 0, 255),
-        get_line_color: Any = (0, 0, 0, 255),
-        get_elevation: Any = 1000,
+        get_position: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (255, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        get_elevation: Accessor = 1000,
+        get_line_width: Accessor = 1,
         disk_resolution: int = 20,
         radius: float = 1000,
+        radius_units: str = "meters",
+        angle: float = 0,
+        offset: tuple[float, float] = (0, 0),
+        coverage: float = 1,
         elevation_scale: float = 1,
+        line_width_units: str = "meters",
+        line_width_scale: float = 1,
+        line_width_min_pixels: float = 0,
+        line_width_max_pixels: float = MAX_SAFE_INTEGER,
         extruded: bool = True,
+        filled: bool = True,
+        stroked: bool = False,
+        wireframe: bool = False,
+        flat_shading: bool = False,
+        vertices: list | None = None,
         **kwargs: Any,
     ) -> None:
         self._get_position_key = get_position
         self._get_fill_color_key = get_fill_color
         self._get_elevation_key = get_elevation
-        super().__init__(
-            data=data,
-            get_position=get_position,
-            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
-            get_line_color=list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
-            get_elevation=get_elevation,
-            disk_resolution=disk_resolution,
-            radius=radius,
-            elevation_scale=elevation_scale,
-            extruded=extruded,
-            **kwargs,
-        )
+        props: dict[str, Any] = {
+            "get_position": get_position,
+            "get_fill_color": list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
+            "get_line_color": list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
+            "get_elevation": get_elevation,
+            "get_line_width": get_line_width,
+            "disk_resolution": disk_resolution,
+            "radius": radius,
+            "radius_units": radius_units,
+            "angle": angle,
+            "offset": list(offset),
+            "coverage": coverage,
+            "elevation_scale": elevation_scale,
+            "line_width_units": line_width_units,
+            "line_width_scale": line_width_scale,
+            "line_width_min_pixels": line_width_min_pixels,
+            "line_width_max_pixels": line_width_max_pixels,
+            "extruded": extruded,
+            "filled": filled,
+            "stroked": stroked,
+            "wireframe": wireframe,
+            "flat_shading": flat_shading,
+        }
+        if vertices is not None:
+            props["vertices"] = vertices
+        super().__init__(data=data, **props, **kwargs)
 
     def to_spec(self) -> dict:
         spec = super().to_spec()
@@ -917,10 +1078,14 @@ class LineLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_source_position: Any = None,
-        get_target_position: Any = None,
-        get_color: Any = (0, 0, 0, 255),
-        get_width: Any = 1,
+        get_source_position: PositionAccessor | None = None,
+        get_target_position: PositionAccessor | None = None,
+        get_color: ColorAccessor = (0, 0, 0, 255),
+        get_width: Accessor = 1,
+        width_units: str = "pixels",
+        width_scale: float = 1,
+        width_min_pixels: float = 0,
+        width_max_pixels: float = MAX_SAFE_INTEGER,
         **kwargs: Any,
     ) -> None:
         self._get_source_position_key = get_source_position
@@ -932,6 +1097,10 @@ class LineLayer(BaseLayer):
             get_target_position=get_target_position,
             get_color=list(get_color) if isinstance(get_color, tuple) else get_color,
             get_width=get_width,
+            width_units=width_units,
+            width_scale=width_scale,
+            width_min_pixels=width_min_pixels,
+            width_max_pixels=width_max_pixels,
             **kwargs,
         )
 
@@ -1007,7 +1176,7 @@ class PointCloudLayer(BaseLayer):
 
     LAYER_TYPE = "PointCloudLayer"
 
-    def __init__(self, *, data: Any = None, get_position: Any = None, get_color: Any = (0, 0, 0, 255), get_normal: Any = None, point_size: float = 10, **kwargs: Any) -> None:
+    def __init__(self, *, data: Any = None, get_position: PositionAccessor | None = None, get_color: ColorAccessor = (0, 0, 0, 255), get_normal: Accessor | None = None, point_size: float = 10, size_units: str = "pixels", **kwargs: Any) -> None:
         self._get_position_key = get_position
         self._get_color_key = get_color
         self._get_normal_key = get_normal
@@ -1017,6 +1186,7 @@ class PointCloudLayer(BaseLayer):
             get_color=list(get_color) if isinstance(get_color, tuple) else get_color,
             get_normal=get_normal,
             point_size=point_size,
+            size_units=size_units,
             **kwargs,
         )
 
@@ -1092,12 +1262,16 @@ class SolidPolygonLayer(BaseLayer):
 
     LAYER_TYPE = "SolidPolygonLayer"
 
-    def __init__(self, *, data: Any = None, get_polygon: Any = None, get_fill_color: Any = (0, 0, 0, 255), extruded: bool = False, get_elevation: Any = 1000, **kwargs: Any) -> None:
+    def __init__(self, *, data: Any = None, get_polygon: PositionAccessor | None = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), get_line_color: ColorAccessor = (0, 0, 0, 255), get_elevation: Accessor = 1000, filled: bool = True, extruded: bool = False, wireframe: bool = False, elevation_scale: float = 1, **kwargs: Any) -> None:
         super().__init__(
             data=data,
             get_polygon=get_polygon,
             get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
-            extruded=extruded,
+            get_line_color=list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
             get_elevation=get_elevation,
+            filled=filled,
+            extruded=extruded,
+            wireframe=wireframe,
+            elevation_scale=elevation_scale,
             **kwargs,
         )

@@ -40,7 +40,7 @@ def _():
 @app.cell
 def _(mo, pd):
     URL = "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv"
-    df = pd.read_csv(URL)
+    df = pd.read_csv(URL).rename(columns={"lng": "lon"})
     mo.md(f"**HeatmapLayer** — Loaded **{len(df):,}** records")
     return (df,)
 
@@ -82,7 +82,7 @@ def _(df, dgl, intensity_slider, map_widget, radius_slider, threshold_slider):
     map_widget.layer_specs = [
         dgl.HeatmapLayer(
             data=df.to_dict("records"),
-            get_position=["lng", "lat"],
+            get_position=["lon", "lat"],
             radius_pixels=radius_slider.value,
             intensity=intensity_slider.value,
             threshold=threshold_slider.value,

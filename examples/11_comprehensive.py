@@ -88,7 +88,7 @@ def _(pd):
 
 @app.cell
 def _(dgl, mo):
-    basemap_options = {name: name for name in dgl.Basemaps.list_available() if name != "none" and name != "embedded"}
+    basemap_options = {name: name for name in dgl.Basemaps.list_available() if name != "none"}
     basemap_picker = mo.ui.dropdown(
         options=basemap_options,
         value="dark-matter",

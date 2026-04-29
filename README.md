@@ -320,7 +320,7 @@ from deckgl_marimo.layers import TripsLayer, MVTLayer, H3HexagonLayer, ContourLa
 
 ```python
 dgl.Basemaps.list_available()
-# ['bright', 'dark', 'dark-matter', 'embedded', 'liberty', 'light', 'none', 'osm', 'positron', 'voyager']
+# ['bright', 'dark', 'dark-matter', 'liberty', 'light', 'none', 'osm', 'positron', 'voyager']
 
 # Use any MapLibre-compatible style URL
 dgl.Map(basemap="https://my-tileserver.example.com/style.json")

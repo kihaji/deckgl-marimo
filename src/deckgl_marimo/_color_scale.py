@@ -207,6 +207,13 @@ class ColorScale:
     ...     data=df,
     ...     get_fill_color=ColorScale("value", colors=["blue", "red"], scale="log"),
     ... )
+
+    Notes
+    -----
+    ``ColorScale`` requires materialized data. If the layer's ``data``
+    is a URL string, :meth:`resolve` raises ``ValueError`` — load the
+    URL into a DataFrame or list of dicts first, or pre-compute colors
+    and pass them as a regular column.
     """
 
     def __init__(

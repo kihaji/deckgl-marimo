@@ -40,7 +40,7 @@ def _():
 @app.cell
 def _(mo, pd):
     URL = "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv"
-    df = pd.read_csv(URL)
+    df = pd.read_csv(URL).rename(columns={"lng": "lon"})
     mo.md(f"**HexagonLayer** — Loaded **{len(df):,}** records")
     return (df,)
 
@@ -83,12 +83,13 @@ def _(coverage_slider, df, dgl, elevation_slider, map_widget, radius_slider):
     map_widget.layer_specs = [
         dgl.HexagonLayer(
             data=df.to_dict("records"),
-            get_position=["lng", "lat"],
+            get_position=["lon", "lat"],
             radius=radius_slider.value,
             coverage=coverage_slider.value,
             elevation_scale=elevation_slider.value,
             extruded=True,
             pickable=True,
+            gpu_aggregation=False,
         ).to_spec()
     ]
     return

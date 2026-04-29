@@ -12,7 +12,7 @@
 
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.0"
 app = marimo.App(width="full")
 
 
@@ -41,29 +41,22 @@ def _():
 def _(mo, pd):
     URL = "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/line/airports.json"
     _raw = pd.read_json(URL)
-    df = _raw.assign(
-        lon=_raw["coordinates"].apply(lambda c: c[0]),
-        lat=_raw["coordinates"].apply(lambda c: c[1]),
-    )
+    df = _raw.assign(lon=_raw["coordinates"].apply(lambda c: c[0]), lat=_raw["coordinates"].apply(lambda c: c[1]))
     mo.md(f"**ScatterplotLayer** — Loaded **{len(df):,}** airports")
     return (df,)
 
 
 @app.cell
 def _(mo):
-    radius_slider = mo.ui.slider(
-        start=1, stop=20, step=1, value=5, show_value=True, label="Radius Scale"
-    )
-    opacity_slider = mo.ui.slider(
-        start=0.1, stop=1.0, step=0.1, value=0.8, show_value=True, label="Opacity"
-    )
+    radius_slider = mo.ui.slider(start=1, stop=20, step=1, value=5, show_value=True, label="Radius Scale")
+    opacity_slider = mo.ui.slider(start=0.1, stop=1.0, step=0.1, value=0.8, show_value=True, label="Opacity")
     mo.hstack([radius_slider, opacity_slider], justify="start", gap=2)
     return opacity_slider, radius_slider
 
 
 @app.cell
 def _(dgl, mo):
-    map_widget = dgl.Map(basemap="dark-matter", center=(-98, 39), zoom=4)
+    map_widget = dgl.Map(basemap = "dark-matter", center = (-98, 39), zoom = 4)
     widget = mo.ui.anywidget(map_widget)
     return map_widget, widget
 
@@ -100,16 +93,16 @@ def _(mo, widget):
 
     mo.md(
         f"""
-**Viewport**
+    **Viewport**
 
-| Property | Value |
-|----------|-------|
-| Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
-| Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
-| Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
-| Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
-| Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
-"""
+    | Property | Value |
+    |----------|-------|
+    | Longitude | {_fmt(viewport.get('longitude'), '.4f')} |
+    | Latitude | {_fmt(viewport.get('latitude'), '.4f')} |
+    | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
+    | Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
+    | Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
+    """
     )
     return
 

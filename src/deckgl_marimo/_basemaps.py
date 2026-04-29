@@ -27,9 +27,6 @@ class Basemaps:
     OSM_BRIGHT = "https://tiles.openfreemap.org/styles/bright"
     OSM_POSITRON = "https://tiles.openfreemap.org/styles/positron"
 
-    # Embedded (no-network fallback)
-    EMBEDDED = "embedded"
-
     _ALIASES: dict[str, str] = {
         "dark-matter": CARTO_DARK,
         "dark": CARTO_DARK,
@@ -39,7 +36,6 @@ class Basemaps:
         "liberty": OSM_LIBERTY,
         "bright": OSM_BRIGHT,
         "osm": OSM_LIBERTY,
-        "embedded": EMBEDDED,
         "none": "",
     }
 

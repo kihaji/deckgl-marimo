@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from deckgl_marimo._accessors import Accessor, ColorAccessor, PositionAccessor
 from deckgl_marimo._base import BaseLayer
 from deckgl_marimo.layers._core import _experimental
 
@@ -18,9 +19,9 @@ class SimpleMeshLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_position: Any = None,
-        get_color: Any = (255, 0, 0, 255),
-        get_orientation: Any = (0, 0, 0),
+        get_position: PositionAccessor | None = None,
+        get_color: ColorAccessor = (255, 0, 0, 255),
+        get_orientation: Accessor = (0, 0, 0),
         mesh: Any = None,
         **kwargs: Any,
     ) -> None:
@@ -44,9 +45,9 @@ class ScenegraphLayer(BaseLayer):
         self,
         *,
         data: Any = None,
-        get_position: Any = None,
-        get_color: Any = (255, 255, 255, 255),
-        get_orientation: Any = (0, 0, 0),
+        get_position: PositionAccessor | None = None,
+        get_color: ColorAccessor = (255, 255, 255, 255),
+        get_orientation: Accessor = (0, 0, 0),
         scenegraph: str | None = None,
         size_scale: float = 1,
         **kwargs: Any,
