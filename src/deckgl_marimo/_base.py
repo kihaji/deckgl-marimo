@@ -207,7 +207,13 @@ class BaseLayer:
         self.load_options = load_options
         self.fetch_headers = fetch_headers
         self.use_binary = use_binary
-        self._props = props
+        # Normalize tuple prop values (colors, offsets, paddings, ...) to
+        # lists once here — tuples are not JSON-serializable by every
+        # transport, and subclasses previously each repeated the conversion.
+        self._props = {
+            key: list(value) if isinstance(value, tuple) else value
+            for key, value in props.items()
+        }
 
         # Map parameters for standalone display
         self._map_kwargs: dict[str, Any] = {

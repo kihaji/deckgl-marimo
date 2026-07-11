@@ -147,13 +147,13 @@ class DisplacementLayer(BaseLayer):
         self._show_origin_dots = show_origin_dots
         self._show_displaced_dots = show_displaced_dots
         self._arc_width = arc_width
-        self._arc_source_color = list(arc_source_color) if isinstance(arc_source_color, tuple) else arc_source_color
-        self._arc_target_color = list(arc_target_color) if isinstance(arc_target_color, tuple) else arc_target_color
+        self._arc_source_color = arc_source_color
+        self._arc_target_color = arc_target_color
         self._great_circle = great_circle
-        self._origin_color = list(origin_color) if isinstance(origin_color, tuple) else origin_color
+        self._origin_color = origin_color
         self._origin_radius = origin_radius
         self._origin_radius_min_pixels = origin_radius_min_pixels
-        self._displaced_color = list(displaced_color) if isinstance(displaced_color, tuple) else displaced_color
+        self._displaced_color = displaced_color
         self._displaced_radius = displaced_radius
         self._displaced_radius_min_pixels = displaced_radius_min_pixels
 
@@ -319,12 +319,12 @@ class EllipseLayer(BaseLayer):
         self._units = units
         self._num_vertices = num_vertices
         self._show_center_dots = show_center_dots
-        self._fill_color = list(fill_color) if isinstance(fill_color, tuple) else fill_color
-        self._line_color = list(line_color) if isinstance(line_color, tuple) else line_color
+        self._fill_color = fill_color
+        self._line_color = line_color
         self._line_width = line_width
         self._filled = filled
         self._stroked = stroked
-        self._center_dot_color = list(center_dot_color) if isinstance(center_dot_color, tuple) else center_dot_color
+        self._center_dot_color = center_dot_color
         self._center_dot_radius = center_dot_radius
         self._center_dot_radius_min_pixels = center_dot_radius_min_pixels
 
