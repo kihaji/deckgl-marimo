@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "marimo",
 #     "pandas",
@@ -12,7 +12,7 @@
 
 import marimo
 
-__generated_with = "0.19.11"
+__generated_with = "0.22.0"
 app = marimo.App(width="full")
 
 
@@ -32,9 +32,9 @@ def _():
 
 @app.cell
 def _():
-    from deckgl_marimo import DeckGLHexagonWidget
+    import deckgl_marimo as dgl
 
-    return (DeckGLHexagonWidget,)
+    return (dgl,)
 
 
 @app.cell
@@ -66,24 +66,40 @@ def _(mo):
 
 
 @app.cell
-def _(DeckGLHexagonWidget, coverage_slider, df, elevation_scale_slider, mo, radius_slider):
-    widget = mo.ui.anywidget(
-        DeckGLHexagonWidget(
-            style_url="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+def _(dgl):
+    # Create the Map in a cell with NO slider dependencies — it stays
+    # stable across slider changes (no re-creation, no camera reset).
+    deck_map = dgl.Map(
+        basemap="dark-matter",
+        center=(-1.4157, 52.2324),
+        zoom=6.0,
+        pitch=40.5,
+    )
+    widget = deck_map.as_widget()
+    return deck_map, widget
+
+
+@app.cell
+def _(widget):
+    widget
+    return
+
+
+@app.cell
+def _(coverage_slider, deck_map, df, dgl, elevation_scale_slider, radius_slider):
+    # Update layers reactively — re-runs on slider changes and updates the
+    # existing map via traitlet sync.
+    deck_map.set_layers([
+        dgl.HexagonLayer(
             data=df,
-            lat_col="lat",
-            lon_col="lon",
-            center_lon=-1.4157,
-            center_lat=52.2324,
-            zoom=6.0,
-            pitch=40.5,
+            get_position=["lon", "lat"],
             radius=radius_slider.value,
             coverage=coverage_slider.value,
             elevation_scale=elevation_scale_slider.value,
+            extruded=True,
         )
-    )
-    widget
-    return (widget,)
+    ])
+    return
 
 
 @app.cell
