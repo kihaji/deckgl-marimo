@@ -47,6 +47,7 @@ nav:
       - ColorScale: api/color-scale.md
       - Binary Packing: api/binary.md
       - Bounds: api/bounds.md
+      - MapLibre Composition: api/maplibre.md
   - Internals:
       - Binary Transfer Research: internals/binary-transfer-research.md
   - Troubleshooting: troubleshooting.md
