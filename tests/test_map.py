@@ -162,3 +162,54 @@ class TestUpdateLayerRouting:
     def test_missing_layer_is_a_noop(self):
         m, _layer = self._map_with_layer()
         m.update_layer("nope", get_radius=5)  # no raise, no change
+
+
+class TestSetLayers:
+    """set_layers replaces layers and re-packs binary in one shot (#30)."""
+
+    def test_replaces_specs_and_binary(self):
+        np = pytest.importorskip("numpy")
+        m = Map()
+        assert m.layer_specs == []
+        layer = ScatterplotLayer(
+            id="bin",
+            data=[{"lon": 1.0, "lat": 2.0}, {"lon": 3.0, "lat": 4.0}],
+            get_position=["lon", "lat"],
+            use_binary=True,
+        )
+        m.set_layers([layer])
+        assert [s["id"] for s in m.layer_specs] == ["bin"]
+        assert m.binary_metadata["layers"][0]["id"] == "bin"
+        assert len(m.binary_data) > 0
+        pos = np.frombuffer(m.binary_data[:16], dtype=np.float32)
+        assert list(pos) == [1.0, 2.0, 3.0, 4.0]
+
+    def test_replaces_existing_layers(self):
+        a = ScatterplotLayer(id="a", data=[{"lon": 0, "lat": 0}], get_position=["lon", "lat"])
+        b = ScatterplotLayer(id="b", data=[{"lon": 1, "lat": 1}], get_position=["lon", "lat"])
+        m = Map(layers=[a])
+        m.set_layers([b])
+        assert [lyr.id for lyr in m.layers] == ["b"]
+        assert [s["id"] for s in m.layer_specs] == ["b"]
+
+
+class TestPromotedCoreLayers:
+    """Line/PointCloud/SolidPolygon are core — no experimental warning (#28)."""
+
+    def test_no_warning_on_construction(self):
+        import warnings
+
+        from deckgl_marimo import LineLayer, PointCloudLayer, SolidPolygonLayer
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            LineLayer()
+            PointCloudLayer()
+            SolidPolygonLayer()
+
+    def test_pack_binary_public(self):
+        import deckgl_marimo as dgl
+
+        assert dgl.pack_binary is not None
+        assert dgl.pack_polygon_binary is not None
+        assert "pack_binary" in dgl.__all__

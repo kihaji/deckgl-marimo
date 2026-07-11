@@ -6,6 +6,7 @@ anywidget-based widgets with full marimo reactivity support.
 
 from deckgl_marimo._accessors import Accessor, ColorAccessor, PositionAccessor
 from deckgl_marimo._basemaps import Basemaps
+from deckgl_marimo._binary import pack_binary, pack_polygon_binary
 from deckgl_marimo._color_scale import ColorScale
 from deckgl_marimo._map import Map
 from deckgl_marimo._view_state import ViewState
@@ -46,6 +47,9 @@ __all__ = [
     "ViewState",
     "Basemaps",
     "ColorScale",
+    # Binary packing
+    "pack_binary",
+    "pack_polygon_binary",
     # Accessor type aliases
     "Accessor",
     "ColorAccessor",
