@@ -682,46 +682,13 @@ class PolygonLayer(BaseLayer):
         if isinstance(get_fill_color, str):
             meta, buf = pack_polygon_binary(self.data, get_polygon, get_fill_color)
         else:
-            # Resolve ColorScale/callable, then expand per-polygon colors to per-vertex
+            # ColorScale/callable: resolve to per-polygon colors; expansion
+            # to per-vertex happens inside pack_polygon_binary. A constant
+            # color resolves to None and stays in the spec instead.
             resolved = resolve_color_accessor(get_fill_color, self.data, len(self.data))
-            if resolved is not None:
-                import numpy as np
-
-                n = len(self.data)
-                vert_counts = np.array([len(row[get_polygon]) for row in self.data], dtype=np.uint32)
-                total_verts = int(vert_counts.sum())
-                si = np.empty(n, dtype=np.uint32)
-                si[0] = 0
-                np.cumsum(vert_counts[:-1], out=si[1:])
-
-                vertex_colors = np.empty((total_verts, 4), dtype=np.uint8)
-                for i in range(n):
-                    v_start = si[i]
-                    v_end = si[i + 1] if i + 1 < n else total_verts
-                    vertex_colors[v_start:v_end] = resolved[i]
-
-                meta, buf = pack_polygon_binary(self.data, get_polygon, None)
-                # Re-pack with colors included
-                from deckgl_marimo._binary import pack_binary
-
-                # Re-extract polygon coords and start indices from the existing meta
-                # Simpler: just call pack_polygon_binary without color, then separately pack color
-                # Actually let's reconstruct fully
-                polygon_flat = np.empty(total_verts * 2, dtype=np.float32)
-                idx = 0
-                for row in self.data:
-                    for pt in row[get_polygon]:
-                        polygon_flat[idx] = pt[0]
-                        polygon_flat[idx + 1] = pt[1]
-                        idx += 2
-
-                attrs: dict[str, tuple] = {
-                    "getPolygon": (polygon_flat, "float32", 2),
-                    "getFillColor": (vertex_colors, "uint8", 4),
-                }
-                meta, buf = pack_binary(n, attrs, start_indices=si)
-            else:
-                meta, buf = pack_polygon_binary(self.data, get_polygon, None)
+            meta, buf = pack_polygon_binary(
+                self.data, get_polygon, None, per_polygon_colors=resolved
+            )
 
         meta["id"] = self.id
         return meta, buf

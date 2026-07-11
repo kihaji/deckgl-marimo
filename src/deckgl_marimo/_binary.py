@@ -97,6 +97,7 @@ def pack_polygon_binary(
     data: list[dict] | Any,
     get_polygon: str = "polygon",
     get_fill_color: Any = None,
+    per_polygon_colors: Any | None = None,
 ) -> tuple[dict, bytes]:
     """Pack polygon data into a binary buffer for deck.gl.
 
@@ -115,6 +116,11 @@ def pack_polygon_binary(
         Key in each dict for the polygon coordinates.
     get_fill_color
         If a string, key for per-polygon [r, g, b, a] color.
+    per_polygon_colors
+        Pre-resolved per-polygon RGBA colors as a (n_polygons, 4) uint8
+        array (e.g. from a ColorScale or callable accessor). Expanded to
+        per-vertex colors here. Ignored on the pre-built-arrays fast path
+        and when ``get_fill_color`` is a column name.
 
     Returns
     -------
@@ -155,14 +161,16 @@ def pack_polygon_binary(
 
     attrs = {"getPolygon": (polygon_flat, "float32", 2)}
 
+    rgba = None
     if isinstance(get_fill_color, str):
-        vertex_colors = np.empty((total_verts, 4), dtype=np.uint8)
+        rgba = np.empty((n, 4), dtype=np.uint8)
         for i, row in enumerate(data):
             c = row[get_fill_color]
-            rgba = (c[0], c[1], c[2], c[3] if len(c) > 3 else 255)
-            v_start = si[i]
-            v_end = si[i + 1] if i + 1 < n else total_verts
-            vertex_colors[v_start:v_end] = rgba
-        attrs["getFillColor"] = (vertex_colors, "uint8", 4)
+            rgba[i] = (c[0], c[1], c[2], c[3] if len(c) > 3 else 255)
+    elif per_polygon_colors is not None:
+        rgba = np.asarray(per_polygon_colors, dtype=np.uint8)
+    if rgba is not None:
+        # One color per polygon, repeated for each of its vertices
+        attrs["getFillColor"] = (np.repeat(rgba, vert_counts, axis=0), "uint8", 4)
 
     return pack_binary(n, attrs, start_indices=si)
