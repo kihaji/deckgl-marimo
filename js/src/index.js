@@ -59,9 +59,17 @@ async function render({ model, el }) {
   container.classList.add("deckgl-marimo-container");
   el.appendChild(container);
 
-  // --- Performance tracker ---
+  // --- Performance tracker (opt-in: show_perf_metrics) ---
   const perf = createPerfTracker(model);
-  perf.start();
+  const syncPerfTracker = () => {
+    if (model.get("show_perf_metrics")) {
+      perf.start();
+    } else {
+      perf.stop();
+    }
+  };
+  model.on("change:show_perf_metrics", syncPerfTracker);
+  syncPerfTracker();
 
   // --- MapLibre Map ---
   const map = new maplibregl.Map({

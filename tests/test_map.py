@@ -251,3 +251,16 @@ class TestPickRowCache:
         m.update_layer("pts", data=[{"lon": 0, "lat": 0, "name": "z"}])
         m.click_info = {"object": None, "layer_id": "pts", "index": 0, "coordinate": [0, 0]}
         assert m.click_info["object"]["name"] == "z"
+
+
+class TestPerfMetricsOptIn:
+    """show_perf_metrics is off by default and toggleable (#24)."""
+
+    def test_default_off(self):
+        assert Map().show_perf_metrics is False
+
+    def test_constructor_and_runtime_toggle(self):
+        m = Map(show_perf_metrics=True)
+        assert m.show_perf_metrics is True
+        m.show_perf_metrics = False
+        assert m.show_perf_metrics is False

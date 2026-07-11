@@ -55,8 +55,18 @@ export function createPerfTracker(model) {
   }
 
   return {
-    start() { animId = requestAnimationFrame(tick); },
-    stop() { if (animId) cancelAnimationFrame(animId); },
+    start() {
+      if (animId !== null) return; // idempotent — never double the rAF loop
+      lastTime = performance.now();
+      frameTimes.length = 0;
+      animId = requestAnimationFrame(tick);
+    },
+    stop() {
+      if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    },
     setDeck(d) { deckRef = d; },
   };
 }
