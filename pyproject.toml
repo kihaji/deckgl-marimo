@@ -43,9 +43,9 @@ Issues = "https://github.com/kihaji/deckgl-marimo/issues"
 
 [project.optional-dependencies]
 binary = ["numpy>=1.24"]
-marimo = ["marimo>=0.23"]
+marimo = ["marimo>=0.22"]
 dev = [
-    "marimo>=0.23",
+    "marimo>=0.22",
     "pandas",
     "polars",
     "numpy>=1.24",
