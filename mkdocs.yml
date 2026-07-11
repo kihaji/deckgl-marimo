@@ -39,6 +39,7 @@ nav:
       - Color Scales: guides/color-scales.md
       - Picking & Events: guides/picking-events.md
       - Zoom-Gated Visibility: guides/zoom-visibility.md
+      - Time Filter & Animation: guides/time-filter.md
       - Basemaps: guides/basemaps.md
       - Authenticated Data: guides/authenticated-data.md
   - API Reference:
@@ -48,6 +49,7 @@ nav:
       - Binary Packing: api/binary.md
       - Bounds: api/bounds.md
       - MapLibre Composition: api/maplibre.md
+      - Time Filter: api/timefilter.md
   - Internals:
       - Binary Transfer Research: internals/binary-transfer-research.md
   - Troubleshooting: troubleshooting.md

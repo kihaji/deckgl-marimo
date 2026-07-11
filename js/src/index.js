@@ -14,6 +14,7 @@ import { applyZoomVisibility, zoomVisibilityKey } from "./zoom-visibility.js";
 import { createPerfTracker } from "./perf-tracker.js";
 import { attachPickHandlers } from "./pick-events.js";
 import { applyConfigExtras, resolveStyle } from "./maplibre-config.js";
+import { createTimeFilterAnimation } from "./time-filter-animation.js";
 
 /**
  * Inject MapLibre CSS into the document if not already present.
@@ -103,8 +104,9 @@ async function render({ model, el }) {
   });
 
   // --- deck.gl Overlay ---
+  let currentLayers = buildLayers(model, map);
   const overlay = new MapboxOverlay({
-    layers: buildLayers(model, map),
+    layers: currentLayers,
     getTooltip: (info) => {
       if (!info || !info.picked || !info.layer) return null;
       // Binary layers: look up pre-packed tooltip string by feature index
@@ -127,11 +129,22 @@ async function render({ model, el }) {
     // _deck is private, may not be accessible
   }
 
+  // --- GPU time-filter animation (opt-in via the time_filter traitlet) ---
+  const timeAnim = createTimeFilterAnimation({
+    model,
+    overlay,
+    getBaseLayers: () => currentLayers,
+  });
+  model.on("change:time_filter", () => timeAnim.sync());
+  timeAnim.sync();
+
   // --- Reactivity: layer_specs or binary_data changes ---
   let lastZoomVisibilityKey = "";
   const rebuildLayers = () => {
     lastZoomVisibilityKey = "";  // force re-evaluation against fresh specs
-    overlay.setProps({ layers: buildLayers(model, map) });
+    currentLayers = buildLayers(model, map);
+    overlay.setProps({ layers: currentLayers });
+    timeAnim.reapply(); // fresh layer instances must inherit the filter window
   };
   model.on("change:layer_specs", rebuildLayers);
   model.on("change:binary_data", rebuildLayers);
@@ -145,7 +158,9 @@ async function render({ model, el }) {
     if (key === null) return;
     if (key !== lastZoomVisibilityKey) {
       lastZoomVisibilityKey = key;
-      overlay.setProps({ layers: buildLayers(model, map) });
+      currentLayers = buildLayers(model, map);
+      overlay.setProps({ layers: currentLayers });
+      timeAnim.reapply();
     }
   });
 
@@ -207,6 +222,7 @@ async function render({ model, el }) {
   // --- Cleanup ---
   return () => {
     perf.stop();
+    timeAnim.stop();
     overlay.finalize();
     map.remove();
   };

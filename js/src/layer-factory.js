@@ -41,7 +41,15 @@ import {
 
 import { SimpleMeshLayer, ScenegraphLayer } from "@deck.gl/mesh-layers";
 
+import { DataFilterExtension } from "@deck.gl/extensions";
+
 import { resolveAccessors } from "./accessor-resolver.js";
+
+// Extension names (from Python specs) -> instance factories. getFilterValue
+// accessors are scalar, hence filterSize 1.
+const EXTENSION_REGISTRY = {
+  DataFilterExtension: () => new DataFilterExtension({ filterSize: 1 }),
+};
 
 /**
  * Registry mapping layer type names to deck.gl layer classes.
@@ -115,6 +123,21 @@ export function createLayer(spec) {
   // Skip accessor resolution for binary data — deck.gl handles it natively
   if (!_binary) {
     resolveAccessors(props, props.data);
+  }
+
+  // Map extension names to instances (e.g. "DataFilterExtension")
+  if (Array.isArray(props.extensions)) {
+    props.extensions = props.extensions
+      .map((ext) => {
+        if (typeof ext !== "string") return ext;
+        const factory = EXTENSION_REGISTRY[ext];
+        if (!factory) {
+          console.warn(`Unknown layer extension: ${ext}. Skipping.`);
+          return null;
+        }
+        return factory();
+      })
+      .filter(Boolean);
   }
 
   return new LayerClass(props);
