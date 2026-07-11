@@ -238,16 +238,21 @@ Binary data is supported on: `ScatterplotLayer`, `PolygonLayer`, `PathLayer`, `A
 
 ### Performance metrics
 
-The `Map` widget includes a built-in FPS counter that reports metrics back to Python:
+The `Map` widget includes an opt-in FPS counter that reports metrics back
+to Python. It is off by default (the tracker pushes updates every 500 ms,
+which is wasted traffic for an idle map):
 
 ```python
-map_widget = dgl.Map(basemap="dark-matter", center=(0, 0), zoom=1)
+map_widget = dgl.Map(basemap="dark-matter", center=(0, 0), zoom=1, show_perf_metrics=True)
 widget = mo.ui.anywidget(map_widget)
 
-# Read performance metrics (updated every 500ms)
+# Read performance metrics (updated every 500ms while enabled)
 perf = widget.value.get("perf_metrics", {})
 fps = perf.get("fps")           # frames per second
 frame_time = perf.get("frameTimeAvg")  # ms per frame
+
+# Toggle at runtime
+map_widget.show_perf_metrics = False
 ```
 
 ### Authenticated remote data

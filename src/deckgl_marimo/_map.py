@@ -41,6 +41,11 @@ class Map(anywidget.AnyWidget):
         CSS height of the map container.
     width
         CSS width of the map container.
+    show_perf_metrics
+        Enable the FPS/frame-time tracker, which pushes ``perf_metrics``
+        updates every 500 ms while the widget is displayed. Off by
+        default to avoid constant traitlet traffic; can be toggled at
+        runtime (``m.show_perf_metrics = True``).
 
     Examples
     --------
@@ -61,7 +66,7 @@ class Map(anywidget.AnyWidget):
     # because Map has a single user-facing class; no MRO walking needed.
     _VALID_KWARGS: ClassVar[frozenset[str]] = frozenset({
         "layers", "basemap", "center", "zoom", "pitch", "bearing",
-        "height", "width",
+        "height", "width", "show_perf_metrics",
     })
 
     # Layer specifications (list of dicts from BaseLayer.to_spec())
@@ -85,6 +90,11 @@ class Map(anywidget.AnyWidget):
     binary_data = traitlets.Bytes(b"").tag(sync=True)
     binary_metadata = traitlets.Dict({}).tag(sync=True)
 
+    # Opt-in FPS/frame-time tracking. Off by default: the tracker runs a
+    # requestAnimationFrame loop that pushes perf_metrics over the wire
+    # every 500 ms — constant traitlet churn an idle map shouldn't pay.
+    show_perf_metrics = traitlets.Bool(False).tag(sync=True)
+
     # One-shot fit-bounds request applied by the JS side via map.fitBounds.
     # Carries a sequence number so repeated calls with identical bounds
     # still fire a change event.
@@ -107,6 +117,7 @@ class Map(anywidget.AnyWidget):
         bearing: float = 0.0,
         height: str = "600px",
         width: str = "100%",
+        show_perf_metrics: bool = False,
         _unsafe_props: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -134,6 +145,7 @@ class Map(anywidget.AnyWidget):
             "bearing": bearing,
             "height": height,
             "width": width,
+            "show_perf_metrics": show_perf_metrics,
             **kwargs,
         }
 
