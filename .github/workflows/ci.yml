@@ -12,13 +12,17 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
+    env:
+      # The JS bundle is built explicitly below; skip the hatch build hook
+      # for the editable install that `uv sync` performs.
+      DECKGL_MARIMO_SKIP_JS_BUILD: "1"
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version-file: .nvmrc
           cache: "npm"
           cache-dependency-path: js/package-lock.json
 
@@ -36,11 +40,23 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      - name: Check lockfile is up to date
+        run: uv lock --check
+
+      - name: Check version agreement
+        run: python3 scripts/check_versions.py
+
       - name: Install dependencies
         run: uv sync --extra dev
 
-      - name: Run tests
-        run: uv run pytest
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Type check (pyright)
+        run: uv run npx pyright
+
+      - name: Run tests with coverage
+        run: uv run pytest --cov=deckgl_marimo --cov-report=term-missing
 
   build:
     runs-on: ubuntu-latest
@@ -50,17 +66,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version-file: .nvmrc
           cache: "npm"
           cache-dependency-path: js/package-lock.json
-
-      - name: Install JS dependencies
-        run: npm ci
-        working-directory: js
-
-      - name: Build JS bundle
-        run: npm run build
-        working-directory: js
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -68,6 +76,8 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
 
+      # No explicit npm build here: `uv build` exercises the self-building
+      # wheel via the hatch_build.py hook (npm ci && npm run build).
       - name: Build package
         run: uv build
 

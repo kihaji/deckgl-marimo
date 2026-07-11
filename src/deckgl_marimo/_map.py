@@ -186,7 +186,7 @@ class Map(anywidget.AnyWidget):
         index = info.get("index")
         if layer_id is None or index is None or index < 0:
             return
-        layer = next((l for l in self._layers if l.id == layer_id), None)
+        layer = next((lyr for lyr in self._layers if lyr.id == layer_id), None)
         if layer is None:
             return
         rows = materialize_rows(layer.data)
@@ -217,7 +217,7 @@ class Map(anywidget.AnyWidget):
         layer_id
             The ``id`` of the layer to remove.
         """
-        self._layers = [l for l in self._layers if l.id != layer_id]
+        self._layers = [lyr for lyr in self._layers if lyr.id != layer_id]
         self._sync_layers()
 
     def update_layer(self, layer_id: str, **props: Any) -> None:

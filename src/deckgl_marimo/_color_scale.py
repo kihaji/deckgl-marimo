@@ -145,9 +145,14 @@ def _extract_column(data: Any, column: str) -> list[float | None]:
     if isinstance(data, list):
         return [row.get(column) if isinstance(row, dict) else None for row in data]
 
-    # GeoJSON FeatureCollection
-    if isinstance(data, dict) and "features" in data:
-        return [f.get("properties", {}).get(column) for f in data["features"]]
+    if isinstance(data, dict):
+        # GeoJSON FeatureCollection
+        if "features" in data:
+            return [f.get("properties", {}).get(column) for f in data["features"]]
+        raise TypeError(
+            f"Cannot extract column '{column}' from a plain dict. "
+            "Expected DataFrame, list of dicts, GeoJSON dict, or GeoDataFrame."
+        )
 
     # GeoDataFrame
     if hasattr(data, "__geo_interface__") and hasattr(data, "columns"):
@@ -163,11 +168,11 @@ def _extract_column(data: Any, column: str) -> list[float | None]:
     try:
         df = nw.from_native(data)
         return df[column].to_list()
-    except Exception:
+    except Exception as err:
         raise TypeError(
             f"Cannot extract column '{column}' from {type(data).__name__}. "
             "Expected DataFrame, list of dicts, GeoJSON dict, or GeoDataFrame."
-        )
+        ) from err
 
 
 class ColorScale:

@@ -30,7 +30,7 @@ class TestUnknownKwargs:
 
     def test_message_mentions_layer_class(self):
         with pytest.raises(TypeError, match="HexagonLayer"):
-            dgl.HexagonLayer(get_positon=["lon", "lat"])  # noqa: typo intentional
+            dgl.HexagonLayer(get_positon=["lon", "lat"])  # typo intentional
 
     def test_unsafe_props_bypasses_validation(self):
         layer = dgl.ScatterplotLayer(_unsafe_props=True, totally_made_up=42)

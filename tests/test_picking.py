@@ -6,7 +6,7 @@ up the original data by layer_id + index and fill in the row.
 """
 
 from deckgl_marimo._map import Map
-from deckgl_marimo.layers._core import ScatterplotLayer, PolygonLayer
+from deckgl_marimo.layers._core import ScatterplotLayer
 
 
 def _pick(layer_id, index, object=None, coordinate=None):

@@ -1,7 +1,6 @@
 """Tests for binary data packing."""
 
 import numpy as np
-import pytest
 
 from deckgl_marimo._binary import pack_binary, pack_polygon_binary
 

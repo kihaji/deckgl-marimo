@@ -4,7 +4,6 @@ import math
 
 import pytest
 
-from deckgl_marimo._base import BaseLayer
 from deckgl_marimo.layers._composite import (
     DisplacementLayer,
     EllipseLayer,
@@ -303,7 +302,7 @@ class TestEllipseLayer:
         ).to_specs()
         ring_deg = specs_deg[0]["data"][0]["_ellipse_polygon"]
         ring_rad = specs_rad[0]["data"][0]["_ellipse_polygon"]
-        for p1, p2 in zip(ring_deg, ring_rad):
+        for p1, p2 in zip(ring_deg, ring_rad, strict=True):
             assert abs(p1[0] - p2[0]) < 1e-10
             assert abs(p1[1] - p2[1]) < 1e-10
 
@@ -319,7 +318,7 @@ class TestEllipseLayer:
         ).to_specs()
         ring_m = specs_m[0]["data"][0]["_ellipse_polygon"]
         ring_km = specs_km[0]["data"][0]["_ellipse_polygon"]
-        for p1, p2 in zip(ring_m, ring_km):
+        for p1, p2 in zip(ring_m, ring_km, strict=True):
             assert abs(p1[0] - p2[0]) < 1e-10
             assert abs(p1[1] - p2[1]) < 1e-10
 
@@ -335,7 +334,7 @@ class TestEllipseLayer:
         ).to_specs()
         ring_m = specs_m[0]["data"][0]["_ellipse_polygon"]
         ring_nm = specs_nm[0]["data"][0]["_ellipse_polygon"]
-        for p1, p2 in zip(ring_m, ring_nm):
+        for p1, p2 in zip(ring_m, ring_nm, strict=True):
             assert abs(p1[0] - p2[0]) < 1e-10
             assert abs(p1[1] - p2[1]) < 1e-10
 

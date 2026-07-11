@@ -16,6 +16,11 @@ build/
 node_modules/
 js/node_modules/
 
+# Built JS bundle — produced by `npm run build` in js/ (and automatically at
+# wheel-build time by hatch_build.py). Never commit it.
+src/deckgl_marimo/static/deckgl-marimo.bundle.js
+src/deckgl_marimo/static/deckgl-marimo.bundle.css
+
 # Virtual environments
 .venv/
 venv/
