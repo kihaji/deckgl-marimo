@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Makefile`, `CONTRIBUTING.md`, this changelog (#13)
 
 ### Changed
+- marimo floor relaxed `>=0.23` → `>=0.22`: marimo 0.23 serializes large
+  widget state ~3.6× slower at widget open (#58), so users on the JSON data
+  path can stay on 0.22 until that's resolved upstream
 - **Breaking:** zoom-gated visibility props renamed `min_zoom`/`max_zoom` →
   `visible_min_zoom`/`visible_max_zoom`; `TileLayer(min_zoom=, max_zoom=)`
   now reach deck.gl as real tile-fetch bounds (#22)
