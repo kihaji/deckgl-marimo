@@ -7,7 +7,12 @@
 import maplibregl from "maplibre-gl";
 import maplibreCss from "maplibre-gl/dist/maplibre-gl.css";
 import { MapboxOverlay } from "@deck.gl/mapbox";
-import { createLayers, applyBinaryData } from "./layer-factory.js";
+import { createLayers } from "./layer-factory.js";
+import { applyBinaryData } from "./binary-data.js";
+import { normalizeBinaryBuffer } from "./binary-buffer.js";
+import { applyZoomVisibility, zoomVisibilityKey } from "./zoom-visibility.js";
+import { createPerfTracker } from "./perf-tracker.js";
+import { attachPickHandlers } from "./pick-events.js";
 
 /**
  * Inject MapLibre CSS into the document if not already present.
@@ -22,90 +27,6 @@ function ensureMaplibreCss() {
 }
 
 /**
- * FPS / performance metrics tracker.
- * Uses requestAnimationFrame to measure frame times and periodically
- * pushes metrics back to the Python model.
- */
-function createPerfTracker(model) {
-  const frameTimes = [];
-  const maxSamples = 60;
-  let lastTime = performance.now();
-  let lastPush = 0;
-  let animId = null;
-  let deckRef = null; // set externally to access deck.metrics
-
-  function tick(now) {
-    const dt = now - lastTime;
-    lastTime = now;
-    frameTimes.push(dt);
-    if (frameTimes.length > maxSamples) frameTimes.shift();
-
-    // Push metrics to Python every 500ms
-    if (now - lastPush > 500 && frameTimes.length > 5) {
-      lastPush = now;
-      const avg = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
-      const fps = 1000 / avg;
-      const min = Math.min(...frameTimes);
-      const max = Math.max(...frameTimes);
-
-      const metrics = {
-        fps: Math.round(fps * 10) / 10,
-        frameTimeAvg: Math.round(avg * 100) / 100,
-        frameTimeMin: Math.round(min * 100) / 100,
-        frameTimeMax: Math.round(max * 100) / 100,
-      };
-
-      // Try to get deck.gl internal metrics
-      try {
-        const dm = deckRef?.metrics;
-        if (dm) {
-          metrics.gpuTime = dm.gpuTime;
-          metrics.cpuTime = dm.cpuTime;
-          metrics.gpuTimePerFrame = dm.gpuTimePerFrame;
-          metrics.cpuTimePerFrame = dm.cpuTimePerFrame;
-          metrics.bufferMemory = dm.bufferMemory;
-          metrics.textureMemory = dm.textureMemory;
-        }
-      } catch (e) {
-        // deck metrics not available
-      }
-
-      model.set("perf_metrics", metrics);
-      model.save_changes();
-    }
-
-    animId = requestAnimationFrame(tick);
-  }
-
-  return {
-    start() { animId = requestAnimationFrame(tick); },
-    stop() { if (animId) cancelAnimationFrame(animId); },
-    setDeck(d) { deckRef = d; },
-  };
-}
-
-/**
- * Fold min/max zoom gating into each spec's `visible` prop.
- *
- * Preserves the user-supplied visible by stashing it once on `_userVisible`,
- * so repeated calls with a changing zoom are idempotent.
- */
-function applyZoomVisibility(specs, zoom) {
-  for (const spec of specs) {
-    const hasMin = spec.minZoom != null;
-    const hasMax = spec.maxZoom != null;
-    if (!hasMin && !hasMax) continue;
-    if (spec._userVisible === undefined) {
-      spec._userVisible = spec.visible !== false;
-    }
-    const inRange =
-      (!hasMin || zoom >= spec.minZoom) &&
-      (!hasMax || zoom <= spec.maxZoom);
-    spec.visible = spec._userVisible && inRange;
-  }
-}
-
-/**
  * Build layers from specs, applying binary data if available.
  */
 function buildLayers(model, map) {
@@ -113,27 +34,7 @@ function buildLayers(model, map) {
   const binaryMeta = model.get("binary_metadata") || {};
   const binaryData = model.get("binary_data");
 
-  // anywidget delivers Bytes traitlets as DataView.
-  // The underlying ArrayBuffer may be shared with a non-zero byteOffset,
-  // so we must copy the relevant slice into a standalone ArrayBuffer
-  // to ensure typed array constructors get correct offsets.
-  let buffer = null;
-  if (binaryData && binaryMeta.layers) {
-    if (binaryData instanceof DataView) {
-      const src = new Uint8Array(binaryData.buffer, binaryData.byteOffset, binaryData.byteLength);
-      const copy = new ArrayBuffer(binaryData.byteLength);
-      new Uint8Array(copy).set(src);
-      buffer = copy;
-    } else if (binaryData instanceof ArrayBuffer) {
-      buffer = binaryData;
-    } else if (binaryData && binaryData.buffer instanceof ArrayBuffer) {
-      const src = new Uint8Array(binaryData.buffer, binaryData.byteOffset || 0, binaryData.byteLength);
-      const copy = new ArrayBuffer(binaryData.byteLength);
-      new Uint8Array(copy).set(src);
-      buffer = copy;
-    }
-  }
-
+  const buffer = binaryMeta.layers ? normalizeBinaryBuffer(binaryData) : null;
   if (buffer && binaryMeta.layers) {
     applyBinaryData(specs, buffer, binaryMeta);
   }
@@ -218,19 +119,8 @@ async function render({ model, el }) {
   // Fires every animation frame during zoom; we only call setProps when at
   // least one gated layer's effective visibility actually flips.
   map.on("zoom", () => {
-    const specs = model.get("layer_specs") || [];
-    const zoom = map.getZoom();
-    let hasGated = false;
-    let key = "";
-    for (const s of specs) {
-      if (s.minZoom == null && s.maxZoom == null) continue;
-      hasGated = true;
-      const inRange =
-        (s.minZoom == null || zoom >= s.minZoom) &&
-        (s.maxZoom == null || zoom <= s.maxZoom);
-      key += `${s.id}:${inRange ? 1 : 0}|`;
-    }
-    if (!hasGated) return;
+    const key = zoomVisibilityKey(model.get("layer_specs") || [], map.getZoom());
+    if (key === null) return;
     if (key !== lastZoomVisibilityKey) {
       lastZoomVisibilityKey = key;
       overlay.setProps({ layers: buildLayers(model, map) });
@@ -280,29 +170,7 @@ async function render({ model, el }) {
   });
 
   // --- Click/hover event readback ---
-  // Gate on info.picked (deck.gl's canonical "something was picked" flag) so
-  // binary-packed layers emit events too — they don't populate info.object.
-  const pickPayload = (info) => ({
-    object: info.object ?? null,
-    coordinate: info.coordinate,
-    layer_id: info.layer ? info.layer.id : null,
-    index: info.index,
-  });
-  overlay.setProps({
-    ...overlay.props,
-    onClick: (info) => {
-      if (info && info.picked) {
-        model.set("click_info", pickPayload(info));
-        model.save_changes();
-      }
-    },
-    onHover: (info) => {
-      if (info && info.picked) {
-        model.set("hover_info", pickPayload(info));
-        model.save_changes();
-      }
-    },
-  });
+  attachPickHandlers(overlay, model);
 
   // --- Cleanup ---
   return () => {
