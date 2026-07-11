@@ -228,16 +228,33 @@ class Map(anywidget.AnyWidget):
         layer_id
             The ``id`` of the layer to update.
         **props
-            Properties to update (snake_case).
+            Properties to update (snake_case). Validated against the
+            layer's declared props; unknown keys raise ``TypeError`` with
+            a "did you mean" suggestion.
         """
-        for layer in self._layers:
-            if layer.id == layer_id:
-                for key, value in props.items():
-                    if hasattr(layer, key):
-                        setattr(layer, key, value)
-                    else:
-                        layer._props[key] = value
-                break
+        layer = next((lyr for lyr in self._layers if lyr.id == layer_id), None)
+        if layer is None:
+            return
+
+        # Explicit routing — never getattr/hasattr on the layer, whose
+        # __getattr__ delegates to a lazily-created backing Map (a hasattr
+        # probe would instantiate a hidden widget and mis-route keys that
+        # happen to collide with Map traitlets, e.g. `zoom`).
+        map_keys = [k for k in props if k in layer._MAP_KEYS]
+        if map_keys:
+            raise ValueError(
+                f"{map_keys!r} are map-level settings for standalone layer "
+                "display and cannot be changed via update_layer(); set them "
+                "on the Map itself (e.g. map.zoom = 10)."
+            )
+        valid = layer._FIELD_KEYS | (layer._VALID_PROPS or frozenset())
+        _raise_for_unknown_props(type(layer).__name__, props, valid)
+
+        for key, value in props.items():
+            if key in layer._FIELD_KEYS:
+                setattr(layer, key, value)
+            else:
+                layer._props[key] = value
         self._sync_layers()
 
     def fit_bounds(self, bounds: list[list[float]]) -> None:

@@ -153,6 +153,13 @@ class BaseLayer:
         "basemap", "center", "zoom", "pitch", "bearing", "map_height",
     }
 
+    # Instance attributes assigned in __init__ (everything else the user
+    # passes lands in self._props). Map.update_layer routes on this set.
+    _FIELD_KEYS: ClassVar[frozenset[str]] = frozenset({
+        "id", "data", "visible", "opacity", "pickable", "auto_highlight",
+        "min_zoom", "max_zoom", "load_options", "fetch_headers", "use_binary",
+    })
+
     # Union of declared kwargs across this class and its ancestors. ``None``
     # on ``BaseLayer`` itself disables validation (catch-all behavior); every
     # subclass receives a concrete frozenset via ``__init_subclass__`` at

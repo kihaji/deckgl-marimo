@@ -116,3 +116,49 @@ class TestAsWidgetWithoutMarimo:
         monkeypatch.setitem(sys.modules, "marimo", None)
         with pytest.raises(ImportError, match=r"deckgl-marimo\[marimo\]"):
             m.as_widget()
+
+
+class TestUpdateLayerRouting:
+    """update_layer routes explicitly and never touches the backing Map (#20)."""
+
+    def _map_with_layer(self):
+        layer = ScatterplotLayer(
+            id="pts", data=[{"lon": 0, "lat": 0}], get_position=["lon", "lat"]
+        )
+        return Map(layers=[layer]), layer
+
+    def test_spec_prop_roundtrips_into_to_spec(self):
+        m, layer = self._map_with_layer()
+        m.update_layer("pts", get_radius=42, radius_scale=2)
+        spec = layer.to_spec()
+        assert spec["getRadius"] == 42
+        assert spec["radiusScale"] == 2
+
+    def test_base_field_roundtrips_into_to_spec(self):
+        m, layer = self._map_with_layer()
+        m.update_layer("pts", visible=False, opacity=0.25)
+        assert layer.visible is False
+        spec = layer.to_spec()
+        assert spec["visible"] is False
+        assert spec["opacity"] == 0.25
+
+    def test_never_instantiates_backing_map(self):
+        m, layer = self._map_with_layer()
+        m.update_layer("pts", get_radius=1, visible=True, opacity=0.5)
+        assert layer._BaseLayer__map is None
+
+    def test_unknown_prop_raises_with_suggestion(self):
+        m, _layer = self._map_with_layer()
+        with pytest.raises(TypeError, match="get_radius"):
+            m.update_layer("pts", get_radiuss=5)
+
+    def test_map_level_key_raises_helpful_error(self):
+        m, layer = self._map_with_layer()
+        with pytest.raises(ValueError, match="map-level"):
+            m.update_layer("pts", zoom=10)
+        # and no dead attribute was set on the layer
+        assert "zoom" not in layer.__dict__
+
+    def test_missing_layer_is_a_noop(self):
+        m, _layer = self._map_with_layer()
+        m.update_layer("nope", get_radius=5)  # no raise, no change
