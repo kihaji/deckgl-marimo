@@ -7,7 +7,7 @@ name = "deckgl-marimo"
 version = "0.6.1"
 description = "deck.gl visualization library for marimo notebooks — interactive maps with 33 layer types"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [
     { name = "Scott Lemke", email = "scott.r.lemke@gmail.com" },
@@ -18,20 +18,21 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: GIS",
     "Topic :: Scientific/Engineering :: Visualization",
 ]
 keywords = ["deck.gl", "maplibre", "marimo", "anywidget", "geospatial", "visualization", "maps"]
+# Deliberately minimal: narwhals needs no DataFrame backend (bring pandas or
+# polars yourself), and marimo is only required for `.as_widget()` — install
+# the `marimo` extra (or marimo itself) to use it outside a marimo environment.
 dependencies = [
-    "anywidget>=0.9.0",
-    "traitlets>=5.0.0",
-    "narwhals>=1.0.0",
-    "marimo>=0.22",
-    "pandas>=2.3.3",
+    "anywidget>=0.10.0",
+    "traitlets>=5.14",
+    "narwhals>=2.0.0",
 ]
 
 [project.urls]
@@ -41,13 +42,14 @@ Repository = "https://github.com/kihaji/deckgl-marimo"
 Issues = "https://github.com/kihaji/deckgl-marimo/issues"
 
 [project.optional-dependencies]
-binary = ["numpy"]
+binary = ["numpy>=1.24"]
+marimo = ["marimo>=0.23"]
 dev = [
-    "marimo",
+    "marimo>=0.23",
     "pandas",
     "polars",
-    "numpy",
-    "pytest",
+    "numpy>=1.24",
+    "pytest>=9",
     "pytest-cov>=7.1",
     "ruff>=0.15",
     "geopandas",
@@ -96,7 +98,7 @@ exclude = [
 
 [tool.ruff]
 line-length = 150
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
@@ -121,7 +123,7 @@ ignore = [
 # is not importable from the dev venv.
 include = ["src", "scripts"]
 typeCheckingMode = "basic"
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 venvPath = "."
 venv = ".venv"
 # traitlets re-exports its API from traitlets.traitlets without explicit
