@@ -1,5 +1,6 @@
 """Tests for binary data packing."""
 
+import pytest
 import numpy as np
 
 from deckgl_marimo._binary import pack_binary, pack_polygon_binary
@@ -317,3 +318,70 @@ class TestLayerToBinary:
         assert "getPosition" in meta["attributes"]
         assert "getFillColor" in meta["attributes"]
         assert "getElevation" in meta["attributes"]
+
+
+class TestPolygonBinaryResolvedColors:
+    """PolygonLayer.to_binary with ColorScale/callable fill colors (#19)."""
+
+    def _unpack_colors(self, meta, buf, n_verts):
+        np = pytest.importorskip("numpy")
+        cm = meta["attributes"]["getFillColor"]
+        raw = buf[cm["offset"] : cm["offset"] + cm["byteLength"]]
+        return np.frombuffer(raw, dtype=np.uint8).reshape(n_verts, 4)
+
+    def test_colorscale_expands_per_vertex_in_one_pass(self):
+        from deckgl_marimo import ColorScale
+        from deckgl_marimo.layers._core import PolygonLayer
+
+        data = [
+            {"polygon": [[0, 0], [1, 0], [1, 1], [0, 0]], "v": 0.0},
+            {"polygon": [[2, 2], [3, 2], [3, 3], [2, 3], [2, 2]], "v": 100.0},
+        ]
+        layer = PolygonLayer(
+            data=data,
+            get_polygon="polygon",
+            get_fill_color=ColorScale("v", palette="viridis"),
+            use_binary=True,
+        )
+        meta, buf = layer.to_binary()
+
+        assert meta["length"] == 2
+        colors = self._unpack_colors(meta, buf, 9)  # 4 + 5 vertices
+        # Every vertex of a polygon shares that polygon's resolved color
+        assert len({tuple(c) for c in colors[:4]}) == 1
+        assert len({tuple(c) for c in colors[4:]}) == 1
+        # And the two polygons (domain extremes) resolve differently
+        assert tuple(colors[0]) != tuple(colors[4])
+
+    def test_callable_accessor_packs_per_vertex(self):
+        from deckgl_marimo.layers._core import PolygonLayer
+
+        data = [
+            {"polygon": [[0, 0], [1, 0], [1, 1]], "v": 10},
+            {"polygon": [[2, 2], [3, 2], [3, 3], [2, 3]], "v": 20},
+        ]
+        layer = PolygonLayer(
+            data=data,
+            get_polygon="polygon",
+            get_fill_color=lambda row: [row["v"], 0, 0, 255],
+            use_binary=True,
+        )
+        meta, buf = layer.to_binary()
+        colors = self._unpack_colors(meta, buf, 7)
+        assert [tuple(c) for c in colors[:3]] == [(10, 0, 0, 255)] * 3
+        assert [tuple(c) for c in colors[3:]] == [(20, 0, 0, 255)] * 4
+
+    def test_constant_color_omits_binary_colors(self):
+        from deckgl_marimo.layers._core import PolygonLayer
+
+        data = [{"polygon": [[0, 0], [1, 0], [1, 1]]}]
+        layer = PolygonLayer(
+            data=data,
+            get_polygon="polygon",
+            get_fill_color=[10, 20, 30, 255],
+            use_binary=True,
+        )
+        meta, _buf = layer.to_binary()
+        assert "getFillColor" not in meta["attributes"]
+        # The constant stays in the spec for deck.gl to apply uniformly
+        assert layer.to_spec()["getFillColor"] == [10, 20, 30, 255]
