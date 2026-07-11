@@ -93,15 +93,15 @@ const LAYER_REGISTRY = {
  * @returns {Layer} A deck.gl layer instance
  */
 export function createLayer(spec) {
-  // minZoom/maxZoom are handled by applyZoomVisibility in zoom-visibility.js —
+  // visibleMinZoom/visibleMaxZoom are handled by applyZoomVisibility in zoom-visibility.js —
   // peel them off (along with the stashed _userVisible) so deck.gl doesn't
   // see them.
   const {
     type,
     _binary,
     _tooltips: _tt,
-    minZoom: _mz,
-    maxZoom: _mx,
+    visibleMinZoom: _mz,
+    visibleMaxZoom: _mx,
     _userVisible: _uv,
     ...props
   } = spec;

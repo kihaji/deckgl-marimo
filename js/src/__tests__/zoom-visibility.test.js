@@ -8,7 +8,7 @@ describe("isInZoomRange", () => {
   });
 
   it("applies inclusive min and max bounds", () => {
-    const spec = { minZoom: 5, maxZoom: 10 };
+    const spec = { visibleMinZoom: 5, visibleMaxZoom: 10 };
     expect(isInZoomRange(spec, 4.99)).toBe(false);
     expect(isInZoomRange(spec, 5)).toBe(true);
     expect(isInZoomRange(spec, 10)).toBe(true);
@@ -16,10 +16,10 @@ describe("isInZoomRange", () => {
   });
 
   it("supports one-sided bounds", () => {
-    expect(isInZoomRange({ minZoom: 8 }, 7)).toBe(false);
-    expect(isInZoomRange({ minZoom: 8 }, 9)).toBe(true);
-    expect(isInZoomRange({ maxZoom: 8 }, 7)).toBe(true);
-    expect(isInZoomRange({ maxZoom: 8 }, 9)).toBe(false);
+    expect(isInZoomRange({ visibleMinZoom: 8 }, 7)).toBe(false);
+    expect(isInZoomRange({ visibleMinZoom: 8 }, 9)).toBe(true);
+    expect(isInZoomRange({ visibleMaxZoom: 8 }, 7)).toBe(true);
+    expect(isInZoomRange({ visibleMaxZoom: 8 }, 9)).toBe(false);
   });
 });
 
@@ -32,7 +32,7 @@ describe("applyZoomVisibility", () => {
   });
 
   it("gates visibility by zoom range", () => {
-    const specs = [{ id: "a", visible: true, minZoom: 5 }];
+    const specs = [{ id: "a", visible: true, visibleMinZoom: 5 }];
     applyZoomVisibility(specs, 3);
     expect(specs[0].visible).toBe(false);
     applyZoomVisibility(specs, 6);
@@ -40,7 +40,7 @@ describe("applyZoomVisibility", () => {
   });
 
   it("is idempotent: repeated calls never lose the user-supplied visible", () => {
-    const specs = [{ id: "a", visible: false, minZoom: 5 }];
+    const specs = [{ id: "a", visible: false, visibleMinZoom: 5 }];
     applyZoomVisibility(specs, 6);
     expect(specs[0].visible).toBe(false); // user said hidden — stays hidden in range
     applyZoomVisibility(specs, 3);
@@ -50,7 +50,7 @@ describe("applyZoomVisibility", () => {
   });
 
   it("treats missing visible as true", () => {
-    const specs = [{ id: "a", minZoom: 5 }];
+    const specs = [{ id: "a", visibleMinZoom: 5 }];
     applyZoomVisibility(specs, 6);
     expect(specs[0].visible).toBe(true);
   });
@@ -63,9 +63,9 @@ describe("zoomVisibilityKey", () => {
 
   it("fingerprints only gated specs and changes exactly when a gate flips", () => {
     const specs = [
-      { id: "a", minZoom: 5 },
+      { id: "a", visibleMinZoom: 5 },
       { id: "b" },
-      { id: "c", maxZoom: 8 },
+      { id: "c", visibleMaxZoom: 8 },
     ];
     const k1 = zoomVisibilityKey(specs, 6); // a in, c in
     const k2 = zoomVisibilityKey(specs, 7); // same states

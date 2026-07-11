@@ -108,10 +108,10 @@ class BaseLayer:
         Whether the layer responds to pointer events.
     auto_highlight
         Whether to highlight the picked object.
-    min_zoom
+    visible_min_zoom
         Minimum zoom level (inclusive) at which the layer is visible.
         If ``None`` (default), no lower bound is applied.
-    max_zoom
+    visible_max_zoom
         Maximum zoom level (inclusive) at which the layer is visible.
         If ``None`` (default), no upper bound is applied.
     load_options
@@ -157,7 +157,7 @@ class BaseLayer:
     # passes lands in self._props). Map.update_layer routes on this set.
     _FIELD_KEYS: ClassVar[frozenset[str]] = frozenset({
         "id", "data", "visible", "opacity", "pickable", "auto_highlight",
-        "min_zoom", "max_zoom", "load_options", "fetch_headers", "use_binary",
+        "visible_min_zoom", "visible_max_zoom", "load_options", "fetch_headers", "use_binary",
     })
 
     # Union of declared kwargs across this class and its ancestors. ``None``
@@ -179,8 +179,8 @@ class BaseLayer:
         opacity: float = 1.0,
         pickable: bool = True,
         auto_highlight: bool = False,
-        min_zoom: float | None = None,
-        max_zoom: float | None = None,
+        visible_min_zoom: float | None = None,
+        visible_max_zoom: float | None = None,
         load_options: dict[str, Any] | None = None,
         fetch_headers: dict[str, str] | None = None,
         use_binary: bool = False,
@@ -202,8 +202,8 @@ class BaseLayer:
         self.opacity = opacity
         self.pickable = pickable
         self.auto_highlight = auto_highlight
-        self.min_zoom = min_zoom
-        self.max_zoom = max_zoom
+        self.visible_min_zoom = visible_min_zoom
+        self.visible_max_zoom = visible_max_zoom
         self.load_options = load_options
         self.fetch_headers = fetch_headers
         self.use_binary = use_binary
@@ -240,10 +240,10 @@ class BaseLayer:
             "autoHighlight": self.auto_highlight,
         }
 
-        if self.min_zoom is not None:
-            spec["minZoom"] = self.min_zoom
-        if self.max_zoom is not None:
-            spec["maxZoom"] = self.max_zoom
+        if self.visible_min_zoom is not None:
+            spec["visibleMinZoom"] = self.visible_min_zoom
+        if self.visible_max_zoom is not None:
+            spec["visibleMaxZoom"] = self.visible_max_zoom
 
         if self.data is not None and not self.use_binary:
             spec["data"] = prepare_data(self.data)
@@ -325,7 +325,7 @@ class BaseLayer:
         # Avoid infinite recursion for our own attributes
         if name.startswith("_BaseLayer") or name in (
             "id", "data", "visible", "opacity", "pickable",
-            "auto_highlight", "min_zoom", "max_zoom",
+            "auto_highlight", "visible_min_zoom", "visible_max_zoom",
             "load_options", "fetch_headers",
             "_props", "_map_kwargs", "LAYER_TYPE", "_MAP_KEYS",
         ):
