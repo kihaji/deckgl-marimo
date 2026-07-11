@@ -117,6 +117,8 @@ ignore = [
 # cell's output — B018 is idiomatic there. Long lines are common in generated
 # notebook code and inline data.
 "examples/**" = ["B018", "E501", "E402"]
+"benchmarks/**" = ["B018", "E501", "E402"]
+"repros/**" = ["B018", "E501", "E402"]
 
 [tool.pyright]
 # hatch_build.py is excluded: hatchling is a build-time-only requirement and

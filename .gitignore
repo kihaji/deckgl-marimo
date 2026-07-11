@@ -48,6 +48,7 @@ htmlcov/
 
 # Large test data files
 examples/data/*.npz
+benchmarks/data/*.npz
 
 # mkdocs build output
 site/

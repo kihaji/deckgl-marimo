@@ -64,7 +64,7 @@ print(f"  vertex_colors: {vertex_colors.shape} ({vertex_colors.nbytes / 1024 / 1
 total_mb = (coords.nbytes + start_indices.nbytes + vertex_colors.nbytes) / 1024 / 1024
 print(f"  total: {total_mb:.1f} MB")
 
-out = "examples/data/polygons_1m.npz"
+out = "benchmarks/data/polygons_1m.npz"
 np.savez_compressed(
     out,
     coords=coords,
