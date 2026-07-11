@@ -46,7 +46,10 @@ dev = [
     "marimo",
     "pandas",
     "polars",
+    "numpy",
     "pytest",
+    "pytest-cov>=7.1",
+    "ruff>=0.15",
     "geopandas",
     "duckdb",
     "httptools>=0.7.1",
@@ -55,3 +58,76 @@ docs = [
     "mkdocs-material",
     "mkdocstrings[python]",
 ]
+
+# --- Packaging ---------------------------------------------------------------
+# The JS bundle (static/deckgl-marimo.bundle.js|css) is NOT git-tracked; it is
+# built at wheel-build time by hatch_build.py (Node 20+ required). `artifacts`
+# tells hatchling to ship the gitignored bundle in wheels.
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/deckgl_marimo"]
+artifacts = [
+    "src/deckgl_marimo/static/deckgl-marimo.bundle.js",
+    "src/deckgl_marimo/static/deckgl-marimo.bundle.css",
+]
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+
+[tool.hatch.build.targets.sdist]
+# sdist ships the JS *sources* + lockfile so wheels built from it are
+# self-building; the compiled bundle stays out.
+include = [
+    "src/deckgl_marimo",
+    "js/src",
+    "js/package.json",
+    "js/package-lock.json",
+    "js/esbuild.config.mjs",
+    "hatch_build.py",
+    "README.md",
+    "LICENSE*",
+]
+exclude = [
+    "src/deckgl_marimo/static/deckgl-marimo.bundle.js",
+    "src/deckgl_marimo/static/deckgl-marimo.bundle.css",
+]
+
+# --- Tooling ------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 150
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "SIM108", # ternary-instead-of-if — sometimes the if/else reads better
+]
+
+[tool.ruff.lint.per-file-ignores]
+# marimo notebooks: a bare expression as the last statement of a cell IS the
+# cell's output — B018 is idiomatic there. Long lines are common in generated
+# notebook code and inline data.
+"examples/**" = ["B018", "E501", "E402"]
+
+[tool.pyright]
+# hatch_build.py is excluded: hatchling is a build-time-only requirement and
+# is not importable from the dev venv.
+include = ["src", "scripts"]
+typeCheckingMode = "basic"
+pythonVersion = "3.10"
+venvPath = "."
+venv = ".venv"
+# traitlets re-exports its API from traitlets.traitlets without explicit
+# re-export markers; pyright flags every `traitlets.Float` etc. as private.
+reportPrivateImportUsage = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-rsxX"

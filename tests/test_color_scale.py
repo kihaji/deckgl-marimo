@@ -1,6 +1,5 @@
 """Tests for ColorScale and callable accessor support."""
 
-import math
 
 import pytest
 
@@ -285,7 +284,8 @@ class TestResolveColorAccessor:
         assert result.shape == (2, 4)
 
     def test_callable(self):
-        fn = lambda row: [row["v"], 0, 255 - row["v"], 200]
+        def fn(row):
+            return [row["v"], 0, 255 - row["v"], 200]
         data = [{"v": 0}, {"v": 100}]
         result = resolve_color_accessor(fn, data, 2)
         assert result is not None

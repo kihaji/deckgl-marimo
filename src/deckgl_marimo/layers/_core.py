@@ -112,11 +112,10 @@ class ScatterplotLayer(BaseLayer):
             # Strip accessor props that binary data provides
             for key in ("getPosition", "getFillColor", "getRadius"):
                 val = spec.get(key)
-                if isinstance(val, str):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and all(isinstance(x, str) for x in val):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+                if isinstance(val, str) or (
+                    isinstance(val, list)
+                    and (all(isinstance(x, str) for x in val) or (len(val) > 0 and isinstance(val[0], list)))
+                ):
                     spec.pop(key, None)
         return spec
 
@@ -339,9 +338,10 @@ class ArcLayer(BaseLayer):
             for key in ("getSourcePosition", "getTargetPosition",
                        "getSourceColor", "getTargetColor"):
                 val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+                if isinstance(val, str) or (
+                    isinstance(val, list)
+                    and (all(isinstance(x, str) for x in val) or (len(val) > 0 and isinstance(val[0], list)))
+                ):
                     spec.pop(key, None)
         return spec
 
@@ -483,9 +483,7 @@ class PathLayer(BaseLayer):
             if isinstance(spec.get("getPath"), str):
                 spec.pop("getPath", None)
             val = spec.get("getColor")
-            if isinstance(val, str):
-                spec.pop("getColor", None)
-            elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+            if isinstance(val, str) or isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
                 spec.pop("getColor", None)
         return spec
 
@@ -660,9 +658,7 @@ class PolygonLayer(BaseLayer):
             # Remove accessor props that are handled by binary attributes
             spec.pop("getPolygon", None)
             val = spec.get("getFillColor")
-            if isinstance(val, str):
-                spec.pop("getFillColor", None)
-            elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+            if isinstance(val, str) or isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
                 spec.pop("getFillColor", None)
         return spec
 
@@ -677,6 +673,10 @@ class PolygonLayer(BaseLayer):
         from deckgl_marimo._color_scale import resolve_color_accessor
 
         get_polygon = self._get_polygon_key or "polygon"
+        if not isinstance(get_polygon, str):
+            # Binary packing reads polygon vertices from a single column;
+            # multi-column position accessors are not supported here.
+            return None
         get_fill_color = self._get_fill_color_key
 
         if isinstance(get_fill_color, str):
@@ -980,9 +980,10 @@ class ColumnLayer(BaseLayer):
         if self.use_binary:
             for key in ("getPosition", "getFillColor", "getElevation"):
                 val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+                if isinstance(val, str) or (
+                    isinstance(val, list)
+                    and (all(isinstance(x, str) for x in val) or (len(val) > 0 and isinstance(val[0], list)))
+                ):
                     spec.pop(key, None)
         return spec
 
@@ -1109,9 +1110,10 @@ class LineLayer(BaseLayer):
         if self.use_binary:
             for key in ("getSourcePosition", "getTargetPosition", "getColor"):
                 val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+                if isinstance(val, str) or (
+                    isinstance(val, list)
+                    and (all(isinstance(x, str) for x in val) or (len(val) > 0 and isinstance(val[0], list)))
+                ):
                     spec.pop(key, None)
         return spec
 
@@ -1176,7 +1178,17 @@ class PointCloudLayer(BaseLayer):
 
     LAYER_TYPE = "PointCloudLayer"
 
-    def __init__(self, *, data: Any = None, get_position: PositionAccessor | None = None, get_color: ColorAccessor = (0, 0, 0, 255), get_normal: Accessor | None = None, point_size: float = 10, size_units: str = "pixels", **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_position: PositionAccessor | None = None,
+        get_color: ColorAccessor = (0, 0, 0, 255),
+        get_normal: Accessor | None = None,
+        point_size: float = 10,
+        size_units: str = "pixels",
+        **kwargs: Any,
+    ) -> None:
         self._get_position_key = get_position
         self._get_color_key = get_color
         self._get_normal_key = get_normal
@@ -1195,9 +1207,10 @@ class PointCloudLayer(BaseLayer):
         if self.use_binary:
             for key in ("getPosition", "getColor", "getNormal"):
                 val = spec.get(key)
-                if isinstance(val, str) or (isinstance(val, list) and all(isinstance(x, str) for x in val)):
-                    spec.pop(key, None)
-                elif isinstance(val, list) and len(val) > 0 and isinstance(val[0], list):
+                if isinstance(val, str) or (
+                    isinstance(val, list)
+                    and (all(isinstance(x, str) for x in val) or (len(val) > 0 and isinstance(val[0], list)))
+                ):
                     spec.pop(key, None)
         return spec
 
@@ -1262,7 +1275,20 @@ class SolidPolygonLayer(BaseLayer):
 
     LAYER_TYPE = "SolidPolygonLayer"
 
-    def __init__(self, *, data: Any = None, get_polygon: PositionAccessor | None = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), get_line_color: ColorAccessor = (0, 0, 0, 255), get_elevation: Accessor = 1000, filled: bool = True, extruded: bool = False, wireframe: bool = False, elevation_scale: float = 1, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_polygon: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        get_elevation: Accessor = 1000,
+        filled: bool = True,
+        extruded: bool = False,
+        wireframe: bool = False,
+        elevation_scale: float = 1,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_polygon=get_polygon,

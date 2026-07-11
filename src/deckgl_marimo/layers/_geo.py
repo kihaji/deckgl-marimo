@@ -15,7 +15,17 @@ class GreatCircleLayer(BaseLayer):
 
     LAYER_TYPE = "GreatCircleLayer"
 
-    def __init__(self, *, data: Any = None, get_source_position: PositionAccessor | None = None, get_target_position: PositionAccessor | None = None, get_source_color: ColorAccessor = (0, 0, 255, 255), get_target_color: ColorAccessor = (0, 200, 0, 255), get_width: Accessor = 1, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_source_position: PositionAccessor | None = None,
+        get_target_position: PositionAccessor | None = None,
+        get_source_color: ColorAccessor = (0, 0, 255, 255),
+        get_target_color: ColorAccessor = (0, 200, 0, 255),
+        get_width: Accessor = 1,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_source_position=get_source_position,
@@ -33,7 +43,15 @@ class H3ClusterLayer(BaseLayer):
 
     LAYER_TYPE = "H3ClusterLayer"
 
-    def __init__(self, *, data: Any = None, get_hexagons: PositionAccessor | None = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), get_line_color: ColorAccessor = (0, 0, 0, 255), **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_hexagons: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_hexagons=get_hexagons,
@@ -49,7 +67,16 @@ class H3HexagonLayer(BaseLayer):
 
     LAYER_TYPE = "H3HexagonLayer"
 
-    def __init__(self, *, data: Any = None, get_hexagon: PositionAccessor | None = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), get_elevation: Accessor = 1000, extruded: bool = False, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_hexagon: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_elevation: Accessor = 1000,
+        extruded: bool = False,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_hexagon=get_hexagon,
@@ -66,7 +93,15 @@ class MVTLayer(BaseLayer):
 
     LAYER_TYPE = "MVTLayer"
 
-    def __init__(self, *, data: Any = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), get_line_color: ColorAccessor = (0, 0, 0, 255), get_line_width: Accessor = 1, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_color: ColorAccessor = (0, 0, 0, 255),
+        get_line_width: Accessor = 1,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
@@ -82,8 +117,20 @@ class QuadkeyLayer(BaseLayer):
 
     LAYER_TYPE = "QuadkeyLayer"
 
-    def __init__(self, *, data: Any = None, get_quadkey: PositionAccessor | None = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), **kwargs: Any) -> None:
-        super().__init__(data=data, get_quadkey=get_quadkey, get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color, **kwargs)
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_quadkey: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            data=data,
+            get_quadkey=get_quadkey,
+            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
+            **kwargs,
+        )
 
 
 @_experimental
@@ -92,8 +139,20 @@ class S2Layer(BaseLayer):
 
     LAYER_TYPE = "S2Layer"
 
-    def __init__(self, *, data: Any = None, get_s2_token: PositionAccessor | None = None, get_fill_color: ColorAccessor = (0, 0, 0, 255), **kwargs: Any) -> None:
-        super().__init__(data=data, get_s2_token=get_s2_token, get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color, **kwargs)
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_s2_token: PositionAccessor | None = None,
+        get_fill_color: ColorAccessor = (0, 0, 0, 255),
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            data=data,
+            get_s2_token=get_s2_token,
+            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
+            **kwargs,
+        )
 
 
 @_experimental
@@ -102,7 +161,15 @@ class TerrainLayer(BaseLayer):
 
     LAYER_TYPE = "TerrainLayer"
 
-    def __init__(self, *, data: Any = None, elevation_data: str | None = None, texture: str | None = None, elevation_decoder: dict | None = None, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        elevation_data: str | None = None,
+        texture: str | None = None,
+        elevation_decoder: dict | None = None,
+        **kwargs: Any,
+    ) -> None:
         props: dict[str, Any] = {}
         if elevation_data is not None:
             props["elevation_data"] = elevation_data
@@ -139,7 +206,17 @@ class TripsLayer(BaseLayer):
 
     LAYER_TYPE = "TripsLayer"
 
-    def __init__(self, *, data: Any = None, get_path: PositionAccessor | None = None, get_timestamps: Accessor | None = None, get_color: ColorAccessor = (0, 0, 0, 255), current_time: float = 0, trail_length: float = 120, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_path: PositionAccessor | None = None,
+        get_timestamps: Accessor | None = None,
+        get_color: ColorAccessor = (0, 0, 0, 255),
+        current_time: float = 0,
+        trail_length: float = 120,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_path=get_path,

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from typing import Any
 
 from deckgl_marimo._accessors import Accessor, PositionAccessor
@@ -164,7 +163,16 @@ class ContourLayer(BaseLayer):
 
     LAYER_TYPE = "ContourLayer"
 
-    def __init__(self, *, data: Any = None, get_position: PositionAccessor | None = None, contours: list | None = None, cell_size: int = 1000, gpu_aggregation: bool = True, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_position: PositionAccessor | None = None,
+        contours: list | None = None,
+        cell_size: int = 1000,
+        gpu_aggregation: bool = True,
+        **kwargs: Any,
+    ) -> None:
         props: dict[str, Any] = {"get_position": get_position, "cell_size": cell_size, "gpu_aggregation": gpu_aggregation}
         if contours is not None:
             props["contours"] = contours
@@ -177,7 +185,18 @@ class GridLayer(BaseLayer):
 
     LAYER_TYPE = "GridLayer"
 
-    def __init__(self, *, data: Any = None, get_position: PositionAccessor | None = None, cell_size: int = 1000, color_range: list | None = None, extruded: bool = False, elevation_scale: float = 1, gpu_aggregation: bool = True, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_position: PositionAccessor | None = None,
+        cell_size: int = 1000,
+        color_range: list | None = None,
+        extruded: bool = False,
+        elevation_scale: float = 1,
+        gpu_aggregation: bool = True,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_position=get_position,
@@ -196,7 +215,17 @@ class ScreenGridLayer(BaseLayer):
 
     LAYER_TYPE = "ScreenGridLayer"
 
-    def __init__(self, *, data: Any = None, get_position: PositionAccessor | None = None, get_weight: Accessor = 1, cell_size_pixels: int = 100, color_range: list | None = None, gpu_aggregation: bool = True, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *,
+        data: Any = None,
+        get_position: PositionAccessor | None = None,
+        get_weight: Accessor = 1,
+        cell_size_pixels: int = 100,
+        color_range: list | None = None,
+        gpu_aggregation: bool = True,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             data=data,
             get_position=get_position,

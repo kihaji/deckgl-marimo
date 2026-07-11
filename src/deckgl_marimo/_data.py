@@ -59,12 +59,12 @@ def prepare_data(data: Any) -> list | dict | str:
     # pandas/polars DataFrame via narwhals
     try:
         return dataframe_to_records(data)
-    except Exception:
+    except Exception as err:
         raise TypeError(
             f"Unsupported data type: {type(data).__name__}. "
             "Expected DataFrame, GeoDataFrame, DuckDB Relation, "
             "list of dicts, dict (GeoJSON), or str (URL)."
-        )
+        ) from err
 
 
 def dataframe_to_records(data: Any) -> list[dict]:
@@ -117,7 +117,7 @@ def dataframe_to_positions(
     df = nw.from_native(data)
     lons = df[lon_col].to_list()
     lats = df[lat_col].to_list()
-    return [[lon, lat] for lon, lat in zip(lons, lats)]
+    return [[lon, lat] for lon, lat in zip(lons, lats, strict=True)]
 
 
 def materialize_rows(data: Any) -> list[dict] | None:
@@ -145,9 +145,12 @@ def materialize_rows(data: Any) -> list[dict] | None:
     if isinstance(data, list):
         return data
 
-    # GeoJSON FeatureCollection
-    if isinstance(data, dict) and "features" in data:
-        return [f.get("properties", {}) for f in data["features"]]
+    if isinstance(data, dict):
+        # GeoJSON FeatureCollection: rows are the feature properties.
+        # Any other plain dict has no row structure to materialize.
+        if "features" in data:
+            return [f.get("properties", {}) for f in data["features"]]
+        return None
 
     # DuckDB Relation
     if hasattr(data, "fetchdf"):

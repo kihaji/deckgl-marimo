@@ -352,6 +352,9 @@ class EllipseLayer(BaseLayer):
         if not isinstance(raw_data, list):
             msg = "EllipseLayer requires tabular data (DataFrame or list of dicts)"
             raise TypeError(msg)
+        if self._center is None:
+            msg = "EllipseLayer requires center=[lon_col, lat_col]"
+            raise TypeError(msg)
 
         unit_factor = _UNIT_TO_METERS[self._units]
         use_radians = self._orientation_units == "radians"
