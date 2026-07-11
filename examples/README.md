@@ -29,6 +29,7 @@ uv run marimo edit examples/01_scatterplot.py
 | 15 | [15_polygon_zoom_visibility.py](15_polygon_zoom_visibility.py) | Zoom gating with polygon detail levels |
 | 16 | [16_maplibre_wms.py](16_maplibre_wms.py) | Composed basemap: WMS source via `maplibre.MapLibreConfig` |
 | 17 | [17_time_filter.py](17_time_filter.py) | GPU time filter: animated sliding window over 100k points |
+| 18 | [18_drawing.py](18_drawing.py) | Interactive drawing/editing with GeoJSON readback |
 
 ## Feature demos
 

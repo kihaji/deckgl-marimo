@@ -74,6 +74,7 @@ class Map(anywidget.AnyWidget):
     _VALID_KWARGS: ClassVar[frozenset[str]] = frozenset({
         "layers", "basemap", "center", "zoom", "pitch", "bearing",
         "height", "width", "show_perf_metrics", "time_filter",
+        "drawing_config", "drawing_features",
     })
 
     # Layer specifications (list of dicts from BaseLayer.to_spec())
@@ -108,6 +109,13 @@ class Map(anywidget.AnyWidget):
     # every 500 ms — constant traitlet churn an idle map shouldn't pay.
     show_perf_metrics = traitlets.Bool(False).tag(sync=True)
 
+    # Drawing/editing (see deckgl_marimo.DrawingConfig): the config drives an
+    # EditableGeoJsonLayer in the frontend; drawn features sync back as
+    # GeoJSON and drawing_event reports edit types.
+    drawing_config = traitlets.Dict({}).tag(sync=True)
+    drawing_features = traitlets.Dict({"type": "FeatureCollection", "features": []}).tag(sync=True)
+    drawing_event = traitlets.Dict({}).tag(sync=True)
+
     # GPU time-filter animation (see deckgl_marimo.build_time_filter):
     # {domain, window, current, playing, speed, loop, softEdge?, layerIds?}.
     # Playback runs client-side; current_time reports the throttled head.
@@ -138,6 +146,7 @@ class Map(anywidget.AnyWidget):
         width: str = "100%",
         show_perf_metrics: bool = False,
         time_filter: dict[str, Any] | None = None,
+        drawing_config: Any = None,
         _unsafe_props: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -182,6 +191,10 @@ class Map(anywidget.AnyWidget):
             "time_filter": time_filter or {},
             **kwargs,
         }
+        if drawing_config is not None:
+            init_kwargs["drawing_config"] = (
+                drawing_config.to_dict() if hasattr(drawing_config, "to_dict") else drawing_config
+            )
 
         if center is not None:
             init_kwargs["longitude"] = center[0]
