@@ -8,18 +8,21 @@
   },
   "scripts": {
     "build": "node esbuild.config.mjs",
-    "watch": "node esbuild.config.mjs --watch"
+    "watch": "node esbuild.config.mjs --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@deck.gl/core": "~9.3.6",
-    "@deck.gl/layers": "~9.3.6",
     "@deck.gl/aggregation-layers": "~9.3.6",
+    "@deck.gl/core": "~9.3.6",
     "@deck.gl/geo-layers": "~9.3.6",
-    "@deck.gl/mesh-layers": "~9.3.6",
+    "@deck.gl/layers": "~9.3.6",
     "@deck.gl/mapbox": "~9.3.6",
+    "@deck.gl/mesh-layers": "~9.3.6",
     "maplibre-gl": "~5.24.0"
   },
   "devDependencies": {
-    "esbuild": "^0.28.1"
+    "esbuild": "^0.28.1",
+    "vitest": "^4.1.10"
   }
 }
