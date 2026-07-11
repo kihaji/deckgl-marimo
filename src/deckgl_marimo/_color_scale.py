@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-import narwhals.stable.v2 as nw
+from deckgl_marimo._data import extract_column
 
 
 # Common CSS color names → RGB
@@ -132,47 +132,12 @@ def _interpolate_palette(control_points: list[list[int]], n: int) -> list[list[i
 
 
 def _extract_column(data: Any, column: str) -> list[float | None]:
-    """Extract a numeric column from various data types."""
-    if data is None:
-        return []
+    """Extract a numeric column from various data types.
 
-    if isinstance(data, str):
-        raise ValueError(
-            f"ColorScale cannot extract column '{column}' from URL data. "
-            "Provide actual data (DataFrame, list of dicts, etc.) or pre-compute colors."
-        )
-
-    if isinstance(data, list):
-        return [row.get(column) if isinstance(row, dict) else None for row in data]
-
-    if isinstance(data, dict):
-        # GeoJSON FeatureCollection
-        if "features" in data:
-            return [f.get("properties", {}).get(column) for f in data["features"]]
-        raise TypeError(
-            f"Cannot extract column '{column}' from a plain dict. "
-            "Expected DataFrame, list of dicts, GeoJSON dict, or GeoDataFrame."
-        )
-
-    # GeoDataFrame
-    if hasattr(data, "__geo_interface__") and hasattr(data, "columns"):
-        if column in data.columns:
-            return data[column].tolist()
-        raise KeyError(f"Column '{column}' not found in GeoDataFrame")
-
-    # DuckDB Relation
-    if hasattr(data, "fetchdf"):
-        return _extract_column(data.fetchdf(), column)
-
-    # pandas/polars via narwhals
-    try:
-        df = nw.from_native(data)
-        return df[column].to_list()
-    except Exception as err:
-        raise TypeError(
-            f"Cannot extract column '{column}' from {type(data).__name__}. "
-            "Expected DataFrame, list of dicts, GeoJSON dict, or GeoDataFrame."
-        ) from err
+    Thin wrapper over :func:`deckgl_marimo._data.extract_column`, kept for
+    backwards compatibility of the private name.
+    """
+    return extract_column(data, column)
 
 
 class ColorScale:
