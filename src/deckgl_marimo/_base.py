@@ -184,6 +184,11 @@ class BaseLayer:
         load_options: dict[str, Any] | None = None,
         fetch_headers: dict[str, str] | None = None,
         use_binary: bool = False,
+        get_filter_value: Any = None,
+        filter_range: list[float] | None = None,
+        filter_soft_range: list[float] | None = None,
+        filter_enabled: bool | None = None,
+        extensions: list[str] | None = None,
         basemap: str = "dark-matter",
         center: tuple[float, float] | None = None,
         zoom: float = 1.0,
@@ -207,6 +212,17 @@ class BaseLayer:
         self.load_options = load_options
         self.fetch_headers = fetch_headers
         self.use_binary = use_binary
+        # GPU filtering props (DataFilterExtension) are available on every
+        # layer; only forwarded when set.
+        for key, value in (
+            ("get_filter_value", get_filter_value),
+            ("filter_range", filter_range),
+            ("filter_soft_range", filter_soft_range),
+            ("filter_enabled", filter_enabled),
+            ("extensions", extensions),
+        ):
+            if value is not None:
+                props[key] = value
         # Normalize tuple prop values (colors, offsets, paddings, ...) to
         # lists once here — tuples are not JSON-serializable by every
         # transport, and subclasses previously each repeated the conversion.
@@ -274,6 +290,12 @@ class BaseLayer:
                 spec[camel_key] = [value(row) for row in rows]
             else:
                 spec[camel_key] = value
+
+        # GPU time filtering: auto-attach the DataFilterExtension when a
+        # filter accessor is present and no explicit extensions were given.
+        # The JS layer factory maps the extension name to an instance.
+        if "getFilterValue" in spec and "extensions" not in spec:
+            spec["extensions"] = ["DataFilterExtension"]
 
         # Build loadOptions from explicit params + convenience params
         effective_load_options = dict(self.load_options) if self.load_options else {}

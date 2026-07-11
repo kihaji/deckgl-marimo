@@ -73,7 +73,7 @@ class Map(anywidget.AnyWidget):
     # because Map has a single user-facing class; no MRO walking needed.
     _VALID_KWARGS: ClassVar[frozenset[str]] = frozenset({
         "layers", "basemap", "center", "zoom", "pitch", "bearing",
-        "height", "width", "show_perf_metrics",
+        "height", "width", "show_perf_metrics", "time_filter",
     })
 
     # Layer specifications (list of dicts from BaseLayer.to_spec())
@@ -108,6 +108,12 @@ class Map(anywidget.AnyWidget):
     # every 500 ms — constant traitlet churn an idle map shouldn't pay.
     show_perf_metrics = traitlets.Bool(False).tag(sync=True)
 
+    # GPU time-filter animation (see deckgl_marimo.build_time_filter):
+    # {domain, window, current, playing, speed, loop, softEdge?, layerIds?}.
+    # Playback runs client-side; current_time reports the throttled head.
+    time_filter = traitlets.Dict({}).tag(sync=True)
+    current_time = traitlets.Float(0.0).tag(sync=True)
+
     # One-shot fit-bounds request applied by the JS side via map.fitBounds.
     # Carries a sequence number so repeated calls with identical bounds
     # still fire a change event.
@@ -131,6 +137,7 @@ class Map(anywidget.AnyWidget):
         height: str = "600px",
         width: str = "100%",
         show_perf_metrics: bool = False,
+        time_filter: dict[str, Any] | None = None,
         _unsafe_props: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -172,6 +179,7 @@ class Map(anywidget.AnyWidget):
             "height": height,
             "width": width,
             "show_perf_metrics": show_perf_metrics,
+            "time_filter": time_filter or {},
             **kwargs,
         }
 

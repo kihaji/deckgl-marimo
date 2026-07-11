@@ -9,6 +9,7 @@ from deckgl_marimo._basemaps import Basemaps
 from deckgl_marimo._binary import pack_binary, pack_polygon_binary
 from deckgl_marimo._bounds import compute_bounds
 from deckgl_marimo._color_scale import ColorScale
+from deckgl_marimo._timefilter import build_time_filter, compute_time_domain
 from deckgl_marimo._map import Map
 
 # Core layers (fully tested)
@@ -48,6 +49,9 @@ __all__ = [
     "pack_polygon_binary",
     # Bounds
     "compute_bounds",
+    # Time filter
+    "compute_time_domain",
+    "build_time_filter",
     # Accessor type aliases
     "Accessor",
     "ColorAccessor",
