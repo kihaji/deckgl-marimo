@@ -30,8 +30,8 @@ class GreatCircleLayer(BaseLayer):
             data=data,
             get_source_position=get_source_position,
             get_target_position=get_target_position,
-            get_source_color=list(get_source_color) if isinstance(get_source_color, tuple) else get_source_color,
-            get_target_color=list(get_target_color) if isinstance(get_target_color, tuple) else get_target_color,
+            get_source_color=get_source_color,
+            get_target_color=get_target_color,
             get_width=get_width,
             **kwargs,
         )
@@ -55,8 +55,8 @@ class H3ClusterLayer(BaseLayer):
         super().__init__(
             data=data,
             get_hexagons=get_hexagons,
-            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
-            get_line_color=list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
+            get_fill_color=get_fill_color,
+            get_line_color=get_line_color,
             **kwargs,
         )
 
@@ -80,7 +80,7 @@ class H3HexagonLayer(BaseLayer):
         super().__init__(
             data=data,
             get_hexagon=get_hexagon,
-            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
+            get_fill_color=get_fill_color,
             get_elevation=get_elevation,
             extruded=extruded,
             **kwargs,
@@ -104,8 +104,8 @@ class MVTLayer(BaseLayer):
     ) -> None:
         super().__init__(
             data=data,
-            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
-            get_line_color=list(get_line_color) if isinstance(get_line_color, tuple) else get_line_color,
+            get_fill_color=get_fill_color,
+            get_line_color=get_line_color,
             get_line_width=get_line_width,
             **kwargs,
         )
@@ -128,7 +128,7 @@ class QuadkeyLayer(BaseLayer):
         super().__init__(
             data=data,
             get_quadkey=get_quadkey,
-            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
+            get_fill_color=get_fill_color,
             **kwargs,
         )
 
@@ -150,7 +150,7 @@ class S2Layer(BaseLayer):
         super().__init__(
             data=data,
             get_s2_token=get_s2_token,
-            get_fill_color=list(get_fill_color) if isinstance(get_fill_color, tuple) else get_fill_color,
+            get_fill_color=get_fill_color,
             **kwargs,
         )
 
@@ -221,7 +221,7 @@ class TripsLayer(BaseLayer):
             data=data,
             get_path=get_path,
             get_timestamps=get_timestamps,
-            get_color=list(get_color) if isinstance(get_color, tuple) else get_color,
+            get_color=get_color,
             current_time=current_time,
             trail_length=trail_length,
             **kwargs,
