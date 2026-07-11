@@ -1,0 +1,78 @@
+site_name: deckgl-marimo
+site_description: deck.gl visualization library for marimo notebooks — GPU-accelerated maps on MapLibre basemaps
+site_url: https://kihaji.github.io/deckgl-marimo/
+repo_name: kihaji/deckgl-marimo
+repo_url: https://github.com/kihaji/deckgl-marimo
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.tabs.link
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quick-start.md
+  - Guides:
+      - Reactive Patterns in marimo: guides/reactive-patterns.md
+      - Binary Data Transport: guides/binary-data.md
+      - Color Scales: guides/color-scales.md
+      - Picking & Events: guides/picking-events.md
+      - Zoom-Gated Visibility: guides/zoom-visibility.md
+      - Basemaps: guides/basemaps.md
+      - Authenticated Data: guides/authenticated-data.md
+  - API Reference:
+      - Map: api/map.md
+      - Layers: api/layers.md
+      - ColorScale: api/color-scale.md
+      - Binary Packing: api/binary.md
+      - Bounds: api/bounds.md
+  - Internals:
+      - Binary Transfer Research: internals/binary-transfer-research.md
+  - Troubleshooting: troubleshooting.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_source: false
+            members_order: source
+            show_root_heading: true
+            separate_signature: true
