@@ -8,9 +8,6 @@
  *   [[255,0,0],[0,255,0]] -> (d, {index}) => data[index] (per-row array)
  */
 
-// Properties that are deck.gl accessor functions (get* pattern)
-const ACCESSOR_PREFIXES = ["get"];
-
 /**
  * Check if a property name is an accessor (starts with "get" and has a capital letter after).
  */

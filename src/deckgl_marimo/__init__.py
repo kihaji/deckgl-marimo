@@ -10,7 +10,6 @@ from deckgl_marimo._binary import pack_binary, pack_polygon_binary
 from deckgl_marimo._bounds import compute_bounds
 from deckgl_marimo._color_scale import ColorScale
 from deckgl_marimo._map import Map
-from deckgl_marimo._view_state import ViewState
 
 # Core layers (fully tested)
 from deckgl_marimo.layers._core import (
@@ -39,13 +38,9 @@ from deckgl_marimo.layers._composite import (
     EllipseLayer,
 )
 
-# Backward compatibility
-from deckgl_marimo.widget import DeckGLHexagonWidget
-
 __all__ = [
     # Widget
     "Map",
-    "ViewState",
     "Basemaps",
     "ColorScale",
     # Binary packing
@@ -75,6 +70,4 @@ __all__ = [
     # Composite layers
     "DisplacementLayer",
     "EllipseLayer",
-    # Backward compat
-    "DeckGLHexagonWidget",
 ]

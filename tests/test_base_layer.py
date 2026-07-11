@@ -4,7 +4,7 @@
 import pytest
 from deckgl_marimo._base import BaseLayer
 from deckgl_marimo.layers._core import GeoJsonLayer
-from deckgl_marimo._utils import to_camel_case, to_snake_case
+from deckgl_marimo._utils import to_camel_case
 
 
 class TestToCamelCase:
@@ -19,17 +19,6 @@ class TestToCamelCase:
 
     def test_already_camel(self):
         assert to_camel_case("radius") == "radius"
-
-
-class TestToSnakeCase:
-    def test_camel(self):
-        assert to_snake_case("elevationScale") == "elevation_scale"
-
-    def test_get_prefix(self):
-        assert to_snake_case("getFillColor") == "get_fill_color"
-
-    def test_single_word(self):
-        assert to_snake_case("radius") == "radius"
 
 
 class TestBaseLayer:
