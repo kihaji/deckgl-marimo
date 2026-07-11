@@ -177,8 +177,8 @@ class DisplacementLayer(BaseLayer):
                 pickable=self.pickable,
                 auto_highlight=self.auto_highlight,
                 visible=self.visible,
-                min_zoom=self.min_zoom,
-                max_zoom=self.max_zoom,
+                visible_min_zoom=self.visible_min_zoom,
+                visible_max_zoom=self.visible_max_zoom,
             )
             specs.append(arc.to_spec())
 
@@ -193,8 +193,8 @@ class DisplacementLayer(BaseLayer):
                 opacity=self.opacity,
                 pickable=self.pickable,
                 visible=self.visible,
-                min_zoom=self.min_zoom,
-                max_zoom=self.max_zoom,
+                visible_min_zoom=self.visible_min_zoom,
+                visible_max_zoom=self.visible_max_zoom,
             )
             specs.append(origin_scatter.to_spec())
 
@@ -209,8 +209,8 @@ class DisplacementLayer(BaseLayer):
                 opacity=self.opacity,
                 pickable=self.pickable,
                 visible=self.visible,
-                min_zoom=self.min_zoom,
-                max_zoom=self.max_zoom,
+                visible_min_zoom=self.visible_min_zoom,
+                visible_max_zoom=self.visible_max_zoom,
             )
             specs.append(displaced_scatter.to_spec())
 
@@ -396,8 +396,8 @@ class EllipseLayer(BaseLayer):
             pickable=self.pickable,
             auto_highlight=self.auto_highlight,
             visible=self.visible,
-            min_zoom=self.min_zoom,
-            max_zoom=self.max_zoom,
+            visible_min_zoom=self.visible_min_zoom,
+            visible_max_zoom=self.visible_max_zoom,
         )
         specs.append(poly.to_spec())
 
@@ -412,8 +412,8 @@ class EllipseLayer(BaseLayer):
                 opacity=self.opacity,
                 pickable=self.pickable,
                 visible=self.visible,
-                min_zoom=self.min_zoom,
-                max_zoom=self.max_zoom,
+                visible_min_zoom=self.visible_min_zoom,
+                visible_max_zoom=self.visible_max_zoom,
             )
             specs.append(scatter.to_spec())
 

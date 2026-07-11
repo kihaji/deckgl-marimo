@@ -82,7 +82,7 @@ def _(crossover, dgl, neighborhoods, region):
         line_width_min_pixels=2,
         stroked=True,
         filled=True,
-        max_zoom=crossover.value,
+        visible_max_zoom=crossover.value,
     )
     neighborhood_layer = dgl.PolygonLayer(
         data=neighborhoods,
@@ -91,7 +91,7 @@ def _(crossover, dgl, neighborhoods, region):
         get_line_color=[255, 255, 255],
         get_line_width=2,
         line_width_min_pixels=1,
-        min_zoom=crossover.value,
+        visible_min_zoom=crossover.value,
     )
     return neighborhood_layer, region_layer
 

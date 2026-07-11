@@ -81,10 +81,10 @@ class TestMapLayerManagement:
             get_position=["lon", "lat"],
         )
         m = Map(layers=[layer])
-        assert "minZoom" not in m.layer_specs[0]
-        m.update_layer("test-layer", min_zoom=10, max_zoom=16)
-        assert m.layer_specs[0]["minZoom"] == 10
-        assert m.layer_specs[0]["maxZoom"] == 16
+        assert "visibleMinZoom" not in m.layer_specs[0]
+        m.update_layer("test-layer", visible_min_zoom=10, visible_max_zoom=16)
+        assert m.layer_specs[0]["visibleMinZoom"] == 10
+        assert m.layer_specs[0]["visibleMaxZoom"] == 16
 
     def test_layers_property(self):
         layer = ScatterplotLayer(data=[{"lon": 1, "lat": 2}], get_position=["lon", "lat"])

@@ -1,16 +1,16 @@
 /**
  * Zoom-gated layer visibility.
  *
- * Python emits `minZoom`/`maxZoom` on layer specs; these are widget-side
+ * Python emits `visibleMinZoom`/`visibleMaxZoom` on layer specs; these are widget-side
  * gates folded into each spec's `visible` prop (deck.gl never sees them —
  * the layer factory peels them off).
  */
 
-/** True when the current zoom is inside the spec's [minZoom, maxZoom] range. */
+/** True when the current zoom is inside the spec's [visibleMinZoom, visibleMaxZoom] range. */
 export function isInZoomRange(spec, zoom) {
   return (
-    (spec.minZoom == null || zoom >= spec.minZoom) &&
-    (spec.maxZoom == null || zoom <= spec.maxZoom)
+    (spec.visibleMinZoom == null || zoom >= spec.visibleMinZoom) &&
+    (spec.visibleMaxZoom == null || zoom <= spec.visibleMaxZoom)
   );
 }
 
@@ -22,7 +22,7 @@ export function isInZoomRange(spec, zoom) {
  */
 export function applyZoomVisibility(specs, zoom) {
   for (const spec of specs) {
-    if (spec.minZoom == null && spec.maxZoom == null) continue;
+    if (spec.visibleMinZoom == null && spec.visibleMaxZoom == null) continue;
     if (spec._userVisible === undefined) {
       spec._userVisible = spec.visible !== false;
     }
@@ -41,7 +41,7 @@ export function zoomVisibilityKey(specs, zoom) {
   let hasGated = false;
   let key = "";
   for (const s of specs) {
-    if (s.minZoom == null && s.maxZoom == null) continue;
+    if (s.visibleMinZoom == null && s.visibleMaxZoom == null) continue;
     hasGated = true;
     key += `${s.id}:${isInZoomRange(s, zoom) ? 1 : 0}|`;
   }

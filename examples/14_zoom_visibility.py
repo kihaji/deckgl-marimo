@@ -56,7 +56,7 @@ def _(mo):
 def _(mo):
     label_min_zoom = mo.ui.slider(
         start=3, stop=10, step=0.5, value=5, show_value=True,
-        label="Label min_zoom",
+        label="Label visible_min_zoom",
     )
     mo.hstack([label_min_zoom], justify="start", gap=2)
     return (label_min_zoom,)
@@ -82,7 +82,7 @@ def _(cities, dgl, label_min_zoom):
         get_alignment_baseline="bottom",
         get_pixel_offset=[0, -12],
         billboard=True,
-        min_zoom=label_min_zoom.value,
+        visible_min_zoom=label_min_zoom.value,
     )
     return dots, labels
 

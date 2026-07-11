@@ -1,5 +1,7 @@
 """Tests for BaseLayer and utility functions."""
 
+
+import pytest
 from deckgl_marimo._base import BaseLayer
 from deckgl_marimo.layers._core import GeoJsonLayer
 from deckgl_marimo._utils import to_camel_case, to_snake_case
@@ -73,32 +75,32 @@ class TestBaseLayer:
 
 class TestZoomVisibility:
     def test_min_zoom_in_spec(self):
-        layer = BaseLayer(min_zoom=5)
+        layer = BaseLayer(visible_min_zoom=5)
         spec = layer.to_spec()
-        assert spec["minZoom"] == 5
+        assert spec["visibleMinZoom"] == 5
 
     def test_max_zoom_in_spec(self):
-        layer = BaseLayer(max_zoom=15)
+        layer = BaseLayer(visible_max_zoom=15)
         spec = layer.to_spec()
-        assert spec["maxZoom"] == 15
+        assert spec["visibleMaxZoom"] == 15
 
     def test_both_zoom_bounds_in_spec(self):
-        layer = BaseLayer(min_zoom=5, max_zoom=15)
+        layer = BaseLayer(visible_min_zoom=5, visible_max_zoom=15)
         spec = layer.to_spec()
-        assert spec["minZoom"] == 5
-        assert spec["maxZoom"] == 15
+        assert spec["visibleMinZoom"] == 5
+        assert spec["visibleMaxZoom"] == 15
 
     def test_no_zoom_keys_by_default(self):
         layer = BaseLayer()
         spec = layer.to_spec()
-        assert "minZoom" not in spec
-        assert "maxZoom" not in spec
+        assert "visibleMinZoom" not in spec
+        assert "visibleMaxZoom" not in spec
 
     def test_fractional_zoom_bounds(self):
-        layer = BaseLayer(min_zoom=10.5, max_zoom=14.25)
+        layer = BaseLayer(visible_min_zoom=10.5, visible_max_zoom=14.25)
         spec = layer.to_spec()
-        assert spec["minZoom"] == 10.5
-        assert spec["maxZoom"] == 14.25
+        assert spec["visibleMinZoom"] == 10.5
+        assert spec["visibleMaxZoom"] == 14.25
 
 
 class TestLoadOptions:
@@ -160,3 +162,41 @@ class TestLoadOptions:
         assert spec["loadOptions"] == {
             "fetch": {"headers": {"X-API-Key": "abc123"}}
         }
+
+
+class TestZoomGatingRename:
+    """visible_min_zoom/visible_max_zoom gating vs deck.gl zoom props (#22)."""
+
+    def test_old_gating_names_raise_with_suggestion(self):
+        from deckgl_marimo.layers._core import ScatterplotLayer
+
+        with pytest.raises(TypeError, match="visible_min_zoom"):
+            ScatterplotLayer(min_zoom=5)
+        with pytest.raises(TypeError, match="visible_max_zoom"):
+            ScatterplotLayer(max_zoom=15)
+
+    def test_tile_layer_zoom_props_reach_the_spec(self):
+        import warnings
+
+        from deckgl_marimo.layers._geo import TileLayer
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")  # experimental warning
+            layer = TileLayer(min_zoom=2, max_zoom=18)
+        spec = layer.to_spec()
+        # Real deck.gl tile-fetch bounds — no longer consumed by gating
+        assert spec["minZoom"] == 2
+        assert spec["maxZoom"] == 18
+        assert "visibleMinZoom" not in spec
+
+    def test_gating_and_tile_zoom_coexist(self):
+        import warnings
+
+        from deckgl_marimo.layers._geo import TileLayer
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            layer = TileLayer(min_zoom=2, max_zoom=18, visible_min_zoom=4)
+        spec = layer.to_spec()
+        assert spec["minZoom"] == 2
+        assert spec["visibleMinZoom"] == 4
