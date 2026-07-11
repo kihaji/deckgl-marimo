@@ -266,7 +266,15 @@ class Map(anywidget.AnyWidget):
         environment — Jupyter / plain-Python users keep using the Map widget
         directly.
         """
-        import marimo as mo
+        try:
+            import marimo as mo
+        except ImportError as err:
+            raise ImportError(
+                "Map.as_widget() requires marimo, which is no longer a hard "
+                "dependency of deckgl-marimo. Install it with "
+                "`pip install 'deckgl-marimo[marimo]'` (or `pip install marimo`). "
+                "Outside marimo, use the Map widget directly."
+            ) from err
 
         return mo.ui.anywidget(self)
 

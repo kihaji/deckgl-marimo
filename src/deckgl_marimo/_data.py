@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import narwhals as nw
+import narwhals.stable.v2 as nw
 
 
 def prepare_data(data: Any) -> list | dict | str:

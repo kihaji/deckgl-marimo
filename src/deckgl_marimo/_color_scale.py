@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-import narwhals as nw
+import narwhals.stable.v2 as nw
 
 
 # Common CSS color names → RGB

@@ -1,5 +1,7 @@
 """Tests for Map widget."""
 
+import pytest
+
 from deckgl_marimo._map import Map
 from deckgl_marimo._base import BaseLayer
 from deckgl_marimo.layers._core import ScatterplotLayer
@@ -100,3 +102,17 @@ class TestMapLayerManagement:
         types = [s["type"] for s in m.layer_specs]
         assert "ScatterplotLayer" in types
         assert "HexagonLayer" in types
+
+
+class TestAsWidgetWithoutMarimo:
+    def test_helpful_error_when_marimo_missing(self, monkeypatch):
+        import sys
+
+        from deckgl_marimo import Map
+
+        m = Map()
+        # Setting a module's sys.modules entry to None makes `import marimo`
+        # raise ImportError, simulating an environment without the extra.
+        monkeypatch.setitem(sys.modules, "marimo", None)
+        with pytest.raises(ImportError, match=r"deckgl-marimo\[marimo\]"):
+            m.as_widget()
