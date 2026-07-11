@@ -156,6 +156,16 @@ async function render({ model, el }) {
     });
   }
 
+  // --- Fit-bounds requests from Python ---
+  const applyFitBounds = () => {
+    const req = model.get("fit_bounds_request");
+    if (req && req.bounds) {
+      map.fitBounds(req.bounds, { padding: req.padding ?? 20 });
+    }
+  };
+  model.on("change:fit_bounds_request", applyFitBounds);
+  applyFitBounds(); // honor a request made before first render
+
   // --- Viewport readback: JS -> Python ---
   map.on("moveend", () => {
     const center = map.getCenter();

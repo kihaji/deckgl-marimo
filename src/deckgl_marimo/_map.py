@@ -85,6 +85,11 @@ class Map(anywidget.AnyWidget):
     binary_data = traitlets.Bytes(b"").tag(sync=True)
     binary_metadata = traitlets.Dict({}).tag(sync=True)
 
+    # One-shot fit-bounds request applied by the JS side via map.fitBounds.
+    # Carries a sequence number so repeated calls with identical bounds
+    # still fire a change event.
+    fit_bounds_request = traitlets.Dict({}).tag(sync=True)
+
     # Read-back from JS (JS -> Python)
     viewport = traitlets.Dict({}).tag(sync=True)
     click_info = traitlets.Dict({}).tag(sync=True)
@@ -109,6 +114,7 @@ class Map(anywidget.AnyWidget):
             _raise_for_unknown_props(type(self).__name__, kwargs, self._VALID_KWARGS)
         self._layers: list[BaseLayer] = list(layers or [])
         self._resolving_pick = False
+        self._fit_bounds_seq = 0
         specs = [spec for layer in self._layers for spec in layer.to_specs()]
         style = Basemaps.resolve(basemap)
 
@@ -275,17 +281,44 @@ class Map(anywidget.AnyWidget):
                 layer._props[key] = value
         self._sync_layers()
 
-    def fit_bounds(self, bounds: list[list[float]]) -> None:
-        """Set the view to fit the given bounds.
+    def fit_bounds(self, bounds: list[list[float]], *, padding: int = 20) -> None:
+        """Fit the viewport to the given bounds.
+
+        The JS side applies an exact ``map.fitBounds(bounds, {padding})``.
+        The Python-side view traitlets are also set to the bounds center
+        and an approximate zoom so state is sane before/without a
+        rendered frontend.
+
+        Use :func:`deckgl_marimo.compute_bounds` to derive bounds from
+        layer data.
 
         Parameters
         ----------
         bounds
-            [[sw_longitude, sw_latitude], [ne_longitude, ne_latitude]]
+            [[west, south], [east, north]] in degrees.
+        padding
+            Pixel padding around the bounds (applied by the JS side).
         """
+        import math
+
         sw, ne = bounds
         self.longitude = (sw[0] + ne[0]) / 2
         self.latitude = (sw[1] + ne[1]) / 2
+
+        # Approximate zoom: fit the larger angular span into a 360°-at-z0
+        # Mercator world. The JS fitBounds supersedes this with the exact
+        # pixel-based fit once rendered.
+        lon_span = max(abs(ne[0] - sw[0]), 1e-9)
+        lat_span = max(abs(ne[1] - sw[1]), 1e-9)
+        zoom = math.log2(360.0 / max(lon_span, lat_span * 2))
+        self.zoom = max(0.0, min(20.0, zoom))
+
+        self._fit_bounds_seq += 1
+        self.fit_bounds_request = {
+            "bounds": [list(sw), list(ne)],
+            "padding": padding,
+            "_seq": self._fit_bounds_seq,
+        }
 
     @property
     def layers(self) -> list[BaseLayer]:
