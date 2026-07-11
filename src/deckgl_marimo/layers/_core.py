@@ -1036,7 +1036,6 @@ class GridCellLayer(BaseLayer):
         super().__init__(data=data, **kwargs)
 
 
-@_experimental
 class LineLayer(BaseLayer):
     """Render straight lines between pairs of points."""
 
@@ -1139,7 +1138,6 @@ class LineLayer(BaseLayer):
         return meta, buf
 
 
-@_experimental
 class PointCloudLayer(BaseLayer):
     """Render a point cloud."""
 
@@ -1236,7 +1234,6 @@ class PointCloudLayer(BaseLayer):
         return meta, buf
 
 
-@_experimental
 class SolidPolygonLayer(BaseLayer):
     """Render solid polygons (no stroke, better performance than PolygonLayer)."""
 

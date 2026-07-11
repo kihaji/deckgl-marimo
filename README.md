@@ -6,11 +6,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/kihaji/deckgl-marimo/blob/main/examples/hexagon_example.py)
 
-Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https://marimo.io) notebooks. Render GPU-accelerated maps with 33 layer types, powered by [MapLibre GL](https://maplibre.org) and [anywidget](https://anywidget.dev).
+Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https://marimo.io) notebooks. Render GPU-accelerated maps with 15 fully tested layer types (plus experimental access to the full deck.gl catalog), powered by [MapLibre GL](https://maplibre.org) and [anywidget](https://anywidget.dev).
 
 ## Features
 
-- **12 deck.gl layer types** — scatter plots, hexagonal bins, heatmaps, arcs, paths, polygons, GeoJSON, 3D columns, lines, point clouds, and more
+- **15 fully tested layer types** — scatter plots, hexagonal bins, heatmaps, arcs, paths, polygons, GeoJSON, 3D columns, lines, point clouds, and more — plus 17 experimental layers covering the rest of the deck.gl catalog
 - **Binary data transfer** — bypass JSON serialization for large datasets (30x faster, 4x smaller payloads)
 - **Multi-layer maps** — compose multiple layers on a single map
 - **Standalone layers** — display any layer directly without explicit map setup
@@ -101,15 +101,15 @@ widget = mo.ui.anywidget(map_widget)
 widget
 
 # Cell 4 — update layers reactively (re-executes when slider changes)
-map_widget.layer_specs = [
+map_widget.set_layers([
     dgl.HexagonLayer(
         data=df,
         get_position=["lon", "lat"],
         radius=radius.value,
         extruded=True,
         elevation_scale=250,
-    ).to_spec()
-]
+    )
+])
 
 # Cell 5 — viewport readback
 vp = widget.value.get("viewport", {})
@@ -197,7 +197,7 @@ layer = dgl.ScatterplotLayer(
 
 ```python
 import numpy as np
-from deckgl_marimo._binary import pack_binary
+from deckgl_marimo import pack_binary
 
 # Prepare arrays
 positions = np.column_stack([lons, lats]).astype(np.float32)
@@ -288,7 +288,7 @@ headers take precedence.
 
 ## Available layers
 
-### Fully tested (12)
+### Fully tested (15)
 
 | Layer | Use case | Binary support |
 |-------|----------|----------------|
@@ -297,6 +297,7 @@ headers take precedence.
 | `ArcLayer` | Origin-destination flows | Yes |
 | `PathLayer` | Routes, trajectories | Yes |
 | `PolygonLayer` | Filled regions | Yes |
+| `SolidPolygonLayer` | Filled regions without stroke (fastest polygons) | Yes |
 | `IconLayer` | Marker icons | — |
 | `TextLayer` | Labels | — |
 | `ColumnLayer` | 3D bars on map | Yes |
@@ -304,12 +305,12 @@ headers take precedence.
 | `HeatmapLayer` | Density visualization | — |
 | `LineLayer` | Straight lines between point pairs | Yes |
 | `PointCloudLayer` | 3D point clouds (LiDAR, etc.) | Yes |
+| `DisplacementLayer` | Origin vs reported-position arcs + dots (composite) | — |
+| `EllipseLayer` | Ellipses from center/axes/orientation (composite) | — |
 
-`LineLayer` and `PointCloudLayer` are newly exported experimental layers.
+### Experimental (17)
 
-### Experimental (21+)
-
-All additional deck.gl layers are available as experimental stubs via `deckgl_marimo.layers`:
+All additional deck.gl layers are available as experimental stubs via `deckgl_marimo.layers` (they emit a warning on construction and may not be fully tested):
 
 ```python
 from deckgl_marimo.layers import TripsLayer, MVTLayer, H3HexagonLayer, ContourLayer
@@ -330,7 +331,23 @@ dgl.Map(basemap="https://my-tileserver.example.com/style.json")
 
 ### `Content-Length` errors in the marimo console
 
-This is fixed in Marimo >= 0.22.0 please update to that.
+Fixed in marimo >= 0.22.0 — update marimo.
+
+### Map flashes black / camera resets when a slider moves
+
+The `Map` widget is being recreated on every reactive run. Create the
+`Map` in a cell with **no** slider dependencies and update layers from a
+separate cell with `map_widget.set_layers([...])` — see
+[Reactive controls](#reactive-controls) above. Assigning
+`map_widget.layer_specs` directly also works for JSON layers, but skips
+binary re-packing; prefer `set_layers`.
+
+### Blank map / WebGL errors on WSL or headless environments
+
+deck.gl requires WebGL2. In WSL, make sure your browser has hardware
+acceleration enabled (check `chrome://gpu` or https://webglreport.com).
+For headless Chromium testing, launch with
+`--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader`.
 
 
 ## License

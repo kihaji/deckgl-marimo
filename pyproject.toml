@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "deckgl-marimo"
 version = "0.6.1"
-description = "deck.gl visualization library for marimo notebooks — interactive maps with 33 layer types"
+description = "deck.gl visualization library for marimo notebooks — 15 fully tested layer types on MapLibre basemaps, plus experimental access to the full deck.gl catalog"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

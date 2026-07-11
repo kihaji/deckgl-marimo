@@ -198,6 +198,24 @@ class Map(anywidget.AnyWidget):
         finally:
             self._resolving_pick = False
 
+    def set_layers(self, layers: list[BaseLayer]) -> None:
+        """Replace all layers on the map.
+
+        This is the recommended way to update layers reactively (e.g. in a
+        marimo cell that depends on slider values): it re-serializes the
+        layer specs *and* re-packs binary buffers in one call, unlike
+        assigning ``layer_specs`` directly, which silently skips binary
+        packing.
+
+        Parameters
+        ----------
+        layers
+            The new list of :class:`BaseLayer` instances. Replaces any
+            existing layers.
+        """
+        self._layers = list(layers)
+        self._sync_layers()
+
     def add_layer(self, layer: BaseLayer) -> None:
         """Add a layer to the map.
 
