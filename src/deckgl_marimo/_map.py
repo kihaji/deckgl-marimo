@@ -115,6 +115,9 @@ class Map(anywidget.AnyWidget):
         self._layers: list[BaseLayer] = list(layers or [])
         self._resolving_pick = False
         self._fit_bounds_seq = 0
+        # Materialized-row cache for pick resolution, keyed by layer id.
+        # Without it every click/hover re-converts the layer's full dataset.
+        self._pick_rows_cache: dict[str, list | None] = {}
         specs = [spec for layer in self._layers for spec in layer.to_specs()]
         style = Basemaps.resolve(basemap)
 
@@ -195,7 +198,9 @@ class Map(anywidget.AnyWidget):
         layer = next((lyr for lyr in self._layers if lyr.id == layer_id), None)
         if layer is None:
             return
-        rows = materialize_rows(layer.data)
+        if layer_id not in self._pick_rows_cache:
+            self._pick_rows_cache[layer_id] = materialize_rows(layer.data)
+        rows = self._pick_rows_cache[layer_id]
         if rows is None or index >= len(rows):
             return
         self._resolving_pick = True
@@ -348,6 +353,7 @@ class Map(anywidget.AnyWidget):
 
     def _sync_layers(self) -> None:
         """Re-serialize all layers and update the traitlet."""
+        self._pick_rows_cache.clear()
         self.layer_specs = [spec for layer in self._layers for spec in layer.to_specs()]
         self._sync_binary()
 

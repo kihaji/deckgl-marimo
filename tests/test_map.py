@@ -213,3 +213,41 @@ class TestPromotedCoreLayers:
         assert dgl.pack_binary is not None
         assert dgl.pack_polygon_binary is not None
         assert "pack_binary" in dgl.__all__
+
+
+class TestPickRowCache:
+    """Pick resolution caches materialized rows per layer (#23)."""
+
+    def test_materializes_once_per_layer(self, monkeypatch):
+        import deckgl_marimo._map as map_mod
+
+        layer = ScatterplotLayer(
+            id="pts", data=[{"lon": 0, "lat": 0, "name": "a"}, {"lon": 1, "lat": 1, "name": "b"}],
+            get_position=["lon", "lat"],
+        )
+        m = Map(layers=[layer])
+        calls = {"n": 0}
+        real = map_mod.materialize_rows
+
+        def counting(data):
+            calls["n"] += 1
+            return real(data)
+
+        monkeypatch.setattr(map_mod, "materialize_rows", counting)
+        for i in (0, 1, 0):
+            m.click_info = {"object": None, "layer_id": "pts", "index": i, "coordinate": [0, 0]}
+            assert m.click_info["object"]["name"] == ("a" if i == 0 else "b")
+        assert calls["n"] == 1
+
+    def test_cache_invalidated_on_layer_update(self):
+
+        layer = ScatterplotLayer(
+            id="pts", data=[{"lon": 0, "lat": 0, "name": "a"}], get_position=["lon", "lat"]
+        )
+        m = Map(layers=[layer])
+        m.click_info = {"object": None, "layer_id": "pts", "index": 0, "coordinate": [0, 0]}
+        assert m.click_info["object"]["name"] == "a"
+
+        m.update_layer("pts", data=[{"lon": 0, "lat": 0, "name": "z"}])
+        m.click_info = {"object": None, "layer_id": "pts", "index": 0, "coordinate": [0, 0]}
+        assert m.click_info["object"]["name"] == "z"
