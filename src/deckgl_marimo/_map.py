@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import anywidget
 import traitlets
@@ -11,6 +11,9 @@ import traitlets
 from deckgl_marimo._base import BaseLayer, _raise_for_unknown_props
 from deckgl_marimo._basemaps import Basemaps
 from deckgl_marimo._data import materialize_rows
+
+if TYPE_CHECKING:
+    from deckgl_marimo.maplibre import MapLibreConfig
 
 _STATIC = pathlib.Path(__file__).parent / "static"
 
@@ -27,8 +30,12 @@ class Map(anywidget.AnyWidget):
     layers
         List of :class:`BaseLayer` instances to render.
     basemap
-        Basemap style name or URL. Use :class:`Basemaps` aliases like
-        ``"dark-matter"`` or a full MapLibre style URL.
+        Basemap style. Accepts a :class:`Basemaps` alias like
+        ``"dark-matter"``, a full MapLibre style URL, an inline MapLibre
+        style spec dict, or a
+        :class:`~deckgl_marimo.maplibre.MapLibreConfig` composing a base
+        style with extra sources (WMS/XYZ/vector/GeoJSON) and MapLibre
+        layers.
     center
         Initial map center as ``(longitude, latitude)``.
     zoom
@@ -82,6 +89,12 @@ class Map(anywidget.AnyWidget):
     # Basemap
     basemap_style = traitlets.Unicode("").tag(sync=True)
 
+    # Composed basemap configuration (maplibre.MapLibreConfig.to_dict()):
+    # {style, sources, mapLayers, mapOptions}. When non-empty, its style
+    # wins over basemap_style and the extra sources/layers are applied
+    # after every style load.
+    maplibre_config = traitlets.Dict({}).tag(sync=True)
+
     # Layout
     height = traitlets.Unicode("600px").tag(sync=True)
     width = traitlets.Unicode("100%").tag(sync=True)
@@ -110,7 +123,7 @@ class Map(anywidget.AnyWidget):
         self,
         layers: list[BaseLayer] | None = None,
         *,
-        basemap: str = "dark-matter",
+        basemap: str | dict[str, Any] | MapLibreConfig = "dark-matter",
         center: tuple[float, float] | None = None,
         zoom: float = 1.0,
         pitch: float = 0.0,
@@ -130,7 +143,19 @@ class Map(anywidget.AnyWidget):
         # Without it every click/hover re-converts the layer's full dataset.
         self._pick_rows_cache: dict[str, list | None] = {}
         specs = [spec for layer in self._layers for spec in layer.to_specs()]
-        style = Basemaps.resolve(basemap)
+
+        # basemap accepts: alias/URL string, a maplibre.MapLibreConfig, a
+        # config dict ({"style": ...}), or an inline MapLibre style spec.
+        style = ""
+        ml_config: dict[str, Any] = {}
+        if isinstance(basemap, str):
+            style = Basemaps.resolve(basemap)
+        elif isinstance(basemap, dict):
+            # A config dict ({"style": ...}) or an inline MapLibre style spec
+            ml_config = basemap if "style" in basemap else {"style": basemap}
+        else:
+            # MapLibreConfig (anything exposing to_dict)
+            ml_config = basemap.to_dict()
 
         # Pre-pack binary data for layers that use binary mode
         bin_meta, bin_data = self._pack_binary(self._layers)
@@ -138,6 +163,7 @@ class Map(anywidget.AnyWidget):
         init_kwargs: dict[str, Any] = {
             "layer_specs": specs,
             "basemap_style": style,
+            "maplibre_config": ml_config,
             "binary_data": bin_data,
             "binary_metadata": bin_meta,
             "zoom": zoom,

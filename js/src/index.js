@@ -13,6 +13,7 @@ import { normalizeBinaryBuffer } from "./binary-buffer.js";
 import { applyZoomVisibility, zoomVisibilityKey } from "./zoom-visibility.js";
 import { createPerfTracker } from "./perf-tracker.js";
 import { attachPickHandlers } from "./pick-events.js";
+import { applyConfigExtras, resolveStyle } from "./maplibre-config.js";
 
 /**
  * Inject MapLibre CSS into the document if not already present.
@@ -72,21 +73,34 @@ async function render({ model, el }) {
   syncPerfTracker();
 
   // --- MapLibre Map ---
+  const FALLBACK_STYLE = {
+    version: 8,
+    sources: {},
+    layers: [{ id: "background", type: "background", paint: { "background-color": "#111" } }],
+  };
+  const mlConfig = model.get("maplibre_config");
   const map = new maplibregl.Map({
     container,
-    style: model.get("basemap_style") || {
-      version: 8,
-      sources: {},
-      layers: [{ id: "background", type: "background", paint: { "background-color": "#111" } }],
-    },
+    style: resolveStyle(mlConfig, model.get("basemap_style"), FALLBACK_STYLE),
     center: [model.get("longitude") || 0, model.get("latitude") || 0],
     zoom: model.get("zoom") || 1,
     pitch: model.get("pitch") || 0,
     bearing: model.get("bearing") || 0,
     canvasContextAttributes: { antialias: true },
+    ...((mlConfig && mlConfig.mapOptions) || {}),
   });
 
   map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+  // Composed-basemap extras (WMS/XYZ/vector sources + style layers).
+  // setStyle wipes user sources, so reapply after every style load.
+  map.on("style.load", () => {
+    applyConfigExtras(map, model.get("maplibre_config"));
+  });
+  model.on("change:maplibre_config", () => {
+    const cfg = model.get("maplibre_config");
+    map.setStyle(resolveStyle(cfg, model.get("basemap_style"), FALLBACK_STYLE));
+  });
 
   // --- deck.gl Overlay ---
   const overlay = new MapboxOverlay({
