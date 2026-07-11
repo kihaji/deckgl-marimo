@@ -15,6 +15,7 @@ import { createPerfTracker } from "./perf-tracker.js";
 import { attachPickHandlers } from "./pick-events.js";
 import { applyConfigExtras, resolveStyle } from "./maplibre-config.js";
 import { createTimeFilterAnimation } from "./time-filter-animation.js";
+import { createDrawingController } from "./drawing.js";
 
 /**
  * Inject MapLibre CSS into the document if not already present.
@@ -103,10 +104,22 @@ async function render({ model, el }) {
     map.setStyle(resolveStyle(cfg, model.get("basemap_style"), FALLBACK_STYLE));
   });
 
+  // --- Drawing controller (EditableGeoJsonLayer appended on top) ---
+  let refreshOverlay = () => {};
+  const drawing = createDrawingController({
+    model,
+    map,
+    onLayersChanged: () => refreshOverlay(),
+  });
+
   // --- deck.gl Overlay ---
   let currentLayers = buildLayers(model, map);
+  const composeLayers = () => {
+    const drawLayer = drawing.getLayer();
+    return drawLayer ? [...currentLayers, drawLayer] : currentLayers;
+  };
   const overlay = new MapboxOverlay({
-    layers: currentLayers,
+    layers: composeLayers(),
     getTooltip: (info) => {
       if (!info || !info.picked || !info.layer) return null;
       // Binary layers: look up pre-packed tooltip string by feature index
@@ -133,18 +146,22 @@ async function render({ model, el }) {
   const timeAnim = createTimeFilterAnimation({
     model,
     overlay,
-    getBaseLayers: () => currentLayers,
+    getBaseLayers: composeLayers,
   });
   model.on("change:time_filter", () => timeAnim.sync());
   timeAnim.sync();
+
+  refreshOverlay = () => {
+    overlay.setProps({ layers: composeLayers() });
+    timeAnim.reapply();
+  };
 
   // --- Reactivity: layer_specs or binary_data changes ---
   let lastZoomVisibilityKey = "";
   const rebuildLayers = () => {
     lastZoomVisibilityKey = "";  // force re-evaluation against fresh specs
     currentLayers = buildLayers(model, map);
-    overlay.setProps({ layers: currentLayers });
-    timeAnim.reapply(); // fresh layer instances must inherit the filter window
+    refreshOverlay(); // fresh instances must inherit filter window + drawing layer
   };
   model.on("change:layer_specs", rebuildLayers);
   model.on("change:binary_data", rebuildLayers);
@@ -159,8 +176,7 @@ async function render({ model, el }) {
     if (key !== lastZoomVisibilityKey) {
       lastZoomVisibilityKey = key;
       currentLayers = buildLayers(model, map);
-      overlay.setProps({ layers: currentLayers });
-      timeAnim.reapply();
+      refreshOverlay();
     }
   });
 

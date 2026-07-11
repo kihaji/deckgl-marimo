@@ -9,6 +9,12 @@ from deckgl_marimo._basemaps import Basemaps
 from deckgl_marimo._binary import pack_binary, pack_polygon_binary
 from deckgl_marimo._bounds import compute_bounds
 from deckgl_marimo._color_scale import ColorScale
+from deckgl_marimo._drawing import (
+    DRAWING_MODES,
+    EMPTY_FEATURE_COLLECTION,
+    DrawingConfig,
+    DrawingStyle,
+)
 from deckgl_marimo._timefilter import build_time_filter, compute_time_domain
 from deckgl_marimo._map import Map
 
@@ -52,6 +58,11 @@ __all__ = [
     # Time filter
     "compute_time_domain",
     "build_time_filter",
+    # Drawing
+    "DrawingConfig",
+    "DrawingStyle",
+    "DRAWING_MODES",
+    "EMPTY_FEATURE_COLLECTION",
     # Accessor type aliases
     "Accessor",
     "ColorAccessor",
