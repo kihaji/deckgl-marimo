@@ -50,6 +50,7 @@ package-build time via `hatch_build.py` (set
 make test         # pytest (tests/)
 make test-js      # vitest (js/src/__tests__/)
 make test-perf    # opt-in perf watchdog (tests/perf_watchdog/), ~20 s, not in CI
+make test-e2e     # opt-in live WFS/WFS-T tests (tests/e2e/), needs network / a GeoServer, not in CI
 make quality      # ruff + pyright
 make check-versions
 ```
@@ -64,6 +65,13 @@ construction / `update_layer()` exceeds 2× the plain-Python cost — the signat
 of the marimo 0.23.14 state-serialization regression (#58). Run it when bumping
 marimo (`uv run --with marimo==X pytest --run-perf tests/perf_watchdog`). The
 full browser-side harness lives in `perf/` (see `perf/tools/browser_protocol.md`).
+
+`make test-e2e` is likewise opt-in: it exercises `deckgl_marimo.wfs` against real
+servers — reads against a public GeoServer (or `DECKGL_E2E_URL`), and WFS-T
+insert/update/delete round-trips against a transactional server when
+`DECKGL_E2E_URL` / `DECKGL_E2E_AUTH` are set (the GeoServer docker image with its
+sample `topp:tasmania_roads` layer is the reference). The unit tests in
+`tests/test_wfs/` replay recorded GeoServer responses and run everywhere.
 
 ## Conventions
 

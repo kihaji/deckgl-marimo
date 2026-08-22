@@ -26,6 +26,16 @@ Switch modes reactively by assigning
 `m.drawing_config = dgl.DrawingConfig("modify").to_dict()` from any cell
 — the map stays stable.
 
+!!! note "Overlay mode"
+    The editable layer needs deck.gl's own pointer-event path, which the
+    `MapboxOverlay` only provides in *interleaved* mode (deck shares the
+    basemap's GL context). The widget switches to interleaved mode the first
+    time a drawing mode is active and stays there; pass
+    `dgl.Map(interleaved=True)` to start in that mode. While a vertex or a
+    selected feature is being dragged, MapLibre's drag-pan is suspended so
+    the map does not move with it. Finish a line/polygon by clicking its
+    last vertex again or double-clicking.
+
 ## Read the drawn features
 
 ```python

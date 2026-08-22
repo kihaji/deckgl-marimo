@@ -16,6 +16,7 @@ import { attachPickHandlers } from "./pick-events.js";
 import { applyConfigExtras, resolveStyle } from "./maplibre-config.js";
 import { createTimeFilterAnimation } from "./time-filter-animation.js";
 import { createDrawingController } from "./drawing.js";
+import { DRAWING_LAYER_ID } from "./drawing-manager.js";
 import { viewportPayload } from "./viewport.js";
 
 /**
@@ -107,10 +108,13 @@ async function render({ model, el }) {
 
   // --- Drawing controller (EditableGeoJsonLayer appended on top) ---
   let refreshOverlay = () => {};
+  let overlay = null;
   const drawing = createDrawingController({
     model,
     map,
     onLayersChanged: () => refreshOverlay(),
+    pickDrawing: (x, y) =>
+      overlay ? overlay.pickMultipleObjects({ x, y, layerIds: [DRAWING_LAYER_ID], radius: 8, depth: 4 }) : [],
   });
 
   // --- deck.gl Overlay ---
@@ -119,41 +123,69 @@ async function render({ model, el }) {
     const drawLayer = drawing.getLayer();
     return drawLayer ? [...currentLayers, drawLayer] : currentLayers;
   };
-  const overlay = new MapboxOverlay({
-    layers: composeLayers(),
-    getTooltip: (info) => {
-      if (!info || !info.picked || !info.layer) return null;
-      // Binary layers: look up pre-packed tooltip string by feature index
-      const specs = model.get("layer_specs") || [];
-      const spec = specs.find((s) => s.id === info.layer.id);
-      if (spec && spec._tooltips && info.index >= 0) {
-        return spec._tooltips[info.index] ?? null;
-      }
-      // Object-based layers: read tooltip off the picked row
-      return info.object ? info.object.tooltip || null : null;
-    },
-  });
-  map.addControl(overlay);
+  const getTooltip = (info) => {
+    if (!info || !info.picked || !info.layer) return null;
+    // Binary layers: look up pre-packed tooltip string by feature index
+    const specs = model.get("layer_specs") || [];
+    const spec = specs.find((s) => s.id === info.layer.id);
+    if (spec && spec._tooltips && info.index >= 0) {
+      return spec._tooltips[info.index] ?? null;
+    }
+    // Object-based layers: read tooltip off the picked row
+    return info.object ? info.object.tooltip || null : null;
+  };
 
-  // Try to get the internal deck instance for metrics
-  try {
-    const deckInstance = overlay._deck;
-    if (deckInstance) perf.setDeck(deckInstance);
-  } catch (e) {
-    // _deck is private, may not be accessible
-  }
+  // Overlay mode. Overlaid (default) renders deck on its own canvas and only
+  // forwards click/hover/drag to layer props; interleaved shares MapLibre's GL
+  // context and attaches deck's event manager to the map canvas. The editable
+  // drawing layer listens on that event manager, so drawing requires
+  // interleaved mode: it is switched on by Map(interleaved=True) or
+  // automatically (and then kept) the first time a drawing mode is active.
+  let overlayInterleaved = null;
+  const wantInterleaved = () =>
+    overlayInterleaved === true || Boolean(model.get("interleaved")) || drawing.isActive();
+  // Clicks select features for modify/translate through the layer's onClick;
+  // deck's default 0 px picking radius makes thin lines/points nearly
+  // impossible to hit, so widen it while a drawing mode is active.
+  const pickingRadius = () => (drawing.isActive() ? 8 : 0);
+  const mountOverlay = (interleaved) => {
+    overlay = new MapboxOverlay({ interleaved, layers: composeLayers(), getTooltip, pickingRadius: pickingRadius() });
+    overlayInterleaved = interleaved;
+    map.addControl(overlay);
+    // Try to get the internal deck instance for metrics
+    try {
+      const deckInstance = overlay._deck;
+      if (deckInstance) perf.setDeck(deckInstance);
+    } catch (e) {
+      // _deck is private, may not be accessible
+    }
+    attachPickHandlers(overlay, model);
+  };
+  const ensureOverlayMode = () => {
+    const interleaved = wantInterleaved();
+    if (overlay && overlayInterleaved === interleaved) return;
+    if (overlay) {
+      map.removeControl(overlay);
+      // Layer instances were initialized by the old Deck — build fresh ones.
+      currentLayers = buildLayers(model, map);
+    }
+    mountOverlay(interleaved);
+  };
+  ensureOverlayMode();
+  model.on("change:interleaved", () => refreshOverlay());
 
   // --- GPU time-filter animation (opt-in via the time_filter traitlet) ---
   const timeAnim = createTimeFilterAnimation({
     model,
-    overlay,
+    overlay: { setProps: (props) => overlay && overlay.setProps(props) },
     getBaseLayers: composeLayers,
   });
   model.on("change:time_filter", () => timeAnim.sync());
   timeAnim.sync();
 
   refreshOverlay = () => {
-    overlay.setProps({ layers: composeLayers() });
+    ensureOverlayMode();
+    overlay.setProps({ layers: composeLayers(), pickingRadius: pickingRadius() });
     timeAnim.reapply();
   };
 
@@ -231,14 +263,14 @@ async function render({ model, el }) {
   map.once("load", publishViewport);
   map.on("moveend", publishViewport);
 
-  // --- Click/hover event readback ---
-  attachPickHandlers(overlay, model);
+  // (Click/hover pick handlers are attached in mountOverlay.)
 
   // --- Cleanup ---
   return () => {
     perf.stop();
     timeAnim.stop();
-    overlay.finalize();
+    drawing.destroy();
+    if (overlay) overlay.finalize();
     map.remove();
   };
 }

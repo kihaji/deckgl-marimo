@@ -30,6 +30,8 @@ uv run marimo edit examples/01_scatterplot.py
 | 16 | [16_maplibre_wms.py](16_maplibre_wms.py) | Composed basemap: WMS source via `maplibre.MapLibreConfig` |
 | 17 | [17_time_filter.py](17_time_filter.py) | GPU time filter: animated sliding window over 100k points |
 | 18 | [18_drawing.py](18_drawing.py) | Interactive drawing/editing with GeoJSON readback |
+| 19 | [19_wfs.py](19_wfs.py) | `WFSLayer`: OGC WFS feature type as GeoJSON, re-queried by visible extent |
+| 20 | [20_wfs_editing.py](20_wfs_editing.py) | `WFSEditor`: edit a WFS layer with the drawing tools, commit via WFS-T (needs a local GeoServer) |
 
 ## Feature demos
 

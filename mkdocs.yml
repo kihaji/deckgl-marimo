@@ -41,6 +41,7 @@ nav:
       - Zoom-Gated Visibility: guides/zoom-visibility.md
       - Time Filter & Animation: guides/time-filter.md
       - Drawing & Editing: guides/drawing.md
+      - WFS & WFS-T Editing: guides/wfs.md
       - Basemaps: guides/basemaps.md
       - Authenticated Data: guides/authenticated-data.md
   - API Reference:
@@ -52,6 +53,7 @@ nav:
       - MapLibre Composition: api/maplibre.md
       - Time Filter: api/timefilter.md
       - Drawing: api/drawing.md
+      - WFS / WFS-T: api/wfs.md
   - Internals:
       - Binary Transfer Research: internals/binary-transfer-research.md
   - Troubleshooting: troubleshooting.md

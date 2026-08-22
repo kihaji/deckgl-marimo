@@ -48,6 +48,11 @@ class Map(anywidget.AnyWidget):
         CSS height of the map container.
     width
         CSS width of the map container.
+    interleaved
+        Render deck.gl interleaved with the MapLibre basemap (shared GL
+        context) instead of on its own canvas above it. Required by the
+        drawing/editing tools, which switch it on automatically; set it
+        explicitly to start the map in that mode. Default ``False``.
     show_perf_metrics
         Enable the FPS/frame-time tracker, which pushes ``perf_metrics``
         updates every 500 ms while the widget is displayed. Off by
@@ -74,7 +79,7 @@ class Map(anywidget.AnyWidget):
     _VALID_KWARGS: ClassVar[frozenset[str]] = frozenset({
         "layers", "basemap", "center", "zoom", "pitch", "bearing",
         "height", "width", "show_perf_metrics", "time_filter",
-        "drawing_config", "drawing_features",
+        "drawing_config", "drawing_features", "interleaved",
     })
 
     # Layer specifications (list of dicts from BaseLayer.to_spec())
@@ -108,6 +113,13 @@ class Map(anywidget.AnyWidget):
     # requestAnimationFrame loop that pushes perf_metrics over the wire
     # every 500 ms — constant traitlet churn an idle map shouldn't pay.
     show_perf_metrics = traitlets.Bool(False).tag(sync=True)
+
+    # deck.gl/MapLibre overlay mode. False (default) = overlaid: deck renders
+    # on its own canvas above the map. True = interleaved: deck shares the
+    # map's GL context (layers can sit between basemap layers; deck's event
+    # manager is attached to the map canvas). Drawing/editing needs the
+    # interleaved event path and switches it on automatically.
+    interleaved = traitlets.Bool(False).tag(sync=True)
 
     # Drawing/editing (see deckgl_marimo.DrawingConfig): the config drives an
     # EditableGeoJsonLayer in the frontend; drawn features sync back as
@@ -150,6 +162,7 @@ class Map(anywidget.AnyWidget):
         show_perf_metrics: bool = False,
         time_filter: dict[str, Any] | None = None,
         drawing_config: Any = None,
+        interleaved: bool = False,
         _unsafe_props: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -192,6 +205,7 @@ class Map(anywidget.AnyWidget):
             "width": width,
             "show_perf_metrics": show_perf_metrics,
             "time_filter": time_filter or {},
+            "interleaved": interleaved,
             **kwargs,
         }
         if drawing_config is not None:

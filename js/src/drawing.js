@@ -8,6 +8,7 @@
 import {
   ACTIVE_DRAWING_MODES,
   DRAG_DRAW_MODES,
+  SELECTION_MODES,
   createEditableLayer,
   deleteFeatures,
   getCursorForMode,
@@ -15,7 +16,25 @@ import {
 
 const EMPTY_FEATURE_COLLECTION = { type: "FeatureCollection", features: [] };
 
-export function createDrawingController({ model, map, onLayersChanged }) {
+/**
+ * Does this pick start a drag the edit mode will handle itself? Edit handles
+ * (vertices) always do; in translate mode so does a selected feature.
+ */
+export function pickStartsEditDrag(pick, mode, selectedIndexes) {
+  if (!pick) return false;
+  const guideType = pick.object && pick.object.properties && pick.object.properties.guideType;
+  if (pick.isGuide && guideType === "editHandle") return true;
+  return mode === "translate" && selectedIndexes.includes(pick.index);
+}
+
+/**
+ * @param {object} opts
+ * @param {object} opts.model anywidget model
+ * @param {object} opts.map MapLibre map
+ * @param {Function} opts.onLayersChanged re-render callback
+ * @param {Function} [opts.pickDrawing] (x, y) => deck pick infos for the editable layer
+ */
+export function createDrawingController({ model, map, onLayersChanged, pickDrawing }) {
   let features = model.get("drawing_features") || EMPTY_FEATURE_COLLECTION;
   let selectedIndexes = [];
   let prevMode = null;
@@ -111,16 +130,75 @@ export function createDrawingController({ model, map, onLayersChanged }) {
     applyInteractions();
   }
 
+  // --- Drag guard ---------------------------------------------------------
+  // The edit modes drag vertices/features through deck's event manager, but
+  // MapLibre's own drag-pan handler would move the map at the same time
+  // (nebula's cancelPan cannot stop native map handlers). When the pointer
+  // goes down on something the edit mode will drag, suspend dragPan for the
+  // rest of that gesture. onCancelPan (called by the edit mode) is the
+  // second line of defence.
+  let panSuspended = false;
+  const suspendPan = () => {
+    if (panSuspended) return;
+    panSuspended = true;
+    map.dragPan.disable();
+  };
+  const resumePan = () => {
+    if (!panSuspended) return;
+    panSuspended = false;
+    applyInteractions(); // restores the per-mode dragPan state
+  };
+  const onPointerDown = (clientX, clientY) => {
+    if (!isActive() || !pickDrawing) return;
+    const mode = cfg().mode;
+    if (!SELECTION_MODES.has(mode)) return;
+    const rect = map.getCanvas().getBoundingClientRect();
+    let picks = [];
+    try {
+      picks = pickDrawing(clientX - rect.left, clientY - rect.top) || [];
+    } catch (e) {
+      picks = [];
+    }
+    const config = cfg();
+    const selected = config.selectedFeatureIndexes?.length ? config.selectedFeatureIndexes : selectedIndexes;
+    if (picks.some((p) => pickStartsEditDrag(p, mode, selected))) suspendPan();
+  };
+  const onMouseDown = (ev) => onPointerDown(ev.clientX, ev.clientY);
+  const onTouchStart = (ev) => {
+    const t = ev.touches && ev.touches[0];
+    if (t) onPointerDown(t.clientX, t.clientY);
+  };
+  const canvasContainer = map.getCanvasContainer();
+  canvasContainer.addEventListener("mousedown", onMouseDown, true);
+  canvasContainer.addEventListener("touchstart", onTouchStart, { capture: true, passive: true });
+  window.addEventListener("mouseup", resumePan, true);
+  window.addEventListener("touchend", resumePan, true);
+  window.addEventListener("touchcancel", resumePan, true);
+
   return {
-    /** The editable layer to append on top of the deck layers (or null). */
+    /** Whether a drawing/editing mode (anything but "view") is active. */
+    isActive,
+    /** Remove window/canvas listeners. */
+    destroy() {
+      canvasContainer.removeEventListener("mousedown", onMouseDown, true);
+      canvasContainer.removeEventListener("touchstart", onTouchStart, true);
+      window.removeEventListener("mouseup", resumePan, true);
+      window.removeEventListener("touchend", resumePan, true);
+      window.removeEventListener("touchcancel", resumePan, true);
+    },
+    /**
+     * The editable layer to append on top of the deck layers (or null).
+     * In "view" mode the layer is still rendered (read-only ViewMode) when it
+     * holds features, so loaded/drawn features do not vanish between edits.
+     */
     getLayer() {
-      if (!isActive()) return null;
       const config = cfg();
+      if (!isActive() && !(features.features && features.features.length)) return null;
       return createEditableLayer(
-        config,
+        { ...config, mode: config.mode || "view" },
         features,
         config.selectedFeatureIndexes?.length ? config.selectedFeatureIndexes : selectedIndexes,
-        { setFeatures, setSelectedIndexes, syncToModel },
+        { setFeatures, setSelectedIndexes, syncToModel, onCancelPan: suspendPan },
       );
     },
   };

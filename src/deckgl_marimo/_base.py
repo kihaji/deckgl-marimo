@@ -351,7 +351,7 @@ class BaseLayer:
         to a lazily-created Map instance.
         """
         # Avoid infinite recursion for our own attributes
-        if name.startswith("_BaseLayer") or name in (
+        if name.startswith(("_BaseLayer", "_wfs_")) or name in (
             "id", "data", "visible", "opacity", "pickable",
             "auto_highlight", "visible_min_zoom", "visible_max_zoom",
             "load_options", "fetch_headers",

@@ -44,11 +44,15 @@ export const ACTIVE_DRAWING_MODES = new Set([
 ]);
 
 /** Modes where clicking a feature should select it. */
-const SELECTION_MODES = new Set(["modify", "translate"]);
+export const SELECTION_MODES = new Set(["modify", "translate"]);
+
+/** deck.gl layer id of the editable layer (used for targeted picking). */
+export const DRAWING_LAYER_ID = "__drawing-layer";
 
 /** Edit types that should sync completed state to Python. */
-const SYNC_EVENTS = new Set([
+export const SYNC_EVENTS = new Set([
   "addFeature", "finishMovePosition", "removePosition", "addPosition", "deleteFeature",
+  "translated",
 ]);
 
 /** Get the mode instance for a mode string (null when unknown). */
@@ -81,7 +85,7 @@ export function getCursorForMode(modeStr) {
  * @param {object} drawingConfig - { mode, selectedFeatureIndexes, style }
  * @param {object} features - Current GeoJSON FeatureCollection
  * @param {number[]} selectedIndexes - Currently selected feature indexes
- * @param {object} callbacks - { setFeatures, setSelectedIndexes, syncToModel }
+ * @param {object} callbacks - { setFeatures, setSelectedIndexes, syncToModel, onCancelPan? }
  * @returns {EditableGeoJsonLayer|null}
  */
 export function createEditableLayer(drawingConfig, features, selectedIndexes, callbacks) {
@@ -94,10 +98,10 @@ export function createEditableLayer(drawingConfig, features, selectedIndexes, ca
 
   const mergedStyle = { ...DEFAULT_STYLE, ...style };
   const isSelectionMode = SELECTION_MODES.has(modeStr);
-  const { setFeatures, setSelectedIndexes, syncToModel } = callbacks;
+  const { setFeatures, setSelectedIndexes, syncToModel, onCancelPan } = callbacks;
 
   return new EditableGeoJsonLayer({
-    id: "__drawing-layer",
+    id: DRAWING_LAYER_ID,
     data: features,
     mode: modeInstance,
     selectedFeatureIndexes: selectedIndexes,
@@ -132,9 +136,14 @@ export function createEditableLayer(drawingConfig, features, selectedIndexes, ca
     pickable: true,
     autoHighlight: false,
 
-    // Click handler for selection in modify/translate modes
+    // Edit modes call cancelPan() when a vertex/feature drag starts; the
+    // controller uses it to suspend MapLibre's drag-pan for that gesture.
+    onCancelPan: onCancelPan || undefined,
+
+    // Click handler for selection in modify/translate modes. Guide picks
+    // (edit handles) carry the handle index, not a feature index — ignore them.
     onClick: (info) => {
-      if (isSelectionMode && info.index >= 0) {
+      if (isSelectionMode && !info.isGuide && info.index >= 0) {
         setSelectedIndexes([info.index]);
       }
     },

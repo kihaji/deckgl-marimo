@@ -25,6 +25,7 @@ Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https:
 - **Fully offline** — all JavaScript bundled in the package, no CDN dependencies
 - **Viewport readback** — read the current map center, zoom, pitch, bearing, and visible bounding box (`m.bounds`, lower-left / upper-right) from Python
 - **Click & hover events** — inspect picked objects reactively in downstream cells
+- **WFS read & WFS-T editing** — render any OGC WFS feature type (`WFSLayer`), query it from Python (`WFSClient`), and edit features with the drawing tools, committing inserts/updates/deletes as WFS-T transactions (`WFSEditor`)
 
 ## Installation
 
@@ -33,6 +34,9 @@ pip install deckgl-marimo
 # or
 uv add deckgl-marimo
 ```
+
+Optional extras: `deckgl-marimo[binary]` (numpy, binary transport) and
+`deckgl-marimo[wfs]` (`requests`, for `WFSClient` / WFS-T editing).
 
 ## Quickstart
 

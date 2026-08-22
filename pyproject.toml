@@ -44,8 +44,10 @@ Issues = "https://github.com/kihaji/deckgl-marimo/issues"
 [project.optional-dependencies]
 binary = ["numpy>=1.24"]
 marimo = ["marimo>=0.22"]
+wfs = ["requests>=2.28"]
 dev = [
     "marimo>=0.22",
+    "requests>=2.28",
     "pandas",
     "polars",
     "numpy>=1.24",
@@ -139,4 +141,5 @@ testpaths = ["tests"]
 addopts = "-rsxX"
 markers = [
     "perf: kernel-side performance watchdog (tests/perf_watchdog); opt-in via --run-perf, not run in CI",
+    "e2e: live-server tests (tests/e2e); opt-in via --run-e2e, not run in CI",
 ]

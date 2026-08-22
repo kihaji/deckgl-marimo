@@ -13,7 +13,7 @@
 #   make docs-build - Build docs with strict mode
 #
 
-.PHONY: all build watch clean test test-js quality check-git check-version check-versions release docs-serve docs-build
+.PHONY: all build watch clean test test-js test-perf test-e2e quality check-git check-version check-versions release docs-serve docs-build
 
 all: build
 
@@ -47,6 +47,13 @@ test-js:
 # plain-Python cost (catches marimo comm/serialization regressions like 0.23.14).
 test-perf:
 	uv run pytest --run-perf tests/perf_watchdog -v
+
+# Live WFS / WFS-T tests (opt-in, not in CI). Reads hit a public GeoServer unless
+# DECKGL_E2E_URL is set; writes need a transactional server, e.g.
+#   docker run -d --name geoserver -p 8080:8080 docker.osgeo.org/geoserver:2.27.1
+#   make test-e2e DECKGL_E2E_URL=http://localhost:8080/geoserver/wfs DECKGL_E2E_AUTH=admin:geoserver
+test-e2e:
+	uv run pytest --run-e2e tests/e2e -v
 
 # Run code quality checks: ruff (lint) + pyright (types)
 quality:

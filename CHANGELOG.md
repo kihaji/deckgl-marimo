@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- OGC WFS read + WFS-T write support in the new `deckgl_marimo.wfs`
+  subpackage: `WFSLayer` (a `GeoJsonLayer` fed by a GetFeature URL with
+  `update_layer`-able query params — `m.update_layer(id, bbox=m.bounds)`),
+  `WFSClient` (GetCapabilities / DescribeFeatureType / GetFeature and
+  `Transaction` insert/update/delete for WFS 2.0.0 / 1.1.0 / 1.0.0, GML
+  encoding with Multi-geometry promotion and GeoServer axis-order handling),
+  and `WFSEditor` (edit a feature type with the drawing tools, diff by
+  feature id, commit as one transaction). New optional extra
+  `deckgl-marimo[wfs]` (`requests`). Guide: *WFS & WFS-T Editing*; examples
+  `19_wfs.py`, `20_wfs_editing.py`. Live tests in `tests/e2e/` (opt-in
+  `make test-e2e`, verified against GeoServer 2.27).
 - `Map.bounds` — the visible map extent as `((west, south), (east, north))`
   (lower-left, upper-right), reported by the frontend alongside the other
   `viewport` fields (`widget.value["viewport"]["bounds"]`). Same shape
@@ -21,6 +32,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   marimo comm/serialization regressions like 0.23.14 (#58).
 - Packaging: sdist `README.md`/`LICENSE*` include patterns anchored to the
   repo root so nested READMEs (examples/, benchmarks/, perf/) no longer ship.
+
+### Fixed
+- Drawing/editing did not receive pointer events: the `MapboxOverlay` ran in
+  overlaid mode, where deck's event manager (which `EditableGeoJsonLayer`
+  listens on) never fires, so drawing, vertex editing and translating were
+  inert. The overlay now switches to interleaved mode while a drawing mode
+  is active (or with `Map(interleaved=True)`), MapLibre's drag-pan is
+  suspended while a vertex/feature is dragged, and clicking an edit handle no
+  longer corrupts the selection. Adds the `Map(interleaved=...)` option (#4).
+- Drawing: features moved with the `translate` mode now sync to Python
+  (`drawing_features`) when dropped — the `translated` edit event was not
+  in the sync list, so translations were only visible after another edit.
 
 ## [0.7.0] - 2026-07-11
 

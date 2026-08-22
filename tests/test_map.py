@@ -294,3 +294,18 @@ class TestBoundsProperty:
         m.fit_bounds(m.bounds)
         assert m.fit_bounds_request["bounds"] == [[-10.0, -5.0], [10.0, 5.0]]
         assert (m.longitude, m.latitude) == (0.0, 0.0)
+
+
+class TestInterleaved:
+    """Map(interleaved=...) selects the MapboxOverlay rendering/event mode."""
+
+    def test_default_is_overlaid(self):
+        assert Map().interleaved is False
+
+    def test_kwarg_sets_trait(self):
+        assert Map(interleaved=True).interleaved is True
+
+    def test_runtime_toggle(self):
+        m = Map()
+        m.interleaved = True
+        assert m.interleaved is True
