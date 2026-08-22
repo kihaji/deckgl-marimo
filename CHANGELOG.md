@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-22
+
 ### Added
 - OGC WFS read + WFS-T write support in the new `deckgl_marimo.wfs`
   subpackage: `WFSLayer` (a `GeoJsonLayer` fed by a GetFeature URL with
