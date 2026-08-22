@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `Map.bounds` — the visible map extent as `((west, south), (east, north))`
+  (lower-left, upper-right), reported by the frontend alongside the other
+  `viewport` fields (`widget.value["viewport"]["bounds"]`). Same shape
+  `fit_bounds()` takes, so views round-trip.
+
+### Changed
+- The `viewport` readback is now published as soon as the map has loaded,
+  not only after the first user interaction.
+- Kernel-side perf watchdog (`tests/perf_watchdog/`, opt-in via
+  `make test-perf` / `pytest --run-perf`; not run in CI) guarding against
+  marimo comm/serialization regressions like 0.23.14 (#58).
+- Packaging: sdist `README.md`/`LICENSE*` include patterns anchored to the
+  repo root so nested READMEs (examples/, benchmarks/, perf/) no longer ship.
+
 ## [0.7.0] - 2026-07-11
 
 ### Added

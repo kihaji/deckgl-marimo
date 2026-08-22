@@ -241,6 +241,7 @@ def _(mo, widget):
 | Zoom | {_fmt(viewport.get('zoom'), '.2f')} |
 | Pitch | {_fmt(viewport.get('pitch'), '.1f')} |
 | Bearing | {_fmt(viewport.get('bearing'), '.1f')} |
+| Bounds (LL, UR) | {viewport.get('bounds', '—')} |
 """
     )
     return

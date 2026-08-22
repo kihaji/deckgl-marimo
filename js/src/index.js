@@ -16,6 +16,7 @@ import { attachPickHandlers } from "./pick-events.js";
 import { applyConfigExtras, resolveStyle } from "./maplibre-config.js";
 import { createTimeFilterAnimation } from "./time-filter-animation.js";
 import { createDrawingController } from "./drawing.js";
+import { viewportPayload } from "./viewport.js";
 
 /**
  * Inject MapLibre CSS into the document if not already present.
@@ -220,17 +221,15 @@ async function render({ model, el }) {
   applyFitBounds(); // honor a request made before first render
 
   // --- Viewport readback: JS -> Python ---
-  map.on("moveend", () => {
-    const center = map.getCenter();
-    model.set("viewport", {
-      longitude: center.lng,
-      latitude: center.lat,
-      zoom: map.getZoom(),
-      pitch: map.getPitch(),
-      bearing: map.getBearing(),
-    });
+  // center/zoom/pitch/bearing + visible bounds ([[west, south], [east, north]]).
+  // Published once the map is ready (so Python sees a value before the first
+  // user interaction) and after every camera move.
+  const publishViewport = () => {
+    model.set("viewport", viewportPayload(map));
     model.save_changes();
-  });
+  };
+  map.once("load", publishViewport);
+  map.on("moveend", publishViewport);
 
   // --- Click/hover event readback ---
   attachPickHandlers(overlay, model);

@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/kihaji/deckgl-marimo/blob/main/examples/hexagon_example.py)
 
+📖 **Documentation:** <https://kihaji.github.io/deckgl-marimo/>
+
 Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https://marimo.io) notebooks. Render GPU-accelerated maps with 15 fully tested layer types (plus experimental access to the full deck.gl catalog), powered by [MapLibre GL](https://maplibre.org) and [anywidget](https://anywidget.dev).
 
 ## Features
@@ -21,7 +23,7 @@ Interactive [deck.gl](https://deck.gl) visualization library for [marimo](https:
 - **Multiple data sources** — pandas, polars, geopandas, DuckDB, GeoJSON dicts, and URLs
 - **Authenticated data loading** — pass HTTP headers, API keys, or credentials for remote data sources
 - **Fully offline** — all JavaScript bundled in the package, no CDN dependencies
-- **Viewport readback** — read the current map center, zoom, pitch, and bearing from Python
+- **Viewport readback** — read the current map center, zoom, pitch, bearing, and visible bounding box (`m.bounds`, lower-left / upper-right) from Python
 - **Click & hover events** — inspect picked objects reactively in downstream cells
 
 ## Installation
@@ -114,6 +116,10 @@ map_widget.set_layers([
 # Cell 5 — viewport readback
 vp = widget.value.get("viewport", {})
 mo.md(f"Zoom: {vp.get('zoom', 'N/A'):.1f}")
+
+# Visible extent as ((west, south), (east, north)) — lower-left, upper-right.
+# Same shape fit_bounds() takes: map_widget.fit_bounds(map_widget.bounds) round-trips.
+bbox = map_widget.bounds          # None until the map has rendered once
 ```
 
 ### Color scales

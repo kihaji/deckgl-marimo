@@ -27,8 +27,8 @@ layer.as_widget()
 - **MapLibre basemaps** — stable WMS/tile-server support and clean,
   HTTP-retrievable style definitions under a performant deck.gl overlay.
 - **marimo-native reactivity** — bind layer properties to sliders and
-  read viewport/click/hover state in downstream cells. See
-  [Reactive Patterns](guides/reactive-patterns.md).
+  read viewport (center, zoom, visible bounds) / click / hover state in
+  downstream cells. See [Reactive Patterns](guides/reactive-patterns.md).
 - **Bring your own DataFrame** — pandas, polars, geopandas, DuckDB,
   GeoJSON dicts, and URLs, via [narwhals](https://narwhals-dev.github.io/narwhals/)
   (no required backend).

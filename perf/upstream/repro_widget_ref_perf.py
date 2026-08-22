@@ -52,7 +52,7 @@ except ImportError:
     import marimo
 
     print(f"marimo {marimo.__version__}: widget_ref module not present (pre-0.23.14) — not affected")
-    raise SystemExit(0)
+    raise SystemExit(0) from None
 
 import marimo
 

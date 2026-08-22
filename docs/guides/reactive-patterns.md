@@ -35,6 +35,9 @@ deck_map.set_layers([
 # Cell 5 — read state back
 vp = widget.value.get("viewport", {})
 mo.md(f"Zoom: {vp.get('zoom', 0):.1f}")
+
+# Visible extent, lower-left / upper-right: ((west, south), (east, north))
+bbox = deck_map.bounds   # None until the map has rendered once
 ```
 
 Slider changes now flow to the existing widget through traitlet sync —

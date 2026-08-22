@@ -264,3 +264,33 @@ class TestPerfMetricsOptIn:
         assert m.show_perf_metrics is True
         m.show_perf_metrics = False
         assert m.show_perf_metrics is False
+
+
+class TestBoundsProperty:
+    def test_none_before_frontend_reports(self):
+        m = Map()
+        assert m.viewport == {}
+        assert m.bounds is None
+
+    def test_none_when_viewport_lacks_bounds(self):
+        m = Map()
+        m.viewport = {"longitude": -95.5, "latitude": 37.0, "zoom": 3.5, "pitch": 0.0, "bearing": 0.0}
+        assert m.bounds is None
+
+    def test_returns_lower_left_upper_right_tuples(self):
+        m = Map()
+        m.viewport = {"zoom": 5.0, "bounds": [[-110.25, 30.5], [-80.75, 44.125]]}
+        assert m.bounds == ((-110.25, 30.5), (-80.75, 44.125))
+        assert isinstance(m.bounds, tuple) and isinstance(m.bounds[0], tuple)
+
+    def test_preserves_unwrapped_antimeridian_longitudes(self):
+        m = Map()
+        m.viewport = {"bounds": [[170.0, -10.0], [190.0, 10.0]]}
+        assert m.bounds == ((170.0, -10.0), (190.0, 10.0))
+
+    def test_round_trips_into_fit_bounds(self):
+        m = Map()
+        m.viewport = {"bounds": [[-10.0, -5.0], [10.0, 5.0]]}
+        m.fit_bounds(m.bounds)
+        assert m.fit_bounds_request["bounds"] == [[-10.0, -5.0], [10.0, 5.0]]
+        assert (m.longitude, m.latitude) == (0.0, 0.0)

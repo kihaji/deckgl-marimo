@@ -127,7 +127,10 @@ class Map(anywidget.AnyWidget):
     # still fire a change event.
     fit_bounds_request = traitlets.Dict({}).tag(sync=True)
 
-    # Read-back from JS (JS -> Python)
+    # Read-back from JS (JS -> Python). ``viewport`` carries longitude,
+    # latitude, zoom, pitch, bearing and ``bounds`` ([[west, south], [east,
+    # north]]); see the ``bounds`` property. Populated on map load and after
+    # every camera move.
     viewport = traitlets.Dict({}).tag(sync=True)
     click_info = traitlets.Dict({}).tag(sync=True)
     hover_info = traitlets.Dict({}).tag(sync=True)
@@ -388,6 +391,33 @@ class Map(anywidget.AnyWidget):
     def layers(self) -> list[BaseLayer]:
         """Return the current list of layers."""
         return list(self._layers)
+
+    @property
+    def bounds(self) -> tuple[tuple[float, float], tuple[float, float]] | None:
+        """Visible map extent as ``((west, south), (east, north))`` — lower-left, upper-right.
+
+        Reported by the frontend (MapLibre ``map.getBounds()``) together with the
+        other ``viewport`` fields when the map finishes loading and after every
+        camera move. ``None`` until the frontend has reported once (e.g. before
+        the widget is displayed, or in a plain-Python/export context).
+
+        The shape matches what :meth:`fit_bounds` accepts, so
+        ``m.fit_bounds(m.bounds)`` round-trips. Also available as
+        ``widget.value["viewport"]["bounds"]`` for reactive cells.
+
+        Notes
+        -----
+        - With ``pitch > 0`` the visible area is a trapezoid; this is its
+          axis-aligned bounding box, which grows quickly at high pitch near
+          the horizon.
+        - Longitudes are *unwrapped* across the antimeridian (east may exceed
+          180 or west be below -180), exactly as MapLibre reports them.
+        """
+        raw = self.viewport.get("bounds")
+        if not raw:
+            return None
+        (west, south), (east, north) = raw
+        return ((float(west), float(south)), (float(east), float(north)))
 
     def as_widget(self) -> Any:
         """Wrap this Map in ``marimo.ui.anywidget`` for reactive ``.value`` access.
