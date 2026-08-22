@@ -1,0 +1,39 @@
+{
+ "config": "lifecycle_250k_binary",
+ "load": {
+  "canvasMountMs": 1452,
+  "ltCount": 5,
+  "heapMB_after_load": 145,
+  "py_layer_map_build_ms": 188.6
+ },
+ "updates": [
+  {
+   "step": "radius_scale 5->6",
+   "updateSettleMs": null,
+   "ltCount": 0,
+   "ltTotalMs": 0,
+   "ltMaxMs": 0,
+   "py_update_ms": 190.6,
+   "heapMB": 141
+  },
+  {
+   "step": "radius_scale 6->7",
+   "updateSettleMs": null,
+   "ltCount": 0,
+   "ltTotalMs": 0,
+   "ltMaxMs": 0,
+   "py_update_ms": 132.8,
+   "heapMB": 145
+  },
+  {
+   "step": "radius_scale 7->8",
+   "updateSettleMs": null,
+   "ltCount": 0,
+   "ltTotalMs": 0,
+   "ltMaxMs": 0,
+   "py_update_ms": 108.8,
+   "heapMB": 140
+  }
+ ],
+ "note": "zero long tasks during updates (same as post-merge); heap flat 141-145 MB"
+}

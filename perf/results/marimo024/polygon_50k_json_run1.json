@@ -1,0 +1,64 @@
+{
+ "config": "polygon_50k_json",
+ "run": 1,
+ "load": {
+  "navTtfb": 8,
+  "domContentLoaded": 314,
+  "loadEvent": 327,
+  "canvasMountMs": 1737,
+  "settleMs": 2143,
+  "ltCount": 7,
+  "ltTotalMs": 706,
+  "ltMaxMs": 148,
+  "longtasks": [
+   {
+    "start": 244,
+    "dur": 70
+   },
+   {
+    "start": 1262,
+    "dur": 123
+   },
+   {
+    "start": 1458,
+    "dur": 148
+   },
+   {
+    "start": 1606,
+    "dur": 127
+   },
+   {
+    "start": 1737,
+    "dur": 88
+   },
+   {
+    "start": 1991,
+    "dur": 62
+   },
+   {
+    "start": 2055,
+    "dur": 88
+   }
+  ]
+ },
+ "interact": {
+  "windowMs": 3719,
+  "frames": 223,
+  "avgFps": 60,
+  "p95FrameMs": 16.8,
+  "maxFrameMs": 16.8,
+  "dropped50": 0,
+  "ltCount": 0,
+  "ltTotalMs": 0
+ },
+ "heapMB": 199,
+ "py": {
+  "scenario": "polygon",
+  "n": 50000,
+  "mode": "json",
+  "data_gen_ms": 115.3,
+  "layer_map_build_ms": 119.5,
+  "binary_bytes": 0,
+  "spec_json_bytes": 10553255
+ }
+}

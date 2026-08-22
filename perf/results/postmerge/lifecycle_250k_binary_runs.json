@@ -1,0 +1,5 @@
+{"config":"lifecycle_250k_binary","load":{"canvasMountMs":1244},"updates":[
+ {"step":"radius_scale 5->6","updateSettleMs":null,"ltCount":0,"ltTotalMs":0,"py_update_ms":154.8,"heapMB":180},
+ {"step":"radius_scale 6->7","updateSettleMs":null,"ltCount":0,"ltTotalMs":0,"py_update_ms":211.5,"heapMB":183},
+ {"step":"radius_scale 7->8","updateSettleMs":null,"ltCount":0,"ltTotalMs":0,"py_update_ms":128.0,"heapMB":188}
+],"note":"zero long tasks during updates post-merge; baseline had one ~540ms freeze per step and 170MB heap churn"}

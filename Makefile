@@ -42,6 +42,12 @@ test:
 test-js:
 	cd js && npm test
 
+# Kernel-side performance watchdog (opt-in, not in CI). Spawns a marimo kernel
+# and asserts widget create/update cost inside the kernel stays < 2x the
+# plain-Python cost (catches marimo comm/serialization regressions like 0.23.14).
+test-perf:
+	uv run pytest --run-perf tests/perf_watchdog -v
+
 # Run code quality checks: ruff (lint) + pyright (types)
 quality:
 	@echo "Running ruff linter..."

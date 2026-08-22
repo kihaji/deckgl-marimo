@@ -1,0 +1,5 @@
+{"config":"lifecycle_250k_binary","load":{"canvasMountMs":1368,"note":"load phase matches scatter_250k_binary baseline"},"updates":[
+ {"step":"radius_scale 5->6","updateSettleMs":1192,"ltCount":1,"ltTotalMs":542,"ltMaxMs":542,"py_update_ms":333.0,"heapMB":309},
+ {"step":"radius_scale 6->7","updateSettleMs":1113,"ltCount":1,"ltTotalMs":510,"ltMaxMs":510,"py_update_ms":121.7,"heapMB":479},
+ {"step":"radius_scale 7->8","updateSettleMs":1130,"ltCount":1,"ltTotalMs":541,"ltMaxMs":541,"py_update_ms":122.4,"heapMB":279}
+],"py":{"scenario":"lifecycle","n":250000,"mode":"binary","data_gen_ms":185.2,"layer_map_build_ms":101.8,"binary_bytes":4000000,"spec_json_bytes":469}}

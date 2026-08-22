@@ -1,0 +1,68 @@
+{
+ "config": "hexagon_500k_json",
+ "run": 1,
+ "load": {
+  "navTtfb": 7,
+  "domContentLoaded": 301,
+  "loadEvent": 315,
+  "canvasMountMs": 4539,
+  "settleMs": 4939,
+  "ltCount": 8,
+  "ltTotalMs": 1315,
+  "ltMaxMs": 704,
+  "longtasks": [
+   {
+    "start": 229,
+    "dur": 71
+   },
+   {
+    "start": 3472,
+    "dur": 704
+   },
+   {
+    "start": 4257,
+    "dur": 100
+   },
+   {
+    "start": 4357,
+    "dur": 170
+   },
+   {
+    "start": 4540,
+    "dur": 65
+   },
+   {
+    "start": 4617,
+    "dur": 60
+   },
+   {
+    "start": 4792,
+    "dur": 51
+   },
+   {
+    "start": 4845,
+    "dur": 94
+   }
+  ]
+ },
+ "interact": {
+  "windowMs": 3883,
+  "frames": 231,
+  "avgFps": 59,
+  "p95FrameMs": 16.8,
+  "maxFrameMs": 33.4,
+  "dropped50": 0,
+  "ltCount": 0,
+  "ltTotalMs": 0
+ },
+ "heapMB": 227,
+ "py": {
+  "scenario": "hexagon",
+  "n": 500000,
+  "mode": "json",
+  "data_gen_ms": 245.9,
+  "layer_map_build_ms": 481.8,
+  "binary_bytes": 0,
+  "spec_json_bytes": 57373968
+ }
+}

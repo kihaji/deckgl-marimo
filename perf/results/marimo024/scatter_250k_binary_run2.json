@@ -1,0 +1,60 @@
+{
+ "config": "scatter_250k_binary",
+ "run": 2,
+ "load": {
+  "navTtfb": 7,
+  "domContentLoaded": 263,
+  "loadEvent": 299,
+  "canvasMountMs": 1380,
+  "settleMs": 1730,
+  "ltCount": 6,
+  "ltTotalMs": 395,
+  "ltMaxMs": 78,
+  "longtasks": [
+   {
+    "start": 198,
+    "dur": 66
+   },
+   {
+    "start": 1246,
+    "dur": 71
+   },
+   {
+    "start": 1318,
+    "dur": 61
+   },
+   {
+    "start": 1381,
+    "dur": 78
+   },
+   {
+    "start": 1605,
+    "dur": 62
+   },
+   {
+    "start": 1673,
+    "dur": 57
+   }
+  ]
+ },
+ "interact": {
+  "windowMs": 3110,
+  "frames": 182,
+  "avgFps": 58,
+  "p95FrameMs": 16.8,
+  "maxFrameMs": 50,
+  "dropped50": 0,
+  "ltCount": 0,
+  "ltTotalMs": 0
+ },
+ "heapMB": 100,
+ "py": {
+  "scenario": "scatter",
+  "n": 250000,
+  "mode": "binary",
+  "data_gen_ms": 171.5,
+  "layer_map_build_ms": 133.1,
+  "binary_bytes": 4000000,
+  "spec_json_bytes": 469
+ }
+}

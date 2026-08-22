@@ -49,12 +49,21 @@ package-build time via `hatch_build.py` (set
 ```bash
 make test         # pytest (tests/)
 make test-js      # vitest (js/src/__tests__/)
+make test-perf    # opt-in perf watchdog (tests/perf_watchdog/), ~20 s, not in CI
 make quality      # ruff + pyright
 make check-versions
 ```
 
 CI runs all of the above plus `uv lock --check` on Python 3.11–3.14, and
 builds a wheel through the self-building hook. Everything must be green.
+
+`make test-perf` is the exception: it is **not** part of CI. It runs the same
+widget workload in-process and inside a real marimo kernel (`marimo export html`,
+no browser needed) and fails if the kernel-side cost of JSON-mode `Map()`
+construction / `update_layer()` exceeds 2× the plain-Python cost — the signature
+of the marimo 0.23.14 state-serialization regression (#58). Run it when bumping
+marimo (`uv run --with marimo==X pytest --run-perf tests/perf_watchdog`). The
+full browser-side harness lives in `perf/` (see `perf/tools/browser_protocol.md`).
 
 ## Conventions
 

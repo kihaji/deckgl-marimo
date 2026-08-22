@@ -1,0 +1,1 @@
+{"date":"2026-07-11","git_commit":"9c3b5ee","branch":"main","chrome":"150.0.0.0 (WSLg Linux)","gpu":"ANGLE D3D12 NVIDIA GeForce RTX 5090","cores":24,"deviceMemoryGB":32,"dpr":1,"viewport":[1905,2010],"transport":"WSL2 localhost -> Chrome (marimo run --headless, port 2718)"}

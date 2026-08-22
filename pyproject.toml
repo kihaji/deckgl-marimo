@@ -86,8 +86,8 @@ include = [
     "js/package-lock.json",
     "js/esbuild.config.mjs",
     "hatch_build.py",
-    "README.md",
-    "LICENSE*",
+    "/README.md",
+    "/LICENSE*",
 ]
 exclude = [
     "src/deckgl_marimo/static/deckgl-marimo.bundle.js",
@@ -119,6 +119,8 @@ ignore = [
 "examples/**" = ["B018", "E501", "E402"]
 "benchmarks/**" = ["B018", "E501", "E402"]
 "repros/**" = ["B018", "E501", "E402"]
+"perf/**" = ["B018", "E501", "E402"]
+"tests/perf_watchdog/_kernel_bench_notebook.py" = ["B018", "E402"]
 
 [tool.pyright]
 # hatch_build.py is excluded: hatchling is a build-time-only requirement and
@@ -135,3 +137,6 @@ reportPrivateImportUsage = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-rsxX"
+markers = [
+    "perf: kernel-side performance watchdog (tests/perf_watchdog); opt-in via --run-perf, not run in CI",
+]

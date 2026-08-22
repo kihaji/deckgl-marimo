@@ -1,0 +1,22 @@
+{
+ "date": "2026-08-21",
+ "git_commit": "f1a7f07",
+ "branch": "main",
+ "deckgl_marimo": "0.7.0 (editable, main @ f1a7f07)",
+ "python": "3.14.4",
+ "marimo": "0.24.0",
+ "anywidget": "0.11.0",
+ "deckgl": "9.3.6",
+ "maplibre_gl": "5.24.0",
+ "bundle_bytes": 3184711,
+ "chrome": "150.0.0.0 (WSLg Linux)",
+ "gpu": "ANGLE D3D12 NVIDIA GeForce RTX 5090",
+ "cores": 24,
+ "deviceMemoryGB": 32,
+ "dpr": 1,
+ "viewport": [
+  1905,
+  2010
+ ],
+ "transport": "WSL2 localhost -> Chrome (marimo run --headless --no-token, port 2718; uv run --with marimo==0.24.0)"
+}
